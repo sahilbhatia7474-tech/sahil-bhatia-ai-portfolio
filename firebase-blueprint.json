@@ -1,0 +1,152 @@
+{
+  "entities": {
+    "identity": {
+      "title": "Identity",
+      "description": "Founder public identity and biographical data",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "headline": { "type": "string" },
+        "primaryRoles": { "type": "array", "items": { "type": "string" } },
+        "shortBio": { "type": "string" },
+        "longBio": { "type": "string" },
+        "location": { "type": "string" },
+        "contactEmail": { "type": "string" },
+        "socialLinks": { "type": "object" },
+        "profileImage": { "type": "string" },
+        "status": { "type": "string" },
+        "availability": { "type": "string" }
+      }
+    },
+    "projects": {
+      "title": "Projects",
+      "description": "Curated projects showcase",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "category": { "type": "string" },
+        "shortDescription": { "type": "string" },
+        "longDescription": { "type": "string" },
+        "status": { "type": "string" },
+        "technologies": { "type": "array", "items": { "type": "string" } },
+        "heroImage": { "type": "string" },
+        "gallery": { "type": "array", "items": { "type": "string" } },
+        "demoUrl": { "type": "string" },
+        "githubUrl": { "type": "string" },
+        "caseStudy": { "type": "string" },
+        "role": { "type": "string" },
+        "year": { "type": "string" },
+        "featured": { "type": "boolean" },
+        "visibility": { "type": "string" },
+        "sortOrder": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      }
+    },
+    "featuredPortrait": {
+      "title": "Featured Portrait",
+      "description": "Founder 3D card portrait image and metadata",
+      "type": "object",
+      "properties": {
+        "imageUrl": { "type": "string" },
+        "focalX": { "type": "number" },
+        "focalY": { "type": "number" },
+        "altText": { "type": "string" },
+        "visibility": { "type": "string" },
+        "featured": { "type": "boolean" },
+        "updatedAt": { "type": "string" }
+      }
+    },
+    "certificates": {
+      "title": "Certificates",
+      "description": "Founder verified certificates and credentials",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "issuer": { "type": "string" },
+        "issueDate": { "type": "string" },
+        "certificateImage": { "type": "string" },
+        "verificationUrl": { "type": "string" },
+        "description": { "type": "string" },
+        "skillsCovered": { "type": "array", "items": { "type": "string" } },
+        "visibility": { "type": "string" },
+        "featured": { "type": "boolean" },
+        "sortOrder": { "type": "number" }
+      }
+    },
+    "journey": {
+      "title": "Journey",
+      "description": "Professional journey and verified timeline",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "company": { "type": "string" },
+        "role": { "type": "string" },
+        "startDate": { "type": "string" },
+        "endDate": { "type": "string" },
+        "description": { "type": "string" },
+        "responsibilities": { "type": "array", "items": { "type": "string" } },
+        "skills": { "type": "array", "items": { "type": "string" } },
+        "evidence": { "type": "string" },
+        "status": { "type": "string" },
+        "visibility": { "type": "string" },
+        "sortOrder": { "type": "number" }
+      }
+    },
+    "education": {
+      "title": "Education",
+      "description": "Academic background and records",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "degree": { "type": "string" },
+        "institution": { "type": "string" },
+        "startYear": { "type": "string" },
+        "endYear": { "type": "string" },
+        "status": { "type": "string" },
+        "description": { "type": "string" },
+        "evidence": { "type": "string" },
+        "visibility": { "type": "string" }
+      }
+    },
+    "proof": {
+      "title": "Proof & Evidence",
+      "description": "Inspectable evidence and validation items",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "type": { "type": "string" },
+        "url": { "type": "string" },
+        "description": { "type": "string" },
+        "projectRelation": { "type": "string" },
+        "verificationState": { "type": "string" },
+        "status": { "type": "string" },
+        "visibility": { "type": "string" }
+      }
+    },
+    "apps": {
+      "title": "Apps",
+      "description": "Distributable executables and web applications",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "appName": { "type": "string" },
+        "description": { "type": "string" },
+        "platform": { "type": "string" },
+        "version": { "type": "string" },
+        "icon": { "type": "string" },
+        "apkUrl": { "type": "string" },
+        "pwaUrl": { "type": "string" },
+        "demoUrl": { "type": "string" },
+        "repository": { "type": "string" },
+        "status": { "type": "string" },
+        "visibility": { "type": "string" },
+        "featured": { "type": "boolean" }
+      }
+    }
+  }
+}

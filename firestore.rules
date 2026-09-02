@@ -1,0 +1,95 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if the user is the authenticated Founder
+    function isFounder() {
+      return request.auth != null && 
+             (request.auth.token.email == 'sahilbhatia7474@gmail.com' ||
+              request.auth.token.firebase.sign_in_provider == 'custom' ||
+              request.auth.token.founder == true);
+    }
+    
+    // Public collections: anyone can read PUBLISHED items, only Founder can write or read drafts
+    match /projects/{document} {
+      allow read: if (resource == null || resource.data.visibility == 'PUBLIC' && resource.data.status == 'PUBLISHED') || isFounder();
+      allow write: if isFounder();
+    }
+
+    match /aiSystems/{document} {
+      allow read: if (resource == null || resource.data.visibility == 'PUBLIC' && resource.data.status == 'PUBLISHED') || isFounder();
+      allow write: if isFounder();
+    }
+
+    match /journey/{document} {
+      allow read: if (resource == null || resource.data.visibility == 'PUBLIC' && resource.data.status == 'PUBLISHED') || isFounder();
+      allow write: if isFounder();
+    }
+
+    match /education/{document} {
+      allow read: if (resource == null || resource.data.visibility == 'PUBLIC' && resource.data.status == 'PUBLISHED') || isFounder();
+      allow write: if isFounder();
+    }
+
+    match /certificates/{document} {
+      allow read: if (resource == null || resource.data.visibility == 'PUBLIC' && resource.data.status == 'PUBLISHED') || isFounder();
+      allow write: if isFounder();
+    }
+
+    match /proof/{document} {
+      allow read: if (resource == null || resource.data.visibility == 'PUBLIC' && resource.data.status == 'PUBLISHED') || isFounder();
+      allow write: if isFounder();
+    }
+
+    match /apps/{document} {
+      allow read: if (resource == null || resource.data.visibility == 'PUBLIC' && resource.data.status == 'PUBLISHED') || isFounder();
+      allow write: if isFounder();
+    }
+
+    match /identity/{document} {
+      allow read: if true;
+      allow write: if isFounder();
+    }
+
+    match /hero/{document} {
+      allow read: if true;
+      allow write: if isFounder();
+    }
+
+    match /featuredPortrait/{document} {
+      allow read: if true;
+      allow write: if isFounder();
+    }
+
+    match /skills/{document} {
+      allow read: if true;
+      allow write: if isFounder();
+    }
+
+    match /navigation/{document} {
+      allow read: if true;
+      allow write: if isFounder();
+    }
+
+    match /siteSettings/{document} {
+      allow read: if true;
+      allow write: if isFounder();
+    }
+
+    match /media/{document} {
+      allow read: if (resource == null || resource.data.visibility == 'PUBLIC') || isFounder();
+      allow write: if isFounder();
+    }
+
+    match /activityLog/{document} {
+      allow read: if isFounder();
+      allow create: if true;
+      allow update, delete: if isFounder();
+    }
+
+    match /messages/{document} {
+      allow create: if true;
+      allow read, update, delete: if isFounder();
+    }
+  }
+}

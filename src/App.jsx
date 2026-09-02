@@ -1,0 +1,240 @@
+import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useLocation, Link } from 'react-router-dom';
+import { AuthProvider, useAuth } from './lib/authContext';
+import { PortfolioDataProvider, usePortfolioData } from './context/PortfolioDataContext';
+import SystemBootLoader from './components/SystemBootLoader';
+import CustomCursor from './components/CustomCursor';
+import Navigation from './components/Navigation';
+import AIAssistant from './components/AIAssistant';
+import Hero from './components/Hero';
+import CapabilityMap from './components/CapabilityMap';
+import Projects from './components/Projects';
+import AISystems from './components/AISystems';
+import Journey from './components/Journey';
+import Proof from './components/Proof';
+import FutureVault from './components/FutureVault';
+import AppsHub from './components/AppsHub';
+import Contact from './components/Contact';
+import Footer from './components/Footer';
+import VaultLayout from './components/vault/VaultLayout';
+import ScrollJumpInstrument from './components/ScrollJumpInstrument';
+import { Eye, ShieldAlert, Lock, Cpu } from 'lucide-react';
+
+// Route Section Smooth Scroller
+function ScrollManager() {
+  const location = useLocation();
+
+  useEffect(() => {
+    const path = location.pathname;
+    const hash = location.hash;
+
+    if (hash) {
+      const el = document.querySelector(hash);
+      if (el) {
+        setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 120);
+      }
+      return;
+    }
+
+    const routeSectionMap = {
+      '/projects': 'projects',
+      '/ai-systems': 'ai-systems',
+      '/journey': 'journey',
+      '/proof': 'proof',
+      '/future-vault': 'vault',
+      '/apps': 'apps',
+      '/contact': 'contact',
+    };
+
+    const sectionId = routeSectionMap[path];
+    if (sectionId) {
+      const el = document.getElementById(sectionId);
+      if (el) {
+        setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 120);
+      }
+    } else if (path === '/') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [location.pathname, location.hash]);
+
+  return null;
+}
+
+// Public Experience Shell
+function PublicExperience() {
+  const [booting, setBooting] = useState(() => {
+    // Only display full initialization sequence on initial visit
+    return !sessionStorage.getItem('sahil_os_booted');
+  });
+  const { siteSettings, previewMode, setPreviewMode } = usePortfolioData();
+  const { isFounderSession } = useAuth();
+
+  const handleBootComplete = () => {
+    sessionStorage.setItem('sahil_os_booted', 'true');
+    setBooting(false);
+  };
+
+  // If maintenance mode is enabled and user is not verified founder
+  if (siteSettings?.maintenanceMode && !isFounderSession) {
+    return (
+      <div className="min-h-screen bg-[#070708] text-white flex flex-col items-center justify-center p-6 text-center select-none font-sans">
+        <div className="max-w-md w-full bg-[#0d0e14] border border-red-500/30 rounded-2xl p-8 space-y-6 shadow-2xl">
+          <div className="w-14 h-14 mx-auto rounded-xl bg-red-600/10 border border-red-500/40 flex items-center justify-center text-red-500">
+            <ShieldAlert className="w-8 h-8" />
+          </div>
+          <div>
+            <div className="font-mono text-xs text-red-400 uppercase tracking-widest mb-1">
+              SYSTEM STATUS // CALIBRATION
+            </div>
+            <h1 className="text-2xl font-bold font-display uppercase tracking-tight text-white">
+              {siteSettings?.systemName || 'SAHIL / PORTFOLIO OS'}
+            </h1>
+            <p className="text-xs text-neutral-400 mt-2 font-sans leading-relaxed">
+              Public services are momentarily suspended for scheduled database replication and systems calibration.
+            </p>
+          </div>
+
+          <div className="p-3.5 rounded bg-black/40 border border-white/5 font-mono text-[11px] text-neutral-500 text-left space-y-1">
+            <div>HOST: {siteSettings?.domain || 'SAHILBHATIA.COM'}</div>
+            <div>STATUS: MAINTENANCE_ACTIVE</div>
+            <div>VERIFIED ARCHITECTURE: ZERO DATA LOSS</div>
+          </div>
+
+          <div className="pt-2 border-t border-white/10 flex justify-between items-center text-xs font-mono">
+            <span className="text-neutral-500">Authorized Personnel:</span>
+            <Link
+              to="/vault"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-white/10 hover:bg-white/20 text-white transition-colors"
+            >
+              <Lock className="w-3.5 h-3.5 text-red-400" />
+              <span>Founder Vault</span>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-[#070708] min-h-screen text-neutral-100 relative selection:bg-red-600 selection:text-white font-sans antialiased">
+      {/* Route Section Scroller */}
+      <ScrollManager />
+
+      {/* System Initialization Boot Sequence */}
+      {booting && <SystemBootLoader onComplete={handleBootComplete} />}
+
+      {/* CMS Preview Mode Banner — Deep Dark HUD Treatment (Visible ONLY to Authenticated Founder in DRAFT Mode) */}
+      {isFounderSession && previewMode === 'DRAFT' && (
+        <div
+          id="founder-preview-hud"
+          className="bg-[#090a0f]/95 backdrop-blur-md text-white px-4 h-9 min-h-[36px] text-xs font-mono border-b border-red-500/30 flex items-center justify-between z-[100] sticky top-0 shadow-2xl"
+        >
+          <div className="flex items-center gap-2.5">
+            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_#ff2a3a]" />
+            <span className="tracking-wide text-neutral-200">
+              <span className="text-red-400 font-bold">FOUNDER PREVIEW</span>
+              <span className="text-neutral-500 mx-1.5">|</span>
+              <span className="text-neutral-300">DRAFT MODE &middot; UNPUBLISHED CONTENT</span>
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/vault"
+              className="px-2.5 py-0.5 bg-white/10 hover:bg-white/20 text-white rounded border border-white/15 text-[11px] uppercase tracking-wider transition-colors"
+            >
+              Return to Vault
+            </Link>
+            <button
+              onClick={() => setPreviewMode('PUBLISHED')}
+              className="px-2.5 py-0.5 bg-red-950/50 hover:bg-red-900/60 text-red-300 rounded border border-red-500/30 text-[11px] uppercase tracking-wider transition-colors cursor-pointer"
+            >
+              Exit Preview
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Broadcast Announcement Bar */}
+      {siteSettings?.showAnnouncement && siteSettings?.announcementBanner && (
+        <div className="bg-[#12080a] text-neutral-200 px-4 py-2 text-xs font-mono border-b border-red-500/20 flex items-center justify-center gap-2 text-center relative z-40">
+          <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+          <span>{siteSettings.announcementBanner}</span>
+        </div>
+      )}
+
+      {/* Precision Ambient Light Follower & Custom Cursor */}
+      <CustomCursor />
+
+      {/* Fixed Sticky Header Navigation */}
+      <Navigation />
+
+      {/* Floating AI Portfolio Assistant & Navigation Engine */}
+      <AIAssistant />
+
+      {/* Floating Navigation Instrument (Jump to Mid / Back to Top) */}
+      <ScrollJumpInstrument />
+
+      {/* Main Structural Portfolio Content */}
+      <main className="relative z-10">
+        {/* 1. IDENTITY & STATEMENT */}
+        <Hero />
+
+        {/* 2. CAPABILITY MAP / SKILLS */}
+        <CapabilityMap />
+
+        {/* 3. CURATED PROJECTS (7 Verified Projects) */}
+        <Projects />
+
+        {/* 4. AI SYSTEMS ARCHITECTURE */}
+        <AISystems />
+
+        {/* 5. PROFESSIONAL JOURNEY (Frontline Sales to AI Systems) */}
+        <Journey />
+
+        {/* 6. PROOF & EVIDENCE MATRIX */}
+        <Proof />
+
+        {/* 7. FUTURE VAULT */}
+        <FutureVault />
+
+        {/* 8. APPS DISTRIBUTION HUB */}
+        <AppsHub />
+
+        {/* 9. DIRECT CHANNEL & CONTACT */}
+        <Contact />
+      </main>
+
+      {/* Editorial Footer */}
+      <Footer />
+    </div>
+  );
+}
+
+// Master Application Component with Providers & Routing
+function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <PortfolioDataProvider>
+          <Routes>
+            {/* Private Founder Vault Route */}
+            <Route path="/vault/*" element={<VaultLayout />} />
+
+            {/* Public Portfolio Experience with Sub-Routes */}
+            <Route path="/" element={<PublicExperience />} />
+            <Route path="/projects" element={<PublicExperience />} />
+            <Route path="/ai-systems" element={<PublicExperience />} />
+            <Route path="/journey" element={<PublicExperience />} />
+            <Route path="/proof" element={<PublicExperience />} />
+            <Route path="/future-vault" element={<PublicExperience />} />
+            <Route path="/apps" element={<PublicExperience />} />
+            <Route path="/contact" element={<PublicExperience />} />
+            <Route path="*" element={<PublicExperience />} />
+          </Routes>
+        </PortfolioDataProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  );
+}
+
+export default App;
