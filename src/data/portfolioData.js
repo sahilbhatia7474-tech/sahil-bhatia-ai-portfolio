@@ -1,7 +1,7 @@
 /**
  * SAHIL BHATIA — AI PORTFOLIO & SYSTEMS
  * Data Architecture & Registry
- * Domain: SAHILBHATIA.COM | System: SAHIL / PORTFOLIO OS
+ * Domain: sahil-bhatia-ai-portfolio.vercel.app | System: PORTFOLIO OS
  */
 
 export const DEFAULT_SOCIAL_LINKS = {
@@ -29,7 +29,7 @@ export const DEFAULT_SOCIAL_LINKS = {
 export const IDENTITY = {
   name: "SAHIL BHATIA",
   handle: "sahilbhatia7474",
-  domain: "SAHILBHATIA.COM",
+  domain: "SAHIL / PORTFOLIO OS",
   systemName: "SAHIL / PORTFOLIO OS",
   version: "v2.6.4",
   status: "ONLINE // OPERATIONAL",
@@ -55,6 +55,15 @@ export const IDENTITY = {
   bio: "From frontline ground-level sales to high-velocity AI system architecting. I design, prototype, and build end-to-end intelligent tools, agentic graphs, and digital products tailored for operational scale.",
   contactEmail: "sahilbhatia7474@gmail.com",
   socialLinks: DEFAULT_SOCIAL_LINKS,
+  introVideo: {
+    enabled: false,
+    videoUrl: "",
+    videoSource: "upload",
+    videoPosterUrl: "",
+    headline: "Founder Introduction // Sahil Bhatia",
+    subheadline: "On building AI-native systems, agentic workflows, and digital operating leverage.",
+    durationBadge: "90 SEC INTRO",
+  },
 };
 
 export const CAPABILITY_MAP = [
@@ -111,6 +120,15 @@ export const CURATED_PROJECTS = [
     status: "BUILT",
     category: "Industrial Hardware & Digital Showcase",
     year: "2025",
+    coverImageUrl: "",
+    heroImage: "",
+    galleryImages: [],
+    videoUrl: "",
+    videoSource: "upload",
+    videoPosterUrl: "",
+    media: [],
+    mediaCaption: "NeutraCap industrial specifications and dielectric parameter filtering",
+    mediaAltText: "NeutraCap digital product catalog interface",
     summary:
       "A high-precision digital product catalog and technical specification showcase designed for heavy-duty industrial capacitor engineering.",
     description:
@@ -136,6 +154,15 @@ export const CURATED_PROJECTS = [
     status: "BUILT",
     category: "AI Systems & Directed Acyclic Graphs",
     year: "2025",
+    coverImageUrl: "",
+    heroImage: "",
+    galleryImages: [],
+    videoUrl: "",
+    videoSource: "upload",
+    videoPosterUrl: "",
+    media: [],
+    mediaCaption: "Directed Acyclic Graph (DAG) state visualization and node execution graph",
+    mediaAltText: "LYRA V2 execution graph workspace",
     summary:
       "An intelligent execution graph engine that decomposes complex strategic objectives into verifiable, dependency-ordered agent tasks.",
     description:
@@ -161,6 +188,15 @@ export const CURATED_PROJECTS = [
     status: "BUILT",
     category: "Personal Operating Framework",
     year: "2026",
+    coverImageUrl: "",
+    heroImage: "",
+    galleryImages: [],
+    videoUrl: "",
+    videoSource: "upload",
+    videoPosterUrl: "",
+    media: [],
+    mediaCaption: "AI OS personal operating framework and model dispatch cockpit",
+    mediaAltText: "Sahil AI OS interface overview",
     summary:
       "A personalized agentic operating layer unifying knowledge retrieval, daily prioritization, automated research, and multi-model dispatch.",
     description:
@@ -186,6 +222,15 @@ export const CURATED_PROJECTS = [
     status: "BUILT",
     category: "Healthcare Digital Experience",
     year: "2025",
+    coverImageUrl: "",
+    heroImage: "",
+    galleryImages: [],
+    videoUrl: "",
+    videoSource: "upload",
+    videoPosterUrl: "",
+    media: [],
+    mediaCaption: "Modern patient booking and clinical procedure roadmap",
+    mediaAltText: "Dental Care clinical platform",
     summary:
       "A patient-centric clinical platform combining intelligent appointment scheduling, treatment visualizers, and digital consent flows.",
     description:
@@ -197,6 +242,19 @@ export const CURATED_PROJECTS = [
       "HIPAA-conscious client data handling and secure doctor note storage",
     ],
     techStack: ["React", "Tailwind CSS", "Calendar Integration", "Framer Motion", "Vite"],
+    liveWebsiteUrl: "https://dental-care-modern-2026.vercel.app/",
+    links: [
+      {
+        id: "lnk-dental-live",
+        type: "LIVE_WEBSITE",
+        label: "Visit Website",
+        actionLabel: "VIEW LIVE PROJECT",
+        url: "https://dental-care-modern-2026.vercel.app/",
+        isPrimary: true,
+        visibility: "PUBLIC",
+        sortOrder: 1,
+      },
+    ],
     highlights: [
       "Reduced patient booking friction",
       "Interactive procedure guides",
@@ -211,6 +269,15 @@ export const CURATED_PROJECTS = [
     status: "BUILT",
     category: "Creator Utility & Digital Identity",
     year: "2025",
+    coverImageUrl: "",
+    heroImage: "",
+    galleryImages: [],
+    videoUrl: "",
+    videoSource: "upload",
+    videoPosterUrl: "",
+    media: [],
+    mediaCaption: "Consolidated link-in-bio engine and responsive personal profile cards",
+    mediaAltText: "LinkBio hub interface",
     summary:
       "A consolidated, ultra-fast link hub and micro-landing page engine for creators, professionals, and brands. (Single consolidated build).",
     description:
@@ -222,6 +289,19 @@ export const CURATED_PROJECTS = [
       "VCard and direct contact exchange integration",
     ],
     techStack: ["React", "Tailwind CSS", "Vite", "Web Storage API", "Lucide Icons"],
+    liveWebsiteUrl: "https://linkvault-henna.vercel.app/",
+    links: [
+      {
+        id: "lnk-linkbio-live",
+        type: "LIVE_WEBSITE",
+        label: "Visit Website",
+        actionLabel: "VIEW LIVE PROJECT",
+        url: "https://linkvault-henna.vercel.app/",
+        isPrimary: true,
+        visibility: "PUBLIC",
+        sortOrder: 1,
+      },
+    ],
     highlights: [
       "Consolidated single-build architecture",
       "Instant loading speed (<100ms)",
@@ -236,6 +316,15 @@ export const CURATED_PROJECTS = [
     status: "BUILT",
     category: "Entertainment & Transaction Flow",
     year: "2025",
+    coverImageUrl: "",
+    heroImage: "",
+    galleryImages: [],
+    videoUrl: "",
+    videoSource: "upload",
+    videoPosterUrl: "",
+    media: [],
+    mediaCaption: "Interactive SVG auditorium seat grid and checkout flow",
+    mediaAltText: "ShowTime ticket reservation system",
     summary:
       "An immersive cinematic ticket reservation system with interactive auditorium seat mapping, concession bundling, and dynamic tier pricing.",
     description:
@@ -261,6 +350,15 @@ export const CURATED_PROJECTS = [
     status: "IN PROGRESS",
     category: "Enterprise Advisory & Operating System",
     year: "2026",
+    coverImageUrl: "",
+    heroImage: "",
+    galleryImages: [],
+    videoUrl: "",
+    videoSource: "upload",
+    videoPosterUrl: "",
+    media: [],
+    mediaCaption: "SME business workflow bottleneck diagnostic and AI readiness matrices",
+    mediaAltText: "AI Consultancy OS framework",
     summary:
       "A complete operational system for scoping, diagnosing, and deploying AI solutions across traditional small-to-medium enterprise workflows.",
     description:
@@ -370,7 +468,7 @@ export const AI_SYSTEMS = [
       },
       {
         title: "Client Control Cockpit",
-        desc: "Transparent client-facing dashboards displaying system uptime, task logs, and operational cost savings.",
+        desc: "Transparent client-facing dashboards displaying system status, task logs, and operational cost savings.",
       },
     ],
     specs: {
@@ -427,16 +525,16 @@ export const PROFESSIONAL_JOURNEY = [
   },
   {
     id: "j-4",
-    phase: "PENDING VERIFICATION — RECORD AUDIT",
+    phase: "PENDING CONFIRMATION — RECORD REVIEW",
     role: "Field Operations Associate",
     company: "PhonePe",
     period: "Timeline Under Verification",
     location: "To be confirmed",
     status: "VERIFY BEFORE PUBLISHING",
     verified: false,
-    keyThemes: ["Timeline Audit", "Record Re-examination", "Strict Data Honesty"],
+    keyThemes: ["Timeline Review", "Record Verification", "Strict Data Honesty"],
     description:
-      "Secondary source records mention field operational experience with PhonePe. However, the documented timeline presents conflicts with primary verified records. In strict accordance with our Project Honesty Rule, this entry remains unconfirmed until final audit.",
+      "Secondary source records mention field operational experience with PhonePe. However, the documented timeline presents conflicts with primary verified records. In strict accordance with our Project Honesty Rule, this entry remains unconfirmed until final review.",
     takeaways: "Uncompromised transparency: we never publish unverified claims.",
   },
   {

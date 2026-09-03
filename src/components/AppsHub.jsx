@@ -38,10 +38,10 @@ const AppsHub = () => {
     setDownloadProgress(true);
     setTimeout(() => {
       // Create verified binary manifest package
-      const domain = identity?.domain || 'SAHILBHATIA.COM';
+      const domain = identity?.domain && identity.domain !== 'SAHILBHATIA.COM' ? identity.domain : 'sahil-bhatia-ai-portfolio.vercel.app';
       const element = document.createElement('a');
       const file = new Blob([
-        `SAHIL BHATIA APPS HUB\nApp: ${downloadModalApp?.name}\nVersion: ${downloadModalApp?.version}\nDomain: ${domain}\nStatus: Certified Direct Distribution Build\nArchitecture: Universal Android APK / PWA`,
+        `SAHIL BHATIA APPS HUB\nApp: ${downloadModalApp?.name}\nVersion: ${downloadModalApp?.version}\nSystem: PORTFOLIO OS\nDomain: ${domain}\nStatus: Direct Distribution Build\nArchitecture: Universal Android APK / PWA`,
       ], { type: 'text/plain' });
       element.href = URL.createObjectURL(file);
       element.download = `${downloadModalApp?.name.toLowerCase().replace(/\s+/g, '-')}-v${downloadModalApp?.version}.txt`;
@@ -53,7 +53,7 @@ const AppsHub = () => {
     }, 800);
   };
 
-  const domain = identity?.domain || 'SAHILBHATIA.COM';
+  const domain = identity?.domain && identity.domain !== 'SAHILBHATIA.COM' ? identity.domain : 'sahil-bhatia-ai-portfolio.vercel.app';
 
   return (
     <section id="apps" className="py-24 bg-[#090a0f] border-b border-white/10 relative">

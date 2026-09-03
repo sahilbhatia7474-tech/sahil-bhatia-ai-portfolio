@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Terminal, ArrowUpRight, Cpu, Lock, Search, Bot } from 'lucide-react';
 import { usePortfolioData } from '../context/PortfolioDataContext';
 import GlobalSearch from './GlobalSearch';
+import ThemeToggle from './ThemeToggle';
 
 const DEFAULT_NAV = [
   { label: 'Identity', path: '/' },
@@ -74,7 +75,7 @@ const Navigation = () => {
               <div className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
                 <span className="font-mono text-[10px] text-neutral-400 tracking-wider">
-                  {siteSettings?.systemName || 'SAHIL / PORTFOLIO OS'} // {siteSettings?.version || 'v2.6.4'}
+                  {siteSettings?.systemName || 'SAHIL / PORTFOLIO OS'}
                 </span>
               </div>
             </div>
@@ -137,10 +138,13 @@ const Navigation = () => {
               <span className="hidden xl:inline">AI ASSISTANT</span>
             </button>
 
+            {/* Theme Toggle Button */}
+            <ThemeToggle />
+
             <div className="hidden xl:flex items-center gap-2 px-2.5 py-1 rounded bg-[#101116] border border-white/10 font-mono text-[11px] text-neutral-400">
               <Terminal className="w-3 h-3 text-red-500" />
-              <span>DOMAIN:</span>
-              <span className="text-neutral-200">{siteSettings?.domain || 'SAHILBHATIA.COM'}</span>
+              <span>SYSTEM:</span>
+              <span className="text-neutral-200">{siteSettings?.systemName || 'SAHIL / PORTFOLIO OS'}</span>
             </div>
 
             <a
@@ -152,8 +156,9 @@ const Navigation = () => {
             </a>
           </div>
 
-          {/* Mobile Right Controls: Search + Hamburger Toggle */}
-          <div className="flex sm:hidden items-center gap-2">
+          {/* Mobile Right Controls: Search + Theme + Hamburger Toggle */}
+          <div className="flex sm:hidden items-center gap-1.5">
+            <ThemeToggle />
             <button
               onClick={() => setSearchOpen(true)}
               className="p-2 rounded-md bg-[#121318] border border-white/10 text-neutral-300 hover:text-white"

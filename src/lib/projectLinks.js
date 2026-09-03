@@ -20,8 +20,8 @@ export function isValidHttpUrl(string) {
 }
 
 export const LINK_TYPES = [
-  { type: 'LIVE_WEBSITE', defaultLabel: 'Visit Website', actionLabel: 'LIVE WEBSITE', priority: 1 },
-  { type: 'DEMO', defaultLabel: 'Launch Demo', actionLabel: 'LAUNCH DEMO', priority: 2 },
+  { type: 'LIVE_WEBSITE', defaultLabel: 'Visit Website', actionLabel: 'VIEW LIVE PROJECT', priority: 1 },
+  { type: 'DEMO', defaultLabel: 'Launch Demo', actionLabel: 'VIEW LIVE PROJECT', priority: 2 },
   { type: 'GITHUB', defaultLabel: 'Source Code', actionLabel: 'GITHUB', priority: 3 },
   { type: 'CASE_STUDY', defaultLabel: 'Read Case Study', actionLabel: 'CASE STUDY', priority: 4 },
   { type: 'DOCUMENTATION', defaultLabel: 'Documentation', actionLabel: 'DOCS', priority: 5 },

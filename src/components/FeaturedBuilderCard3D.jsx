@@ -1,9 +1,13 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { usePortfolioData } from '../context/PortfolioDataContext';
-import { ShieldCheck, Cpu, Terminal, Sparkles, Activity, Layers } from 'lucide-react';
+import { Terminal } from 'lucide-react';
 
-const FeaturedBuilderCard3D = () => {
-  const { identity, featuredPortrait } = usePortfolioData();
+const DEFAULT_PORTRAIT = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800';
+
+const FeaturedBuilderCard3D = ({ identity: propIdentity, featuredPortrait: propPortrait, inVault = false } = {}) => {
+  const contextData = usePortfolioData() || {};
+  const identity = propIdentity || contextData.identity;
+  const featuredPortrait = propPortrait || contextData.featuredPortrait;
   const cardRef = useRef(null);
   const containerRef = useRef(null);
 
@@ -13,11 +17,12 @@ const FeaturedBuilderCard3D = () => {
   const [isInteracting, setIsInteracting] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
   const [glarePos, setGlarePos] = useState({ x: 50, y: 50, opacity: 0 });
+  const [imgLoadFailed, setImgLoadFailed] = useState(false);
 
   const touchStartRef = useRef({ x: 0, y: 0, initialRotX: 0, initialRotY: 0 });
   const animFrameRef = useRef(null);
 
-  // Rotation limits strictly adhering to specification: X ~ ±8 deg, Y ~ ±12 deg
+  // Strictly clamped tilt limits: X ~ ±8 deg, Y ~ ±12 deg
   const MAX_ROT_X = 8;
   const MAX_ROT_Y = 12;
 
@@ -61,7 +66,6 @@ const FeaturedBuilderCard3D = () => {
     const normalizedX = (x - centerX) / centerX; // -1 to 1
     const normalizedY = (y - centerY) / centerY; // -1 to 1
 
-    // Invert Y for standard natural physical tilt
     const targetRotX = -normalizedY * MAX_ROT_X;
     const targetRotY = normalizedX * MAX_ROT_Y;
 
@@ -96,7 +100,6 @@ const FeaturedBuilderCard3D = () => {
     };
     setIsInteracting(true);
 
-    // Subtle 3D response on initial tap
     setRotX(-3);
     setRotY(4);
     setGlarePos({ x: 45, y: 35, opacity: 0.3 });
@@ -110,13 +113,11 @@ const FeaturedBuilderCard3D = () => {
     const absDeltaX = Math.abs(deltaX);
     const absDeltaY = Math.abs(deltaY);
 
-    // Yield to vertical page scrolling
     if (absDeltaY > 12 && absDeltaY > absDeltaX * 1.4) {
       springBack();
       return;
     }
 
-    // Controlled sensitivity mapped strictly within ±8 and ±12 deg limits
     const targetY = Math.min(Math.max(deltaX * 0.1, -MAX_ROT_Y), MAX_ROT_Y);
     const targetX = Math.min(Math.max(-deltaY * 0.08, -MAX_ROT_X), MAX_ROT_X);
 
@@ -139,14 +140,33 @@ const FeaturedBuilderCard3D = () => {
     return () => cancelAnimationFrame(animFrameRef.current);
   }, []);
 
-  const portraitUrl = featuredPortrait?.imageUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800';
+  // Strict Source Priority: 1. Custom image in Firestore/Storage, 2. Direct URL, 3. High-quality default
+  const portraitUrl = featuredPortrait?.imageUrl?.trim() || DEFAULT_PORTRAIT;
   const focalX = featuredPortrait?.focalX ?? 50;
-  const focalY = featuredPortrait?.focalY ?? 35;
+  const focalY = featuredPortrait?.focalY ?? 20;
+  const altText = featuredPortrait?.altText || 'Sahil Bhatia — AI-Native Builder and Systems Architect';
+
+  // Configurable Copy with strict defaults required by design spec
+  const cardHeader = featuredPortrait?.header || 'FOUNDER CARD';
+  const cardRole = featuredPortrait?.role || 'SYSTEMS ARCHITECT';
+  const cardDescription = featuredPortrait?.description || 'Designing scalable systems.\nBuilding intelligent solutions.';
+  const cardStatusLabel = featuredPortrait?.statusLabel || 'SYSTEM STATUS';
+  const cardStatus = featuredPortrait?.status || 'ACTIVE';
+  const cardName = featuredPortrait?.name || identity?.name || 'SAHIL BHATIA';
+  const cardPositioning = featuredPortrait?.positioning || 'AI-NATIVE BUILDER • SYSTEMS ARCHITECT';
+  const cardCapabilities = featuredPortrait?.capabilities || ['AI AGENTS', 'WORKFLOWS', 'AUTOMATION'];
+  const cardCapabilityVectors = featuredPortrait?.capabilityVectors || [
+    'AI SYSTEMS ARCHITECTURE',
+    'AI-NATIVE DEVELOPMENT',
+    'AUTOMATION & WORKFLOWS',
+  ];
+  const footerLead = featuredPortrait?.footerLead || 'BUILDING INTELLIGENT SYSTEMS';
+  const footerSub = featuredPortrait?.footerSub || 'FOR REAL IMPACT.';
 
   return (
     <div
       ref={containerRef}
-      className="perspective-1000 py-4 w-full flex justify-center items-center select-none"
+      className="perspective-1000 py-2 sm:py-4 w-full xl:w-auto flex justify-center items-center select-none"
       style={{ perspective: '1200px' }}
     >
       <div
@@ -160,10 +180,14 @@ const FeaturedBuilderCard3D = () => {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         onTouchCancel={handleTouchEnd}
-        className="relative w-full max-w-[360px] sm:max-w-[390px] lg:max-w-[420px] xl:max-w-[430px] h-[580px] sm:h-[620px] lg:h-[650px] xl:h-[660px] rounded-2xl bg-[#090a0f] border border-red-500/30 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.9),0_0_35px_rgba(255,42,58,0.12)] cursor-grab active:cursor-grabbing transition-shadow duration-300"
+        className={`relative w-full ${
+          inVault
+            ? 'max-w-[380px] h-[600px]'
+            : 'max-w-[295px] xs:max-w-[330px] sm:max-w-[380px] md:max-w-[380px] lg:max-w-[380px] xl:w-[646px] xl:max-w-[646px] h-[520px] sm:h-[600px] md:h-[600px] lg:h-[600px] xl:h-[1020px]'
+        } rounded-2xl bg-[#090a0f] border border-red-500/30 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.9),0_0_35px_rgba(255,42,58,0.12)] cursor-grab active:cursor-grabbing transition-shadow duration-300`}
         style={{
           transformStyle: 'preserve-3d',
-          transform: `rotateX(${rotX}deg) rotateY(${rotY}deg) ${isPressed ? 'scale(1.035) translateZ(8px)' : isHovered || isInteracting ? 'scale(1.02)' : 'scale(1)'}`,
+          transform: `rotateX(${rotX}deg) rotateY(${rotY}deg) ${isPressed ? 'scale(1.03) translateZ(8px)' : isHovered || isInteracting ? 'scale(1.015)' : 'scale(1)'}`,
           transition: isInteracting ? 'none' : 'transform 0.2s ease-out, box-shadow 0.3s ease',
         }}
       >
@@ -190,113 +214,129 @@ const FeaturedBuilderCard3D = () => {
         />
 
         {/* CARD INTERNAL CONTAINER WITH LAYERED DEPTH */}
-        <div className="relative w-full h-full p-5 flex flex-col justify-between overflow-hidden rounded-2xl">
+        <div className={`relative w-full h-full p-4 sm:p-5 lg:p-6 ${inVault ? '' : 'xl:p-8'} flex flex-col justify-between overflow-hidden rounded-2xl`}>
           
-          {/* LAYER 1: CARD TOP HUD & RARITY SPECIFICATION */}
+          {/* LAYER 1: CARD TOP HUD & SYSTEM METRICS */}
           <div
-            className="flex items-center justify-between z-20 pb-2 border-b border-white/10"
+            className={`z-20 pb-2.5 lg:pb-3 ${inVault ? '' : 'xl:pb-4 space-y-2 xl:space-y-3'} border-b border-white/10 bg-[#090a0f]/90 backdrop-blur-md rounded-t-xl -mx-1 px-2 pt-1`}
             style={{ transform: 'translateZ(18px)' }}
           >
-            <div className="flex items-center gap-1.5 font-mono text-[10px] tracking-wider text-neutral-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#ff2a3a] animate-pulse" />
-              <span className="text-white font-bold">COLLECTIBLE // FOUNDER CARD</span>
+            {/* Header Line: FOUNDER CARD & ROLE */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5 font-mono text-[10px] lg:text-xs xl:text-sm tracking-wider text-neutral-300">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#ff2a3a] animate-pulse" />
+                <span className="text-white font-bold tracking-widest uppercase">{cardHeader}</span>
+              </div>
+              <div className="flex items-center gap-1.5 px-2 py-0.5 xl:px-2.5 xl:py-1 rounded bg-red-950/40 border border-red-500/40 text-[9px] lg:text-[10px] xl:text-xs font-mono text-red-300 uppercase tracking-widest font-semibold">
+                <span className="text-neutral-400">ROLE:</span>
+                <span className="text-white font-bold">{cardRole}</span>
+              </div>
             </div>
-            <div className="flex items-center gap-1 px-2 py-0.5 rounded bg-red-950/40 border border-red-500/40 text-[9px] font-mono text-red-300 uppercase tracking-widest font-semibold">
-              <Sparkles className="w-2.5 h-2.5 text-red-400" />
-              <span>SERIES 01 &bull; 001</span>
+
+            {/* Sub-Header HUD: DESCRIPTION & SYSTEM STATUS */}
+            <div className="flex items-start justify-between gap-2 pt-1 border-t border-white/5 font-mono text-[9px] lg:text-[10px] xl:text-xs">
+              <div className={`space-y-0.5 text-left ${inVault ? 'max-w-[190px]' : 'max-w-[190px] lg:max-w-[240px] xl:max-w-[340px]'}`}>
+                <div className="text-[7.5px] lg:text-[8.5px] xl:text-[9.5px] text-neutral-400 uppercase tracking-wider font-semibold">DESCRIPTION</div>
+                <p className="text-neutral-200 text-[8.5px] sm:text-[9px] lg:text-[10.5px] xl:text-[12px] leading-tight xl:leading-relaxed font-medium font-sans whitespace-pre-line">
+                  {cardDescription}
+                </p>
+              </div>
+
+              <div className="flex flex-col items-end shrink-0">
+                <span className="text-[7.5px] lg:text-[8.5px] xl:text-[9.5px] text-neutral-400 uppercase tracking-wider font-semibold">{cardStatusLabel}</span>
+                <div className="flex items-center gap-1 text-[9px] lg:text-[10px] xl:text-xs font-bold text-emerald-400 uppercase tracking-wider mt-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                  <span>{cardStatus}</span>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* LAYER 2: EMBEDDED CINEMATIC MERGED PORTRAIT (NOT A PASTED BOX) */}
+          {/* LAYER 2: EMBEDDED CINEMATIC MERGED PORTRAIT (UNOBSTRUCTED MIDDLE STAGE) */}
           <div
-            className="absolute inset-x-0 top-12 bottom-24 z-10 overflow-hidden pointer-events-none"
-            style={{ transform: 'translateZ(12px)' }}
+            className={`absolute inset-x-0 ${inVault ? 'top-20 bottom-36' : 'top-20 lg:top-24 xl:top-32 bottom-36 lg:bottom-44 xl:bottom-64'} z-10 overflow-hidden pointer-events-none`}
+            style={{ transform: 'translateZ(10px)' }}
           >
             {/* Dark background integration canvas */}
             <div className="absolute inset-0 bg-[#07080c]" />
 
-            {/* Portrait Image with Focal Point & Soft Masking */}
-            <img
-              src={portraitUrl}
-              alt={featuredPortrait?.altText || 'Sahil Bhatia'}
-              className="w-full h-full object-cover grayscale contrast-110 brightness-95 opacity-90 transition-transform duration-700 hover:scale-105"
-              style={{
-                objectPosition: `${focalX}% ${focalY}%`,
-              }}
-              onError={(e) => {
-                // Safe fallback to unsplash portrait if custom fails
-                e.currentTarget.src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800';
-              }}
-            />
-
-            {/* ARTISTIC EDGE INTEGRATION: Soft Edge Falloff, Deep Vignette & Dark Gradients */}
-            {/* Top dark falloff */}
-            <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#090a0f] via-[#090a0f]/80 to-transparent" />
-            {/* Bottom dark falloff merging into card base */}
-            <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-[#090a0f] via-[#090a0f]/90 to-transparent" />
-            {/* Lateral soft fades */}
-            <div className="absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-[#090a0f] to-transparent" />
-            <div className="absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-[#090a0f] to-transparent" />
-
-            {/* Laser Red Rim Lighting Overlay */}
-            <div
-              className="absolute inset-0 pointer-events-none mix-blend-screen opacity-40"
-              style={{
-                background: 'radial-gradient(ellipse at 85% 15%, rgba(255,42,58,0.5) 0%, transparent 60%), radial-gradient(ellipse at 15% 85%, rgba(255,42,58,0.3) 0%, transparent 60%)',
-              }}
-            />
-          </div>
-
-          {/* LAYER 3: FLOATING CRYPTOGRAPHIC CHIP / SYSTEM BADGE */}
-          <div
-            className="z-20 pt-4 flex justify-between items-start pointer-events-none"
-            style={{ transform: 'translateZ(26px)' }}
-          >
-            <div className="p-2 rounded bg-black/60 backdrop-blur-md border border-white/10 shadow-lg text-[10px] font-mono text-neutral-400 space-y-0.5">
-              <div className="flex items-center gap-1 text-white font-bold">
-                <Cpu className="w-3 h-3 text-[#ff2a3a]" />
-                <span>SAHIL / OS</span>
+            {/* Portrait Image with Focal Point & Soft Masking OR Fallback Card */}
+            {!imgLoadFailed ? (
+              <img
+                src={portraitUrl}
+                alt={altText}
+                className="w-full h-full object-cover grayscale contrast-110 brightness-95 opacity-90 transition-all duration-300"
+                style={{
+                  objectPosition: `${focalX}% ${focalY}%`,
+                }}
+                onError={() => {
+                  setImgLoadFailed(true);
+                }}
+              />
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center bg-[#0d0e14] p-6 text-center space-y-3">
+                <div className="w-20 h-20 rounded-2xl bg-red-950/40 border border-red-500/30 flex items-center justify-center text-red-400 font-display font-black text-2xl tracking-widest shadow-[0_0_20px_rgba(255,42,58,0.2)]">
+                  SB
+                </div>
+                <div className="font-mono text-xs text-neutral-300 uppercase tracking-wider">
+                  FOUNDER PORTFOLIO // SAHIL BHATIA
+                </div>
+                <div className="font-mono text-[10px] text-neutral-500 uppercase tracking-widest">
+                  AI-NATIVE BUILDER &bull; SYSTEMS ARCHITECT
+                </div>
               </div>
-              <div className="text-[9px] text-neutral-500">ID: 7474-SN50X</div>
-            </div>
+            )}
 
-            <div className="px-2.5 py-1 rounded bg-[#ff2a3a]/15 border border-[#ff2a3a]/40 backdrop-blur-md text-[10px] font-mono text-white flex items-center gap-1 shadow-[0_0_12px_rgba(255,42,58,0.25)] font-bold">
-              <Activity className="w-3 h-3 text-[#ff2a3a]" />
-              <span>VERIFIED BUILDER</span>
-            </div>
+            {/* ARTISTIC EDGE INTEGRATION: Soft Edge Falloff & Dark Gradients */}
+            <div className={`absolute inset-x-0 top-0 ${inVault ? 'h-16' : 'h-16 lg:h-20 xl:h-28'} bg-gradient-to-b from-[#090a0f] via-[#090a0f]/80 to-transparent`} />
+            <div className={`absolute inset-x-0 bottom-0 ${inVault ? 'h-32' : 'h-32 lg:h-40 xl:h-52'} bg-gradient-to-t from-[#090a0f] via-[#090a0f]/90 to-transparent`} />
+            <div className={`absolute inset-y-0 left-0 ${inVault ? 'w-8' : 'w-8 lg:w-10 xl:w-14'} bg-gradient-to-r from-[#090a0f] to-transparent`} />
+            <div className={`absolute inset-y-0 right-0 ${inVault ? 'w-8' : 'w-8 lg:w-10 xl:w-14'} bg-gradient-to-l from-[#090a0f] to-transparent`} />
+
+            {/* Laser Red Ambient Lighting Overlay */}
+            <div
+              className="absolute inset-0 pointer-events-none mix-blend-screen opacity-35"
+              style={{
+                background: 'radial-gradient(ellipse at 85% 15%, rgba(255,42,58,0.45) 0%, transparent 60%), radial-gradient(ellipse at 15% 85%, rgba(255,42,58,0.25) 0%, transparent 60%)',
+              }}
+            />
           </div>
 
-          {/* LAYER 4: LOWER CARD IDENTITY & CAPABILITY METRICS */}
+          {/* LAYER 3: LOWER CARD IDENTITY & CAPABILITY VECTORS */}
           <div
-            className="z-20 mt-auto space-y-3 pt-4 pointer-events-none"
-            style={{ transform: 'translateZ(28px)' }}
+            className={`z-20 mt-auto ${inVault ? 'space-y-2.5 pt-3' : 'space-y-2.5 sm:space-y-3 lg:space-y-3.5 xl:space-y-4 pt-3 xl:pt-4'} pointer-events-none bg-gradient-to-t from-[#090a0f] via-[#090a0f]/90 to-transparent -mx-1 px-1 pb-1`}
+            style={{ transform: 'translateZ(26px)' }}
           >
             {/* Name and Designation */}
             <div>
-              <span className="font-mono text-[9px] text-[#ff2a3a] uppercase tracking-[0.25em] font-bold block mb-0.5">
-                FEATURED DEV // OPERATOR
-              </span>
-              <h3 className="text-2xl sm:text-3xl font-black font-display text-white tracking-tight uppercase leading-none drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
-                {identity?.name || 'SAHIL BHATIA'}
+              <h3 className={`font-black font-display text-white tracking-tight uppercase leading-none drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] ${inVault ? 'text-2xl' : 'text-2xl sm:text-3xl lg:text-4xl xl:text-5xl'}`}>
+                {cardName}
               </h3>
-              <p className="text-xs font-mono text-neutral-300 mt-1 font-semibold">
-                AI-NATIVE BUILDER &bull; SYSTEMS ARCHITECT
+              <p className={`font-mono text-neutral-300 mt-1 font-semibold tracking-wide ${inVault ? 'text-[10.5px]' : 'text-[10.5px] sm:text-xs lg:text-sm xl:text-base'}`}>
+                {cardPositioning}
               </p>
             </div>
 
-            {/* Capability Indicators Matrix (Real, Non-Fabricated) */}
+            {/* Capability Vectors */}
             <div className="space-y-1.5">
-              <div className="text-[9px] font-mono uppercase tracking-widest text-neutral-400 flex items-center justify-between">
-                <span>VERIFIED CAPABILITY VECTORS</span>
-                <span className="text-emerald-400 flex items-center gap-1 text-[8px]">
-                  <ShieldCheck className="w-2.5 h-2.5" /> AUDITED
-                </span>
+              <div className={`font-mono uppercase tracking-widest text-neutral-400 font-semibold ${inVault ? 'text-[8px]' : 'text-[8px] sm:text-[8.5px] lg:text-[9.5px] xl:text-[11px]'}`}>
+                CAPABILITY VECTORS
               </div>
               <div className="flex flex-wrap gap-1">
-                {['AI SYSTEMS', 'AUTOMATION', 'WORKFLOWS', 'PRODUCT', 'UX', 'VIBE CODING'].map((cap) => (
+                {cardCapabilityVectors.map((cap) => (
                   <span
                     key={cap}
-                    className="text-[9px] font-mono px-2 py-0.5 rounded bg-black/70 border border-white/10 text-neutral-200"
+                    className={`font-mono px-2 py-0.5 xl:px-2.5 xl:py-1 rounded bg-black/85 border border-white/10 text-neutral-200 ${inVault ? 'text-[8px]' : 'text-[8px] sm:text-[8.5px] lg:text-[9.5px] xl:text-[11px]'}`}
+                  >
+                    {cap}
+                  </span>
+                ))}
+              </div>
+              <div className="flex flex-wrap gap-1 pt-0.5">
+                {cardCapabilities.map((cap) => (
+                  <span
+                    key={cap}
+                    className={`font-mono px-1.5 py-0.5 xl:px-2 xl:py-1 rounded bg-red-950/40 border border-red-500/30 text-red-200 font-medium ${inVault ? 'text-[8px]' : 'text-[8px] sm:text-[8.5px] lg:text-[9.5px] xl:text-[11px]'}`}
                   >
                     {cap}
                   </span>
@@ -304,13 +344,18 @@ const FeaturedBuilderCard3D = () => {
               </div>
             </div>
 
-            {/* Footer Telemetry Strip */}
-            <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[9px] font-mono text-neutral-400">
-              <div className="flex items-center gap-1 text-neutral-300">
-                <Terminal className="w-2.5 h-2.5 text-[#ff2a3a]" />
-                <span>SAHILBHATIA.COM</span>
+            {/* Footer Statement & Platform Identifier */}
+            <div className={`pt-2 xl:pt-3 border-t border-white/10 flex items-center justify-between font-mono text-neutral-400 ${inVault ? 'text-[8px]' : 'text-[8px] sm:text-[9px] lg:text-[10px] xl:text-xs'}`}>
+              <div className="flex flex-col text-left">
+                <span className="text-neutral-200 font-bold tracking-wider">
+                  {footerLead}
+                </span>
+                <span className="text-neutral-400">{footerSub}</span>
               </div>
-              <span className="text-neutral-500">TOUCH / HOVER TILT ACTIVE</span>
+              <div className="flex items-center gap-1 text-neutral-400 shrink-0">
+                <Terminal className={`text-[#ff2a3a] ${inVault ? 'w-2.5 h-2.5' : 'w-2.5 h-2.5 lg:w-3 lg:h-3 xl:w-3.5 xl:h-3.5'}`} />
+                <span className="tracking-wide">SAHIL / PORTFOLIO OS</span>
+              </div>
             </div>
           </div>
         </div>
@@ -320,3 +365,4 @@ const FeaturedBuilderCard3D = () => {
 };
 
 export default FeaturedBuilderCard3D;
+

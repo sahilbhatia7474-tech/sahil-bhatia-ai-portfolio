@@ -1,0 +1,6 @@
+# robots.txt for Sahil Bhatia — AI Portfolio & Systems
+User-agent: *
+Allow: /
+Disallow: /vault
+
+Sitemap: https://sahil-bhatia-ai-portfolio.vercel.app/sitemap.xml

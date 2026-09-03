@@ -1,20 +1,18 @@
-import { useState } from 'react';
 import { usePortfolioData } from '../../context/PortfolioDataContext';
 import {
   FolderKanban,
   Award,
   Image as ImageIcon,
   Briefcase,
-  GraduationCap,
   Smartphone,
   PlusCircle,
   Activity,
-  CheckCircle2,
   Clock,
   Sparkles,
   ExternalLink,
   ShieldCheck,
   AlertTriangle,
+  Settings,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -24,8 +22,6 @@ const VaultDashboard = ({ setActiveTab, openNewModal }) => {
     certificates,
     media,
     allJourney,
-    education,
-    allApps,
     activityLogs,
     siteSettings,
     previewMode,
@@ -36,65 +32,80 @@ const VaultDashboard = ({ setActiveTab, openNewModal }) => {
   const draftProjects = allProjects.filter((p) => p.status === 'DRAFT').length;
   const verifyItems = allJourney.filter((j) => j.status === 'VERIFY' || !j.verified).length;
 
-  const statCards = [
+  // Real, meaningful system indicators — zero fabrication
+  const systemStatusCards = [
     {
-      title: 'SITE STATUS',
-      value: siteSettings?.maintenanceMode ? 'MAINTENANCE' : 'ONLINE // NOMINAL',
-      desc: 'Public endpoints active',
+      title: 'SYSTEM STATUS',
+      value: 'AUTHENTICATED',
+      desc: 'Founder authorization verified',
       icon: Activity,
-      color: siteSettings?.maintenanceMode ? 'text-amber-400' : 'text-emerald-400',
+      color: 'text-emerald-400',
       border: 'border-white/10',
     },
     {
-      title: 'CURATED PROJECTS',
-      value: `${allProjects.length}`,
-      desc: `${publishedProjects} Published &bull; ${draftProjects} Draft`,
-      icon: FolderKanban,
+      title: 'PUBLIC EXPERIENCE',
+      value: siteSettings?.maintenanceMode ? 'MAINTENANCE' : 'LIVE',
+      desc: siteSettings?.maintenanceMode ? 'Public traffic paused' : 'Serving production runtime',
+      icon: ShieldCheck,
+      color: siteSettings?.maintenanceMode ? 'text-amber-400' : 'text-emerald-400',
+      border: 'border-white/10',
+      action: () => setActiveTab('settings'),
+    },
+    {
+      title: 'FOUNDER VAULT',
+      value: 'PRIVATE',
+      desc: 'Restricted root access console',
+      icon: ShieldCheck,
       color: 'text-red-400',
       border: 'border-white/10',
+    },
+  ];
+
+  // Core Operating Sections
+  const operationalSections = [
+    {
+      title: 'PORTFOLIO CONTROL',
+      desc: 'Manage what is publicly visible across the portfolio.',
+      badge: 'CONTROLS',
+      icon: Settings,
+      action: () => setActiveTab('settings'),
+    },
+    {
+      title: 'FOUNDER CARD',
+      desc: 'Control the featured portrait, focal position, identity copy, and public visibility.',
+      badge: 'LIVE 3D',
+      icon: Sparkles,
+      action: () => setActiveTab('portrait'),
+    },
+    {
+      title: 'PROJECT SYSTEM',
+      desc: 'Manage curated projects, demos, case studies, and publication state.',
+      meta: `${allProjects.length} Curated Records (${publishedProjects} Live • ${draftProjects} Staging)`,
+      badge: 'REPERTOIRE',
+      icon: FolderKanban,
       action: () => setActiveTab('projects'),
     },
     {
-      title: 'CERTIFICATES',
-      value: `${certificates.length}`,
-      desc: 'Verified Credentials',
+      title: 'PROOF & CREDENTIALS',
+      desc: 'Manage certificates, evidence, media, and supporting proof.',
+      meta: `${certificates.length} Verified Certificates • Zero Fabrication`,
+      badge: 'EVIDENCE',
       icon: Award,
-      color: 'text-blue-400',
-      border: 'border-white/10',
       action: () => setActiveTab('certificates'),
     },
     {
-      title: 'MEDIA ASSETS',
-      value: `${media.length}`,
-      desc: 'Portraits, Specs & Graphics',
+      title: 'FUTURE VAULT',
+      desc: 'Store experiments, future work, assets, and unpublished material.',
+      meta: `${media.length} Media Assets & Work-in-Progress`,
+      badge: 'STORAGE',
       icon: ImageIcon,
-      color: 'text-purple-400',
-      border: 'border-white/10',
       action: () => setActiveTab('media'),
-    },
-    {
-      title: 'JOURNEY RECORDS',
-      value: `${allJourney.length}`,
-      desc: verifyItems > 0 ? `${verifyItems} Audit Pending` : 'All Verified',
-      icon: Briefcase,
-      color: verifyItems > 0 ? 'text-amber-400' : 'text-emerald-400',
-      border: verifyItems > 0 ? 'border-amber-500/30' : 'border-white/10',
-      action: () => setActiveTab('journey'),
-    },
-    {
-      title: 'DISTRIBUTED APPS',
-      value: `${allApps.length}`,
-      desc: 'APK, PWA & Web Hubs',
-      icon: Smartphone,
-      color: 'text-cyan-400',
-      border: 'border-white/10',
-      action: () => setActiveTab('apps'),
     },
   ];
 
   return (
     <div className="space-y-8">
-      {/* Top Banner / Control Cockpit */}
+      {/* Top Banner / Founder Control Room */}
       <div className="rounded-2xl bg-gradient-to-r from-[#11131c] via-[#0e0f17] to-[#12131d] border border-white/10 p-6 sm:p-8 shadow-xl relative overflow-hidden">
         <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-radial-gradient from-red-600/10 via-transparent to-transparent pointer-events-none" />
 
@@ -103,18 +114,24 @@ const VaultDashboard = ({ setActiveTab, openNewModal }) => {
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
               <span className="text-[11px] font-mono tracking-widest text-red-400 uppercase font-bold">
-                FOUNDER CONTROL COCKPIT // SAHIL OS
+                FOUNDER CONTROL // SAHIL OS
               </span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-black font-display text-white tracking-tight uppercase">
-              CONTENT MANAGEMENT SUITE
+              FOUNDER VAULT
             </h2>
             <p className="text-xs sm:text-sm text-neutral-400 max-w-2xl leading-relaxed">
-              Real-time Firestore sync &bull; 3D card customization &bull; Draft/publish staging &bull; Zero fake data.
+              Private control room for portfolio systems, identity, projects, proof, and the Founder Card.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
+            {/* Founder Access Status Indicator */}
+            <div className="px-3 py-1.5 rounded-lg bg-red-950/40 border border-red-500/40 text-xs font-mono text-red-300 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />
+              <span className="font-bold tracking-wider">FOUNDER ACCESS // ACTIVE</span>
+            </div>
+
             {/* Live vs Draft Preview Toggle */}
             <div className="p-1 rounded-lg bg-[#08090d] border border-white/15 flex items-center gap-1 font-mono text-xs">
               <button
@@ -151,16 +168,16 @@ const VaultDashboard = ({ setActiveTab, openNewModal }) => {
         </div>
       </div>
 
-      {/* Stats Tiles Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {statCards.map((stat) => {
+      {/* Real Status Indicators (Zero Fake Metrics) */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {systemStatusCards.map((stat) => {
           const Icon = stat.icon;
           return (
             <div
               key={stat.title}
               onClick={stat.action}
-              className={`rounded-xl bg-[#0c0d13] border ${stat.border} p-5 hover:border-red-500/40 transition-all ${
-                stat.action ? 'cursor-pointer hover:bg-[#11131a]' : ''
+              className={`rounded-xl bg-[#0c0d13] border ${stat.border} p-5 transition-all ${
+                stat.action ? 'cursor-pointer hover:border-red-500/40 hover:bg-[#11131a]' : ''
               }`}
             >
               <div className="flex items-center justify-between mb-3">
@@ -169,16 +186,65 @@ const VaultDashboard = ({ setActiveTab, openNewModal }) => {
                 </span>
                 <Icon className={`w-4 h-4 ${stat.color}`} />
               </div>
-              <div className={`text-2xl font-black font-mono tracking-tight ${stat.color}`}>
+              <div className={`text-xl font-black font-mono tracking-tight ${stat.color}`}>
                 {stat.value}
               </div>
-              <div
-                className="text-xs text-neutral-400 mt-1 font-sans"
-                dangerouslySetInnerHTML={{ __html: stat.desc }}
-              />
+              <div className="text-xs text-neutral-400 mt-1 font-sans">
+                {stat.desc}
+              </div>
             </div>
           );
         })}
+      </div>
+
+      {/* Primary Section Operating Consoles */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="font-mono text-xs text-neutral-400 uppercase tracking-widest">
+            OPERATIONAL SECTIONS // DIRECT ACCESS
+          </div>
+          <div className="font-mono text-[11px] text-red-400">
+            SYSTEM STATUS: AUTHENTICATED // FOUNDER
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {operationalSections.map((sec) => {
+            const Icon = sec.icon;
+            return (
+              <div
+                key={sec.title}
+                onClick={sec.action}
+                className="p-5 rounded-xl bg-[#0c0d13] border border-white/10 hover:border-red-500/40 hover:bg-[#11131a] transition-all cursor-pointer flex flex-col justify-between gap-3 group"
+              >
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="w-8 h-8 rounded-lg bg-red-950/30 border border-red-500/30 flex items-center justify-center text-red-400 group-hover:scale-105 transition-transform">
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <span className="text-[9px] font-mono px-2 py-0.5 rounded bg-white/5 border border-white/10 text-neutral-400">
+                      {sec.badge}
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className="font-mono text-sm font-bold text-white uppercase group-hover:text-red-400 transition-colors">
+                      {sec.title}
+                    </h3>
+                    <p className="text-xs text-neutral-400 font-sans mt-1 leading-relaxed">
+                      {sec.desc}
+                    </p>
+                  </div>
+                </div>
+
+                {sec.meta && (
+                  <div className="pt-2 border-t border-white/5 text-[10px] font-mono text-neutral-500">
+                    {sec.meta}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Quick Creator Actions */}

@@ -36,7 +36,7 @@ import {
   X,
   Cpu,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const TABS = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -57,7 +57,13 @@ const TABS = [
 const VaultLayout = () => {
   const { isFounder, logout, currentUser } = useAuth();
   const { previewMode, setPreviewMode, siteSettings } = usePortfolioData();
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Extract active tab from URL path (e.g. /vault/projects -> 'projects', /vault/settings -> 'settings')
+  const pathSegment = location.pathname.replace(/^\/vault\/?/, '').split('/')[0];
+  const activeTab = TABS.some((t) => t.id === pathSegment) ? pathSegment : 'dashboard';
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [createSignal, setCreateSignal] = useState(null);
 
@@ -66,8 +72,13 @@ const VaultLayout = () => {
     return <VaultLogin />;
   }
 
+  const handleSelectTab = (tabId) => {
+    navigate(`/vault/${tabId}`);
+    setSidebarOpen(false);
+  };
+
   const handleOpenNewModal = (tabId) => {
-    setActiveTab(tabId);
+    navigate(`/vault/${tabId}`);
     setCreateSignal(tabId);
   };
 
@@ -177,10 +188,7 @@ const VaultLayout = () => {
               return (
                 <button
                   key={tab.id}
-                  onClick={() => {
-                    setActiveTab(tab.id);
-                    setSidebarOpen(false);
-                  }}
+                  onClick={() => handleSelectTab(tab.id)}
                   className={`w-full min-h-[44px] px-3 py-2 rounded-lg text-xs font-mono flex items-center gap-3 transition-colors cursor-pointer ${
                     isActive
                       ? 'bg-red-600 text-white font-bold shadow-[0_0_15px_rgba(255,42,58,0.3)]'
@@ -220,7 +228,7 @@ const VaultLayout = () => {
           <div className="max-w-6xl mx-auto">
             {activeTab === 'dashboard' && (
               <VaultDashboard
-                setActiveTab={setActiveTab}
+                setActiveTab={handleSelectTab}
                 openNewModal={handleOpenNewModal}
               />
             )}

@@ -9,7 +9,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { db, auth } from './firebase';
-import { FOUNDER_EMAIL } from './authConstants';
+import { isAuthorizedFounderEmail } from './authConstants';
 import {
   IDENTITY,
   CURATED_PROJECTS,
@@ -52,23 +52,35 @@ export const SEED_DATA = {
     id: 'primary',
     imageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800',
     focalX: 50,
-    focalY: 35,
-    altText: 'Sahil Bhatia — AI Systems Architect Portrait',
+    focalY: 20,
+    altText: 'Sahil Bhatia — AI-Native Builder and Systems Architect',
     visibility: 'PUBLIC',
     featured: true,
+    publicationState: 'PUBLISHED',
+    header: 'FOUNDER CARD',
+    role: 'SYSTEMS ARCHITECT',
+    description: 'Designing scalable systems.\nBuilding intelligent solutions.',
+    statusLabel: 'SYSTEM STATUS',
+    status: 'ACTIVE',
+    name: 'SAHIL BHATIA',
+    positioning: 'AI-NATIVE BUILDER • SYSTEMS ARCHITECT',
+    capabilities: ['AI AGENTS', 'WORKFLOWS', 'AUTOMATION'],
+    capabilityVectors: ['AI SYSTEMS ARCHITECTURE', 'AI-NATIVE DEVELOPMENT', 'AUTOMATION & WORKFLOWS'],
+    footerLead: 'BUILDING INTELLIGENT SYSTEMS',
+    footerSub: 'FOR REAL IMPACT.',
     blendMode: 'cinematic-dark',
     updatedAt: new Date().toISOString(),
   },
   siteSettings: {
     id: 'primary',
     siteTitle: 'SAHIL BHATIA — AI PORTFOLIO & SYSTEMS',
-    metaDescription: 'AI Generalist, AI Consultant & Digital Systems Creator. Translating frontline sales understanding into resilient agentic architectures.',
-    domain: 'SAHILBHATIA.COM',
-    systemName: 'SAHIL / PORTFOLIO OS',
+    metaDescription: 'AI-Native Builder, AI Consultant & Systems Architect. Translating frontline sales understanding into resilient agentic architectures.',
+    domain: 'sahil-bhatia-ai-portfolio.vercel.app',
+    systemName: 'PORTFOLIO OS',
     version: 'v2.6.4',
     accentColor: '#FF2A3A',
     contactEmail: 'sahilbhatia7474@gmail.com',
-    announcementBanner: 'FOUNDER VAULT CMS v2.6 ACTIVE // DIRECT DISTRIBUTION ONLINE',
+    announcementBanner: 'PORTFOLIO OS ACTIVE // DIRECT ACCESS ONLINE',
     maintenanceMode: false,
     updatedAt: new Date().toISOString(),
   },
@@ -199,9 +211,7 @@ export const SEED_DATA = {
 export const seedInitialDatabase = async (force = false) => {
   try {
     const currentUser = auth.currentUser;
-    const isFounderAuth = currentUser && (
-      (currentUser.email || '').toLowerCase().trim() === FOUNDER_EMAIL.toLowerCase()
-    );
+    const isFounderAuth = currentUser && isAuthorizedFounderEmail(currentUser.email);
 
     // If session is unauthenticated and not forced, bypass writing to avoid permission violations.
     // The public portfolio seamlessly defaults to curated offline data.

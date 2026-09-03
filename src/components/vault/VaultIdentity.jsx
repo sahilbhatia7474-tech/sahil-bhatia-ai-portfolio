@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { usePortfolioData } from '../../context/PortfolioDataContext';
 import { saveItem } from '../../lib/dbService';
 import { isValidHttpUrl } from '../../lib/projectLinks';
-import { Save, Check, AlertCircle, RefreshCw, UserCheck, Eye, EyeOff } from 'lucide-react';
+import { Save, Check, AlertCircle, RefreshCw, UserCheck, Eye, EyeOff, Film, Play, Upload, Image as ImageIcon } from 'lucide-react';
+import { uploadStorageAsset } from '../../lib/storageService';
 
 const VaultIdentity = () => {
   const { identity, refreshAllData } = usePortfolioData();
@@ -41,6 +42,17 @@ const VaultIdentity = () => {
     },
   });
 
+  const [introVideo, setIntroVideo] = useState({
+    enabled: false,
+    videoUrl: '',
+    videoSource: 'upload',
+    videoPosterUrl: '',
+    headline: 'Founder Introduction // Sahil Bhatia',
+    subheadline: 'On building AI-native systems, agentic workflows, and digital operating leverage.',
+    durationBadge: '90 SEC INTRO',
+  });
+
+  const [uploadProgress, setUploadProgress] = useState({ video: null, poster: null });
   const [newRole, setNewRole] = useState('');
   const [newTheme, setNewTheme] = useState('');
   const [saving, setSaving] = useState(false);
@@ -61,6 +73,18 @@ const VaultIdentity = () => {
         status: identity.status || 'ONLINE // OPERATIONAL',
         availability: identity.availability || 'AVAILABLE FOR SYSTEMS CONSULTATION',
       });
+
+      if (identity.introVideo) {
+        setIntroVideo({
+          enabled: Boolean(identity.introVideo.enabled),
+          videoUrl: identity.introVideo.videoUrl || '',
+          videoSource: identity.introVideo.videoSource || 'upload',
+          videoPosterUrl: identity.introVideo.videoPosterUrl || '',
+          headline: identity.introVideo.headline || 'Founder Introduction // Sahil Bhatia',
+          subheadline: identity.introVideo.subheadline || 'On building AI-native systems, agentic workflows, and digital operating leverage.',
+          durationBadge: identity.introVideo.durationBadge || '90 SEC INTRO',
+        });
+      }
 
       const raw = identity.socialLinks || {};
       setSocialLinks({
@@ -195,6 +219,15 @@ const VaultIdentity = () => {
       },
       status: formData.status,
       availability: formData.availability,
+      introVideo: {
+        enabled: Boolean(introVideo.enabled),
+        videoUrl: (introVideo.videoUrl || '').trim(),
+        videoSource: introVideo.videoSource || 'upload',
+        videoPosterUrl: (introVideo.videoPosterUrl || '').trim(),
+        headline: (introVideo.headline || '').trim(),
+        subheadline: (introVideo.subheadline || '').trim(),
+        durationBadge: (introVideo.durationBadge || '').trim(),
+      },
     };
 
     const res = await saveItem('identity', 'primary', payload);
@@ -619,6 +652,217 @@ const VaultIdentity = () => {
                     className="w-full min-h-[38px] px-2.5 py-1.5 rounded-lg bg-[#141620] border border-white/15 text-white text-xs font-mono focus:outline-none"
                   />
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 04. FUTURE INTRO VIDEO SYSTEM (ARCHITECTURE) */}
+        <div className="p-5 rounded-xl bg-[#0e1017] border border-white/10 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/10">
+            <div>
+              <div className="flex items-center gap-2">
+                <Film className="w-4 h-4 text-red-500" />
+                <h3 className="font-mono text-sm font-bold text-white uppercase tracking-wider">
+                  FOUNDER INTRO VIDEO ARCHITECTURE
+                </h3>
+              </div>
+              <p className="text-[11px] font-mono text-neutral-400 mt-0.5">
+                Cinematic video presentation system. When disabled, zero broken players or placeholders are displayed.
+              </p>
+            </div>
+
+            {/* Enable/Disable Toggle */}
+            <label className="inline-flex items-center gap-2 cursor-pointer select-none">
+              <span className="font-mono text-xs text-neutral-300">
+                {introVideo.enabled ? 'ACTIVE ON HERO' : 'DISABLED (STANDBY)'}
+              </span>
+              <div
+                onClick={() => setIntroVideo((prev) => ({ ...prev, enabled: !prev.enabled }))}
+                className={`w-11 h-6 rounded-full transition-colors relative cursor-pointer ${
+                  introVideo.enabled ? 'bg-red-600' : 'bg-neutral-800 border border-white/15'
+                }`}
+              >
+                <div
+                  className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${
+                    introVideo.enabled ? 'left-6' : 'left-1'
+                  }`}
+                />
+              </div>
+            </label>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Video Source & URL */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <label className="text-[10px] font-mono text-neutral-400 uppercase">Video Source:</label>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIntroVideo((prev) => ({ ...prev, videoSource: 'upload' }))}
+                    className={`px-2.5 py-1 rounded text-[10px] font-mono cursor-pointer ${
+                      introVideo.videoSource === 'upload'
+                        ? 'bg-red-600 text-white font-bold'
+                        : 'bg-white/5 text-neutral-400'
+                    }`}
+                  >
+                    Storage Upload
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIntroVideo((prev) => ({ ...prev, videoSource: 'external' }))}
+                    className={`px-2.5 py-1 rounded text-[10px] font-mono cursor-pointer ${
+                      introVideo.videoSource === 'external'
+                        ? 'bg-red-600 text-white font-bold'
+                        : 'bg-white/5 text-neutral-400'
+                    }`}
+                  >
+                    External Link / Embed
+                  </button>
+                </div>
+              </div>
+
+              {introVideo.videoSource === 'upload' ? (
+                <div className="space-y-2">
+                  <label className="block text-[10px] font-mono text-neutral-400 uppercase">
+                    Upload MP4/WebM Video (Max 100MB)
+                  </label>
+                  <label className="flex items-center justify-center gap-2 p-3 rounded-lg border border-dashed border-white/20 bg-[#131520] hover:bg-[#181a28] cursor-pointer transition-colors text-xs font-mono text-neutral-300">
+                    <Upload className="w-4 h-4 text-red-400" />
+                    <span>Choose Video File</span>
+                    <input
+                      type="file"
+                      accept="video/mp4,video/webm,video/quicktime"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        setUploadProgress((p) => ({ ...p, video: 10 }));
+                        try {
+                          const res = await uploadStorageAsset(file, 'identity/intro', (pct) => {
+                            setUploadProgress((p) => ({ ...p, video: pct }));
+                          });
+                          if (res.success) {
+                            setIntroVideo((prev) => ({ ...prev, videoUrl: res.downloadUrl }));
+                            setUploadProgress((p) => ({ ...p, video: null }));
+                          } else {
+                            alert('Upload error: ' + res.error);
+                            setUploadProgress((p) => ({ ...p, video: null }));
+                          }
+                        } catch (err) {
+                          alert('Upload failed: ' + err.message);
+                          setUploadProgress((p) => ({ ...p, video: null }));
+                        }
+                      }}
+                    />
+                  </label>
+                  {uploadProgress.video !== null && (
+                    <div className="w-full bg-neutral-800 rounded-full h-1.5 overflow-hidden">
+                      <div className="bg-red-500 h-1.5 rounded-full transition-all" style={{ width: `${uploadProgress.video}%` }} />
+                    </div>
+                  )}
+                  {introVideo.videoUrl && (
+                    <div className="text-[10px] font-mono text-emerald-400 truncate">
+                      Asset: {introVideo.videoUrl}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-1">
+                  <label className="block text-[10px] font-mono text-neutral-400 uppercase">
+                    External Video URL (YouTube, Vimeo, MP4 link)
+                  </label>
+                  <input
+                    type="url"
+                    value={introVideo.videoUrl}
+                    onChange={(e) => setIntroVideo((prev) => ({ ...prev, videoUrl: e.target.value }))}
+                    placeholder="https://youtu.be/..."
+                    className="w-full min-h-[44px] px-3 py-2 rounded-lg bg-[#141620] border border-white/15 text-white text-xs font-mono focus:outline-none focus:border-red-500"
+                  />
+                </div>
+              )}
+
+              {/* Poster Image */}
+              <div className="space-y-1.5 pt-1">
+                <label className="block text-[10px] font-mono text-neutral-400 uppercase">
+                  Video Poster Image URL
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={introVideo.videoPosterUrl}
+                    onChange={(e) => setIntroVideo((prev) => ({ ...prev, videoPosterUrl: e.target.value }))}
+                    placeholder="https://images.unsplash.com/..."
+                    className="w-full min-h-[40px] px-3 py-2 rounded-lg bg-[#141620] border border-white/15 text-white text-xs font-mono focus:outline-none"
+                  />
+                  <label className="p-2.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/15 cursor-pointer shrink-0">
+                    <ImageIcon className="w-4 h-4 text-neutral-300" />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        setUploadProgress((p) => ({ ...p, poster: 10 }));
+                        try {
+                          const res = await uploadStorageAsset(file, 'identity/posters', (pct) => {
+                            setUploadProgress((p) => ({ ...p, poster: pct }));
+                          });
+                          if (res.success) {
+                            setIntroVideo((prev) => ({ ...prev, videoPosterUrl: res.downloadUrl }));
+                            setUploadProgress((p) => ({ ...p, poster: null }));
+                          }
+                        } finally {
+                          setUploadProgress((p) => ({ ...p, poster: null }));
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            {/* Video Copy & Duration Metadata */}
+            <div className="space-y-3">
+              <div className="space-y-1">
+                <label className="block text-[10px] font-mono text-neutral-400 uppercase">
+                  Video Modal Headline
+                </label>
+                <input
+                  type="text"
+                  value={introVideo.headline}
+                  onChange={(e) => setIntroVideo((prev) => ({ ...prev, headline: e.target.value }))}
+                  placeholder="Founder Introduction // Sahil Bhatia"
+                  className="w-full min-h-[40px] px-3 py-2 rounded-lg bg-[#141620] border border-white/15 text-white text-xs font-mono focus:outline-none"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="block text-[10px] font-mono text-neutral-400 uppercase">
+                  Subheadline / Abstract
+                </label>
+                <textarea
+                  rows={2}
+                  value={introVideo.subheadline}
+                  onChange={(e) => setIntroVideo((prev) => ({ ...prev, subheadline: e.target.value }))}
+                  placeholder="On building AI-native systems, agentic workflows..."
+                  className="w-full p-2.5 rounded-lg bg-[#141620] border border-white/15 text-white text-xs font-sans focus:outline-none"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="block text-[10px] font-mono text-neutral-400 uppercase">
+                  Duration Badge Text
+                </label>
+                <input
+                  type="text"
+                  value={introVideo.durationBadge}
+                  onChange={(e) => setIntroVideo((prev) => ({ ...prev, durationBadge: e.target.value }))}
+                  placeholder="90 SEC INTRO"
+                  className="w-full min-h-[40px] px-3 py-2 rounded-lg bg-[#141620] border border-white/15 text-white text-xs font-mono focus:outline-none"
+                />
               </div>
             </div>
           </div>

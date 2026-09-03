@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, Link } from 'react-router-dom';
 import { AuthProvider, useAuth } from './lib/authContext';
 import { PortfolioDataProvider, usePortfolioData } from './context/PortfolioDataContext';
+import { ThemeProvider } from './context/ThemeContext';
 import SystemBootLoader from './components/SystemBootLoader';
 import CustomCursor from './components/CustomCursor';
 import Navigation from './components/Navigation';
@@ -16,9 +17,12 @@ import FutureVault from './components/FutureVault';
 import AppsHub from './components/AppsHub';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
-import VaultLayout from './components/vault/VaultLayout';
 import ScrollJumpInstrument from './components/ScrollJumpInstrument';
-import { Eye, ShieldAlert, Lock, Cpu } from 'lucide-react';
+import { Eye, ShieldAlert, Lock, Cpu, RefreshCw } from 'lucide-react';
+
+// Lazy-load private Founder Vault CMS to isolate bundle size from public portfolio
+const VaultLayout = lazy(() => import('./components/vault/VaultLayout'));
+const ProtectedRoute = lazy(() => import('./components/vault/ProtectedRoute'));
 
 // Route Section Smooth Scroller
 function ScrollManager() {
@@ -87,7 +91,7 @@ function PublicExperience() {
               SYSTEM STATUS // CALIBRATION
             </div>
             <h1 className="text-2xl font-bold font-display uppercase tracking-tight text-white">
-              {siteSettings?.systemName || 'SAHIL / PORTFOLIO OS'}
+              {siteSettings?.systemName || 'PORTFOLIO OS'}
             </h1>
             <p className="text-xs text-neutral-400 mt-2 font-sans leading-relaxed">
               Public services are momentarily suspended for scheduled database replication and systems calibration.
@@ -95,9 +99,9 @@ function PublicExperience() {
           </div>
 
           <div className="p-3.5 rounded bg-black/40 border border-white/5 font-mono text-[11px] text-neutral-500 text-left space-y-1">
-            <div>HOST: {siteSettings?.domain || 'SAHILBHATIA.COM'}</div>
+            <div>SYSTEM: {siteSettings?.systemName || 'PORTFOLIO OS'}</div>
             <div>STATUS: MAINTENANCE_ACTIVE</div>
-            <div>VERIFIED ARCHITECTURE: ZERO DATA LOSS</div>
+            <div>CALIBRATION: PORTFOLIO REPLICATION ACTIVE</div>
           </div>
 
           <div className="pt-2 border-t border-white/10 flex justify-between items-center text-xs font-mono">
@@ -214,25 +218,47 @@ function PublicExperience() {
 function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <PortfolioDataProvider>
-          <Routes>
-            {/* Private Founder Vault Route */}
-            <Route path="/vault/*" element={<VaultLayout />} />
+      <ThemeProvider>
+        <AuthProvider>
+          <PortfolioDataProvider>
+            <Routes>
+              {/* Private Founder Vault Route (Lazy-loaded) */}
+              <Route
+                path="/vault/*"
+                element={
+                  <Suspense
+                    fallback={
+                      <div className="min-h-screen bg-[#070708] flex items-center justify-center font-mono text-xs text-neutral-400">
+                        <div className="flex items-center gap-3 bg-[#0d0e14] border border-white/10 px-6 py-4 rounded-xl shadow-2xl">
+                          <RefreshCw className="w-4 h-4 text-red-500 animate-spin" />
+                          <span className="text-white font-semibold uppercase tracking-wider">
+                            INITIALIZING FOUNDER VAULT...
+                          </span>
+                        </div>
+                      </div>
+                    }
+                  >
+                    <ProtectedRoute>
+                      <VaultLayout />
+                    </ProtectedRoute>
+                  </Suspense>
+                }
+              />
 
-            {/* Public Portfolio Experience with Sub-Routes */}
-            <Route path="/" element={<PublicExperience />} />
-            <Route path="/projects" element={<PublicExperience />} />
-            <Route path="/ai-systems" element={<PublicExperience />} />
-            <Route path="/journey" element={<PublicExperience />} />
-            <Route path="/proof" element={<PublicExperience />} />
-            <Route path="/future-vault" element={<PublicExperience />} />
-            <Route path="/apps" element={<PublicExperience />} />
-            <Route path="/contact" element={<PublicExperience />} />
-            <Route path="*" element={<PublicExperience />} />
-          </Routes>
-        </PortfolioDataProvider>
-      </AuthProvider>
+              {/* Public Portfolio Experience with Sub-Routes */}
+              <Route path="/" element={<PublicExperience />} />
+              <Route path="/projects" element={<PublicExperience />} />
+              <Route path="/ai-systems" element={<PublicExperience />} />
+              <Route path="/journey" element={<PublicExperience />} />
+              <Route path="/proof" element={<PublicExperience />} />
+              <Route path="/future-vault" element={<PublicExperience />} />
+              <Route path="/apps" element={<PublicExperience />} />
+              <Route path="/contact" element={<PublicExperience />} />
+              <Route path="*" element={<PublicExperience />} />
+            </Routes>
+          </PortfolioDataProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }

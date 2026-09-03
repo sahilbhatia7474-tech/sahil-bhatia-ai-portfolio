@@ -4,13 +4,13 @@ import { gsap } from 'gsap';
 const SystemBootLoader = ({ onComplete }) => {
   const containerRef = useRef(null);
   const contentRef = useRef(null);
-  const [bootLog, setBootLog] = useState('SYS_INIT: SAHIL / PORTFOLIO OS v2.6.4');
+  const [bootLog, setBootLog] = useState('SYS_INIT: PORTFOLIO OS v2.6.4');
 
   useEffect(() => {
     const logs = [
-      'SYS_INIT: SAHIL / PORTFOLIO OS v2.6.4',
+      'SYS_INIT: PORTFOLIO OS v2.6.4',
       'LOADING: AGENTIC ROUTING MATRIX & DAG SCHEDULER...',
-      'CONNECTING: SAHILBHATIA.COM RUNTIME...',
+      'CONNECTING: PORTFOLIO OS RUNTIME...',
       'STATUS: CORE ENGINE READY // DEPLOYING INTERFACE',
     ];
 
@@ -79,7 +79,7 @@ const SystemBootLoader = ({ onComplete }) => {
             SAHIL BHATIA
           </h1>
           <div className="text-xs font-mono text-red-500 font-medium tracking-wider">
-            SAHIL / PORTFOLIO OS
+            PORTFOLIO OS
           </div>
         </div>
 

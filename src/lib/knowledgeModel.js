@@ -142,7 +142,7 @@ export function buildKnowledgeIndex(data = {}) {
         (entry.role || '').toLowerCase(),
         ...(entry.keyThemes || entry.coreThemes || []).map((t) => t.toLowerCase()),
       ],
-      badge: (entry.status || (entry.verified ? 'VERIFIED' : 'AUDIT')).toUpperCase(),
+      badge: (entry.status || (entry.verified ? 'VERIFIED' : 'ACTIVE')).toUpperCase(),
     });
   });
 
@@ -453,8 +453,9 @@ export function queryAIAssistant(userPrompt, portfolioData = {}) {
 
   // 8. APPS HUB / DOWNLOADS
   if (prompt.includes('app') || prompt.includes('apk') || prompt.includes('download')) {
+    const activeDomain = identity?.domain && identity.domain !== 'SAHILBHATIA.COM' ? identity.domain : 'sahil-bhatia-ai-portfolio.vercel.app';
     return {
-      text: `The Apps Hub hosts official client distribution packages for ${identity.domain || 'SAHILBHATIA.COM'}:\n\n• Sahil AI OS Companion (Mobile & Desktop Cockpit, Android APK / PWA)\n• LinkBio Pro Builder (Instant Micro-Landing & Link Hub)\n• Lyra Architect Engine (Visual DAG Task Planner)`,
+      text: `The Apps Hub hosts client distribution packages for ${activeDomain}:\n\n• Sahil AI OS Companion (Mobile & Desktop Cockpit, Android APK / PWA)\n• LinkBio Pro Builder (Instant Micro-Landing & Link Hub)\n• Lyra Architect Engine (Visual DAG Task Planner)`,
       actions: [
         { label: 'EXPLORE APPS HUB', destination: '#apps', type: 'scroll' },
       ],

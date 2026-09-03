@@ -140,10 +140,10 @@ const VaultJourney = ({ openCreateSignal, clearCreateSignal }) => {
         <div>
           <h2 className="text-xl font-bold font-display text-white uppercase tracking-wider flex items-center gap-2">
             <Briefcase className="w-5 h-5 text-red-500" />
-            <span>PROFESSIONAL JOURNEY & AUDIT MANAGER</span>
+            <span>PROFESSIONAL JOURNEY & CAREER MANAGER</span>
           </h2>
           <p className="text-xs text-neutral-400 mt-1 font-sans">
-            Maintain verified corporate experience, accountability audit states, and key contributions.
+            Maintain verified professional experience, career milestones, and key contributions.
           </p>
         </div>
 

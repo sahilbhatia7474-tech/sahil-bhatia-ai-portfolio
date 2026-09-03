@@ -1,59 +1,94 @@
 import { useState } from 'react';
-import { Mail, Send, CheckCircle2, ArrowUpRight, ShieldCheck, Terminal, MapPin } from 'lucide-react';
+import { Mail, CheckCircle2, ArrowUpRight, ShieldCheck, Terminal, MapPin } from 'lucide-react';
 import { usePortfolioData } from '../context/PortfolioDataContext';
 import { saveItem, logActivity } from '../lib/dbService';
 import { isValidHttpUrl } from '../lib/projectLinks';
+
+const CONSULTATION_AREAS = [
+  'AI Systems',
+  'AI Agents',
+  'Automation',
+  'Digital Product',
+  'UX / Website',
+  'Business Workflow',
+  'Other',
+];
 
 const Contact = () => {
   const { identity } = usePortfolioData();
   const [formData, setFormData] = useState({
     name: '',
+    selectedArea: 'AI Systems',
+    problem: '',
     email: '',
-    subject: 'AI Systems Advisory',
-    message: '',
   });
 
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [validationError, setValidationError] = useState(null);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const handleSelectArea = (area) => {
+    setFormData((prev) => ({ ...prev, selectedArea: area }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setValidationError(null);
+
+    if (!formData.name.trim()) {
+      setValidationError('Please provide your name or organization.');
+      return;
+    }
+
+    if (!formData.email.trim() || !formData.email.includes('@')) {
+      setValidationError('Please provide a valid direct email address.');
+      return;
+    }
+
+    if (!formData.problem.trim()) {
+      setValidationError('Please describe what you are trying to solve.');
+      return;
+    }
+
     setSubmitting(true);
 
     try {
       // Save transmission message to Firestore
-      const msgId = `msg-${Date.now()}`;
+      const msgId = `inquiry-${Date.now()}`;
       await saveItem('messages', msgId, {
-        ...formData,
+        name: formData.name.trim(),
+        subject: `Consultation: ${formData.selectedArea}`,
+        category: formData.selectedArea,
+        problem: formData.problem.trim(),
+        message: formData.problem.trim(),
+        email: formData.email.trim().toLowerCase(),
+        status: 'UNREAD',
         timestamp: new Date().toISOString(),
       }, true);
 
-      await logActivity('CONTACT_MESSAGE', 'messages', `Inquiry received from ${formData.name} (${formData.email})`);
+      await logActivity('CONSULTATION_INQUIRY', 'messages', `Inquiry from ${formData.name} regarding ${formData.selectedArea}`);
     } catch (err) {
-      console.warn('Transmission saved locally:', err);
+      console.warn('Consultation saved locally:', err);
     }
 
     setSubmitting(false);
     setSubmitted(true);
-    setFormData({ name: '', email: '', subject: 'AI Systems Advisory', message: '' });
-    setTimeout(() => setSubmitted(false), 6000);
+    setFormData({
+      name: '',
+      selectedArea: 'AI Systems',
+      problem: '',
+      email: '',
+    });
+    setTimeout(() => setSubmitted(false), 8000);
   };
 
   const contactEmail = identity?.contactEmail || 'sahilbhatia7474@gmail.com';
-  const domain = identity?.domain || 'SAHILBHATIA.COM';
-  const systemName = identity?.systemName || 'SAHIL / PORTFOLIO OS';
+  const systemName = identity?.systemName || 'PORTFOLIO OS';
 
   // Authoritative Social Link Architecture (Instagram, LinkedIn, GitHub)
-  // Twitter / X is removed. Instagram is only shown if configured by Founder with a valid URL.
   const rawSocial = identity?.socialLinks || {};
   const activeSocialLinks = [];
 
-  // Instagram
   const instaUrl = rawSocial.instagram?.url || (typeof rawSocial.instagram === 'string' ? rawSocial.instagram : 'https://www.instagram.com/neutronverse.ai');
   if (instaUrl && isValidHttpUrl(instaUrl) && rawSocial.instagram?.visibility !== 'HIDDEN') {
     activeSocialLinks.push({
@@ -64,7 +99,6 @@ const Contact = () => {
     });
   }
 
-  // LinkedIn (Authoritative)
   const linkedInUrl = rawSocial.linkedin?.url || (typeof rawSocial.linkedin === 'string' ? rawSocial.linkedin : 'https://www.linkedin.com/in/sahil-bhatia-b3bb3a3a2');
   if (linkedInUrl && isValidHttpUrl(linkedInUrl) && rawSocial.linkedin?.visibility !== 'HIDDEN') {
     activeSocialLinks.push({
@@ -75,7 +109,6 @@ const Contact = () => {
     });
   }
 
-  // GitHub (Authoritative)
   const ghUrl = rawSocial.github?.url || (typeof rawSocial.github === 'string' ? rawSocial.github : 'https://github.com/sahilbhatia7474-tech');
   if (ghUrl && isValidHttpUrl(ghUrl) && rawSocial.github?.visibility !== 'HIDDEN') {
     activeSocialLinks.push({
@@ -91,255 +124,253 @@ const Contact = () => {
   return (
     <section id="contact" className="py-24 bg-[#070708] relative border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          {/* Left Column: Direct Communication Channels */}
-          <div className="lg:col-span-5 space-y-8">
-            <div>
-              <div className="flex items-center gap-2 font-mono text-xs text-red-500 uppercase tracking-widest mb-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
-                INITIATE DIALOGUE & CONSULTATION
-              </div>
-              <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-white font-display uppercase">
-                Direct Channel
-              </h2>
-              <p className="text-sm text-neutral-400 font-sans mt-3 leading-relaxed">
-                Whether diagnosing existing business friction points, architecting custom AI systems, or discussing high-velocity product prototyping.
-              </p>
-            </div>
+        
+        {/* Header */}
+        <div className="max-w-3xl mb-14">
+          <div className="flex items-center gap-2 font-mono text-xs text-red-500 uppercase tracking-widest mb-3">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+            DIRECT CONSULTATION CHANNEL &middot; HIGH-SIGNAL INQUIRIES
+          </div>
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white font-display uppercase">
+            START A CONVERSATION
+          </h2>
+          <p className="text-base sm:text-lg text-neutral-300 font-sans mt-3 leading-relaxed">
+            Have a problem worth solving? Tell me what you are building, what is slowing you down, or what you want to automate.
+          </p>
+        </div>
 
-            {/* Engagement Models Spotlight */}
-            <div className="space-y-3">
-              <span className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider block">
-                PRIMARY ENGAGEMENT MODELS
-              </span>
-              <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-2.5">
-                {[
-                  {
-                    title: 'AI Consulting',
-                    desc: 'Commercial diagnosis, workflow bottlenecks, and n8n / agentic automation.',
-                    code: 'ENG-01',
-                  },
-                  {
-                    title: 'Prototype Building',
-                    desc: '0-to-1 full-stack product velocity, vibe coding, and interactive interfaces.',
-                    code: 'ENG-02',
-                  },
-                  {
-                    title: 'Full-time / High-Impact Roles',
-                    desc: 'AI systems architecture, forward-deployed engineering, and systems strategy.',
-                    code: 'ENG-03',
-                  },
-                ].map((model) => (
-                  <div
-                    key={model.title}
-                    onClick={() => setFormData((prev) => ({ ...prev, subject: model.title }))}
-                    className="p-3.5 rounded-lg bg-[#0d0e14] border border-white/10 hover:border-red-500/40 transition-colors cursor-pointer group"
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <h4 className="font-mono text-xs font-bold text-white group-hover:text-red-400 transition-colors">
-                        {model.title}
-                      </h4>
-                      <span className="font-mono text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-neutral-400 border border-white/5">
-                        {model.code}
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-neutral-400 font-sans leading-relaxed">
-                      {model.desc}
-                    </p>
-                  </div>
-                ))}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          
+          {/* Left Column: Direct Channel & Supporting Protocols */}
+          <div className="lg:col-span-5 space-y-6">
+            
+            {/* Supporting Information Box */}
+            <div className="rounded-xl bg-[#0c0d12] border border-white/10 p-6 space-y-5">
+              <div className="flex items-center gap-2 text-xs font-mono text-red-400 uppercase tracking-wider font-bold">
+                <Mail className="w-4 h-4" />
+                <span>DIRECT CHANNEL</span>
               </div>
-            </div>
-
-            {/* Contact Details Card */}
-            <div className="rounded-xl bg-[#0c0d12] border border-white/10 p-6 space-y-4">
-              <div className="flex items-center gap-3.5 pb-4 border-b border-white/5">
-                <div className="w-10 h-10 rounded-lg bg-red-600/10 border border-red-500/25 flex items-center justify-center text-red-500">
-                  <Mail className="w-5 h-5" />
-                </div>
-                <div>
-                  <span className="text-[10px] font-mono text-neutral-500 uppercase block">
-                    PRIMARY VERIFIED INBOX
-                  </span>
-                  <a
-                    href={`mailto:${contactEmail}`}
-                    className="text-base sm:text-lg font-sans font-semibold text-white hover:text-red-400 transition-colors tracking-tight"
-                  >
-                    {contactEmail}
-                  </a>
-                </div>
+              
+              <div>
+                <span className="text-[10px] font-mono text-neutral-500 uppercase block mb-1">
+                  EMAIL
+                </span>
+                <a
+                  href={`mailto:${contactEmail}`}
+                  className="text-base sm:text-lg font-mono font-semibold text-white hover:text-red-400 transition-colors break-all"
+                >
+                  {contactEmail}
+                </a>
               </div>
 
-              <div className="flex items-center gap-3.5 pb-4 border-b border-white/5">
-                <div className="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-neutral-300">
-                  <Terminal className="w-5 h-5 text-red-500" />
-                </div>
-                <div>
-                  <span className="text-[10px] font-mono text-neutral-500 uppercase block">
-                    OPERATING DOMAIN & SYSTEM
-                  </span>
-                  <span className="text-sm font-sans font-medium text-neutral-200">
-                    {domain} // {systemName}
-                  </span>
-                </div>
+              <div className="pt-4 border-t border-white/5 space-y-2">
+                <span className="text-[10px] font-mono text-neutral-500 uppercase block">
+                  RESPONSE PROTOCOL
+                </span>
+                <p className="text-xs text-neutral-300 font-sans leading-relaxed">
+                  Consultation requests are reviewed directly.
+                </p>
               </div>
 
-              <div className="flex items-center gap-3.5">
-                <div className="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-neutral-300">
-                  <MapPin className="w-5 h-5 text-neutral-400" />
-                </div>
-                <div>
-                  <span className="text-[10px] font-mono text-neutral-500 uppercase block">
-                    LOCATION BASE
-                  </span>
-                  <span className="text-sm font-sans font-medium text-neutral-200">
-                    Delhi NCR, India &bull; Global Remote Advisory
-                  </span>
-                </div>
+              <div className="pt-4 border-t border-white/5 space-y-2">
+                <span className="text-[10px] font-mono text-neutral-500 uppercase flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>CONFIDENTIALITY</span>
+                </span>
+                <p className="text-xs text-neutral-400 font-sans leading-relaxed">
+                  Information submitted through this form is used only to understand the inquiry.
+                </p>
               </div>
             </div>
 
-            {/* Social / External Links — Verified Authoritative Data Only */}
-            <div className="space-y-2">
-              <span className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider block">
-                EXTERNAL CHANNELS
-              </span>
-              <div className="flex flex-wrap gap-2.5">
-                {activeSocialLinks.map((item) => (
-                  <a
-                    key={item.key}
-                    href={item.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3.5 py-2 rounded-lg bg-[#0e0f15] border border-white/10 hover:border-red-500/40 text-neutral-200 hover:text-white flex items-center gap-1.5 transition-colors font-sans text-xs font-medium"
-                  >
-                    <span>{item.label}</span>
-                    <ArrowUpRight className="w-3.5 h-3.5 text-neutral-400" />
-                  </a>
-                ))}
+            {/* System Info Box */}
+            <div className="rounded-xl bg-[#0c0d12] border border-white/10 p-5 space-y-3 font-mono text-xs text-neutral-400">
+              <div className="flex items-center justify-between">
+                <span className="text-neutral-500 text-[10px] uppercase">RUNTIME ENGINE</span>
+                <span className="text-neutral-200">{systemName}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-neutral-500 text-[10px] uppercase">LOCATION BASE</span>
+                <span className="text-neutral-200">Delhi NCR &bull; Global Remote Advisory</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-neutral-500 text-[10px] uppercase">ENGAGEMENT STATUS</span>
+                <span className="text-emerald-400 font-semibold">ONLINE // OPEN FOR SYSTEM BRIEFS</span>
               </div>
             </div>
+
+            {/* Authoritative Social Profiles */}
+            {activeSocialLinks.length > 0 && (
+              <div className="space-y-2">
+                <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider block">
+                  VERIFIED DIRECT PROFILES
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {activeSocialLinks.map((item) => (
+                    <a
+                      key={item.key}
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3.5 py-2 rounded-lg bg-[#0d0e14] border border-white/10 hover:border-red-500/40 text-neutral-300 hover:text-white flex items-center gap-1.5 transition-colors font-mono text-xs"
+                    >
+                      <span>{item.label}</span>
+                      <ArrowUpRight className="w-3 h-3 text-neutral-400" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Right Column: Interactive Consultation Inquiry Form */}
+          {/* Right Column: Premium 4-Section Consultation Brief Form */}
           <div className="lg:col-span-7">
             <div className="rounded-xl bg-[#0c0d12] border border-white/10 p-6 sm:p-8 shadow-2xl relative">
-              <div className="flex items-center justify-between pb-4 mb-6 border-b border-white/10">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-red-500" />
-                  <span className="font-mono text-xs uppercase tracking-wider text-white font-bold">
-                    DISCOVERY BRIEFING FORM
-                  </span>
-                </div>
-                <span className="font-mono text-[10px] text-neutral-500">
-                  CONFIDENTIAL PROTOCOL
-                </span>
-              </div>
-
+              
               {submitted ? (
-                <div className="py-12 px-4 text-center rounded-lg bg-[#11121a] border border-emerald-500/30 space-y-3 animate-in fade-in duration-300">
-                  <div className="w-12 h-12 mx-auto rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-                    <CheckCircle2 className="w-6 h-6" />
+                <div className="py-16 px-6 text-center rounded-lg bg-[#11121a] border border-emerald-500/30 space-y-4 animate-in fade-in duration-300">
+                  <div className="w-14 h-14 mx-auto rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                    <CheckCircle2 className="w-7 h-7" />
                   </div>
-                  <h3 className="text-xl font-bold font-display text-white uppercase">
-                    Transmission Dispatched
+                  <h3 className="text-2xl font-bold font-display text-white uppercase tracking-tight">
+                    Consultation Brief Dispatched
                   </h3>
-                  <p className="text-xs text-neutral-300 max-w-sm mx-auto font-sans leading-relaxed">
-                    Thank you. Your inquiry has been routed into the Sahil AI OS triage pipeline. Direct response will be dispatched to your email address shortly.
+                  <p className="text-sm text-neutral-300 max-w-md mx-auto font-sans leading-relaxed">
+                    Thank you. Your inquiry has been routed into Sahil&apos;s direct queue. A thoughtful response will be sent to your email address.
                   </p>
+                  <div className="pt-4">
+                    <button
+                      onClick={() => setSubmitted(false)}
+                      className="px-4 py-2 rounded bg-white/10 hover:bg-white/20 text-white font-mono text-xs cursor-pointer transition-colors"
+                    >
+                      Submit Another Inquiry
+                    </button>
+                  </div>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-4 font-sans text-xs">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label htmlFor="contact-name" className="font-mono text-[11px] text-neutral-400 uppercase tracking-wider block">
-                        Your Name / Organization *
+                <form onSubmit={handleSubmit} className="space-y-8">
+                  
+                  {validationError && (
+                    <div className="p-3.5 rounded-lg bg-red-950/40 border border-red-500/50 font-mono text-xs text-red-300 flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-red-400 shrink-0" />
+                      <span>{validationError}</span>
+                    </div>
+                  )}
+
+                  {/* 01 — WHO ARE YOU? */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 pb-2 border-b border-white/5">
+                      <span className="font-mono text-xs font-bold text-red-500">01</span>
+                      <h4 className="font-mono text-xs uppercase tracking-wider text-white font-bold">
+                        WHO ARE YOU?
+                      </h4>
+                    </div>
+                    
+                    <div className="space-y-1.5 pt-1">
+                      <label htmlFor="inquiry-name" className="block font-mono text-[11px] text-neutral-400 uppercase">
+                        Name / Organization *
                       </label>
                       <input
-                        id="contact-name"
+                        id="inquiry-name"
                         type="text"
-                        name="name"
                         required
                         value={formData.name}
-                        onChange={handleChange}
-                        placeholder="e.g. Alex Miller / TechCorp"
-                        className="w-full px-3.5 py-2.5 rounded bg-[#12131b] border border-white/10 text-white placeholder-neutral-500 font-sans focus:outline-none focus:border-red-500/60"
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        placeholder="Your name or organization (e.g. Alex Morgan / Acme Corp)"
+                        className="w-full min-h-[44px] px-3.5 py-2 rounded-lg bg-[#121319] border border-white/15 text-white font-sans text-xs focus:outline-none focus:border-red-500 transition-colors"
                       />
                     </div>
+                  </div>
 
-                    <div className="space-y-1.5">
-                      <label htmlFor="contact-email" className="font-mono text-[11px] text-neutral-400 uppercase tracking-wider block">
-                        Email Address *
+                  {/* 02 — WHERE SHOULD WE START? */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 pb-2 border-b border-white/5">
+                      <span className="font-mono text-xs font-bold text-red-500">02</span>
+                      <h4 className="font-mono text-xs uppercase tracking-wider text-white font-bold">
+                        WHERE SHOULD WE START?
+                      </h4>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {CONSULTATION_AREAS.map((area) => {
+                        const isSelected = formData.selectedArea === area;
+                        return (
+                          <button
+                            key={area}
+                            type="button"
+                            onClick={() => handleSelectArea(area)}
+                            className={`px-4 py-2 rounded-lg font-mono text-xs transition-all cursor-pointer select-none ${
+                              isSelected
+                                ? 'bg-red-600 text-white font-bold shadow-[0_0_15px_rgba(227,38,53,0.35)] border border-red-500'
+                                : 'bg-[#121319] text-neutral-300 border border-white/10 hover:border-white/25 hover:text-white'
+                            }`}
+                          >
+                            {area}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* 03 — WHAT ARE YOU TRYING TO SOLVE? */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 pb-2 border-b border-white/5">
+                      <span className="font-mono text-xs font-bold text-red-500">03</span>
+                      <h4 className="font-mono text-xs uppercase tracking-wider text-white font-bold">
+                        WHAT ARE YOU TRYING TO SOLVE?
+                      </h4>
+                    </div>
+
+                    <div className="space-y-1.5 pt-1">
+                      <label htmlFor="inquiry-problem" className="block font-mono text-[11px] text-neutral-400 uppercase">
+                        Problem / Objective *
+                      </label>
+                      <textarea
+                        id="inquiry-problem"
+                        required
+                        rows={4}
+                        value={formData.problem}
+                        onChange={(e) => setFormData({ ...formData, problem: e.target.value })}
+                        placeholder="Tell me what you are building, what is slowing you down, or what you want to automate..."
+                        className="w-full px-3.5 py-2.5 rounded-lg bg-[#121319] border border-white/15 text-white font-sans text-xs focus:outline-none focus:border-red-500 transition-colors leading-relaxed"
+                      />
+                    </div>
+                  </div>
+
+                  {/* 04 — HOW CAN I REACH YOU? */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 pb-2 border-b border-white/5">
+                      <span className="font-mono text-xs font-bold text-red-500">04</span>
+                      <h4 className="font-mono text-xs uppercase tracking-wider text-white font-bold">
+                        HOW CAN I REACH YOU?
+                      </h4>
+                    </div>
+
+                    <div className="space-y-1.5 pt-1">
+                      <label htmlFor="inquiry-email" className="block font-mono text-[11px] text-neutral-400 uppercase">
+                        Email *
                       </label>
                       <input
-                        id="contact-email"
+                        id="inquiry-email"
                         type="email"
-                        name="email"
                         required
                         value={formData.email}
-                        onChange={handleChange}
-                        placeholder="alex@organization.com"
-                        className="w-full px-3.5 py-2.5 rounded bg-[#12131b] border border-white/10 text-white placeholder-neutral-500 font-sans focus:outline-none focus:border-red-500/60"
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        placeholder="alex@company.com"
+                        className="w-full min-h-[44px] px-3.5 py-2 rounded-lg bg-[#121319] border border-white/15 text-white font-sans text-xs focus:outline-none focus:border-red-500 transition-colors"
                       />
                     </div>
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label htmlFor="contact-subject" className="font-mono text-[11px] text-neutral-400 uppercase tracking-wider block">
-                      Consultation Domain
-                    </label>
-                    <select
-                      id="contact-subject"
-                      name="subject"
-                      value={formData.subject}
-                      onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 rounded bg-[#12131b] border border-white/10 text-white font-mono focus:outline-none focus:border-red-500/60"
+                  {/* Primary CTA Button */}
+                  <div className="pt-2">
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs font-bold uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(227,38,53,0.3)] disabled:opacity-50 cursor-pointer"
                     >
-                      <option value="AI Consulting">AI Consulting & Workflow Diagnosis</option>
-                      <option value="Prototype Building">Prototype Building & 0-to-1 MVP</option>
-                      <option value="Full-time / High-Impact Roles">Full-time / High-Impact Roles</option>
-                      <option value="Workflow Automation">Workflow Automation / n8n Pipelines</option>
-                      <option value="General Collaboration">General Strategic Collaboration</option>
-                    </select>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label htmlFor="contact-message" className="font-mono text-[11px] text-neutral-400 uppercase tracking-wider block">
-                      Scope, Objective, or Problem Statement *
-                    </label>
-                    <textarea
-                      id="contact-message"
-                      name="message"
-                      rows={4}
-                      required
-                      value={formData.message}
-                      onChange={handleChange}
-                      placeholder="Outline the current manual bottleneck, project scope, or system you wish to deploy..."
-                      className="w-full px-3.5 py-2.5 rounded bg-[#12131b] border border-white/10 text-white placeholder-neutral-500 font-sans focus:outline-none focus:border-red-500/60 leading-relaxed resize-none"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={submitting}
-                    className="w-full py-3.5 rounded-lg bg-[#ff2a3a] hover:bg-red-600 text-white font-sans text-sm font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2.5 shadow-[0_0_24px_rgba(255,42,58,0.35)] cursor-pointer"
-                  >
-                    {submitting ? (
-                      <span>Dispatching Brief...</span>
-                    ) : (
-                      <>
-                        <Send className="w-3.5 h-3.5" />
-                        <span>Dispatch Direct Inquiry</span>
-                      </>
-                    )}
-                  </button>
-
-                  <div className="flex items-center justify-between text-[11px] font-mono text-neutral-500 pt-2">
-                    <span className="flex items-center gap-1">
-                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                      Zero spam guarantee
-                    </span>
-                    <span>Direct recipient: sahilbhatia7474@gmail.com</span>
+                      <span>{submitting ? 'DISPATCHING BRIEF...' : 'INITIATE CONSULTATION →'}</span>
+                    </button>
                   </div>
                 </form>
               )}

@@ -19,10 +19,10 @@ const VaultActivityLog = () => {
         <div>
           <h2 className="text-xl font-bold font-display text-white uppercase tracking-wider flex items-center gap-2">
             <Activity className="w-5 h-5 text-red-500" />
-            <span>FOUNDER AUDIT LOG & TELEMETRY</span>
+            <span>FOUNDER ACTIVITY LOG & HISTORY</span>
           </h2>
           <p className="text-xs text-neutral-400 mt-1 font-sans">
-            Immutable log of publishing operations, draft updates, security sessions, and data modifications.
+            Log of publishing operations, draft updates, security sessions, and data modifications.
           </p>
         </div>
 

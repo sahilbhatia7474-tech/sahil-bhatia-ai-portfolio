@@ -16,7 +16,7 @@ const VaultSiteSettings = () => {
   const { siteSettings, refreshAllData } = usePortfolioData();
   const [formData, setFormData] = useState({
     title: 'SAHIL BHATIA — AI PORTFOLIO & SYSTEMS',
-    domain: 'SAHILBHATIA.COM',
+    domain: 'SAHIL / PORTFOLIO OS',
     systemName: 'SAHIL / PORTFOLIO OS',
     version: 'v2.6.4',
     brandSubtitle: 'AI SYSTEMS ARCHITECT & BUILDER',
@@ -35,7 +35,7 @@ const VaultSiteSettings = () => {
     if (siteSettings) {
       setFormData({
         title: siteSettings.title || 'SAHIL BHATIA — AI PORTFOLIO & SYSTEMS',
-        domain: siteSettings.domain || 'SAHILBHATIA.COM',
+        domain: siteSettings.domain || 'SAHIL / PORTFOLIO OS',
         systemName: siteSettings.systemName || 'SAHIL / PORTFOLIO OS',
         version: siteSettings.version || 'v2.6.4',
         brandSubtitle: siteSettings.brandSubtitle || 'AI SYSTEMS ARCHITECT & BUILDER',

@@ -12,8 +12,8 @@ const Footer = () => {
   };
 
   const name = identity?.name || 'SAHIL BHATIA';
-  const domain = identity?.domain || 'SAHILBHATIA.COM';
-  const systemName = identity?.systemName || 'SAHIL / PORTFOLIO OS';
+  const displayDomain = identity?.domain && identity.domain !== 'SAHILBHATIA.COM' ? identity.domain : 'sahil-bhatia-ai-portfolio.vercel.app';
+  const systemName = identity?.systemName || 'PORTFOLIO OS';
   const contactEmail = identity?.contactEmail || 'sahilbhatia7474@gmail.com';
 
   return (
@@ -37,7 +37,7 @@ const Footer = () => {
               <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
               <span>{systemName}</span>
               <span>&bull;</span>
-              <span className="text-neutral-300">{domain}</span>
+              <span className="text-neutral-300">{displayDomain}</span>
             </div>
 
             {/* Public Verified Social Network Links */}
@@ -190,7 +190,7 @@ const Footer = () => {
               {contactEmail}
             </a>
             <span>&bull;</span>
-            <span className="text-neutral-400">{domain}</span>
+            <span className="text-neutral-400">{displayDomain}</span>
           </div>
         </div>
       </div>
