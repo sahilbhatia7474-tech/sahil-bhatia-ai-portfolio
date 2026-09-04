@@ -198,7 +198,7 @@ const Hero = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="lg:col-span-5 xl:shrink-0 flex justify-center items-center lg:-mt-6 xl:-mt-4"
+            className="lg:col-span-5 xl:flex-none xl:w-[570px] 2xl:w-[580px] flex justify-center items-center lg:-mt-6 xl:-mt-2"
           >
             <FeaturedBuilderCard3D />
           </motion.div>

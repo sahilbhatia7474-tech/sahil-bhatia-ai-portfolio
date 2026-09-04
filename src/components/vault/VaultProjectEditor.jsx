@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { saveItem } from '../../lib/dbService';
-import { uploadStorageAsset, validateImageFile, validateVideoFile } from '../../lib/storageService';
+import MediaUploadControl from './MediaUploadControl';
 import { 
   X, Save, Eye, CheckCircle2, AlertCircle, RefreshCw, Star, 
   Link as LinkIcon, ExternalLink, Plus, Trash2, Globe,
-  Upload, Video, Image as ImageIcon, Film, ArrowUp, ArrowDown
+  Image as ImageIcon, Film, ArrowUp, ArrowDown
 } from 'lucide-react';
 import { isValidHttpUrl } from '../../lib/projectLinks';
 
@@ -188,72 +188,6 @@ const VaultProjectEditor = ({ project, isNew, onClose, onSaved }) => {
     setLinks(remaining);
   };
 
-  // Media Management: Cover Image Upload
-  const handleUploadCover = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const validation = validateImageFile(file);
-    if (!validation.valid) {
-      setMediaUploadState({ status: 'error', progress: 0, message: validation.error, target: 'cover' });
-      return;
-    }
-
-    setMediaUploadState({ status: 'uploading', progress: 0, message: 'Uploading cover image...', target: 'cover' });
-    const res = await uploadStorageAsset(file, 'projects/covers', (pct) => {
-      setMediaUploadState((prev) => ({ ...prev, progress: pct }));
-    });
-    if (res.success && res.downloadUrl) {
-      setFormData((prev) => ({
-        ...prev,
-        coverImageUrl: res.downloadUrl,
-        heroImage: res.downloadUrl,
-      }));
-      setMediaUploadState({ status: 'completed', progress: 100, message: 'Cover visual uploaded successfully', target: 'cover' });
-      setTimeout(() => setMediaUploadState({ status: 'idle', progress: 0, message: '', target: '' }), 3000);
-    } else {
-      setMediaUploadState({ status: 'error', progress: 0, message: res.error || 'Upload failed', target: 'cover' });
-    }
-  };
-
-  // Media Management: Gallery Images Upload
-  const handleUploadGallery = async (e) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length === 0) return;
-
-    // Validate each file first
-    for (const f of files) {
-      const v = validateImageFile(f);
-      if (!v.valid) {
-        setMediaUploadState({ status: 'error', progress: 0, message: `${f.name}: ${v.error}`, target: 'gallery' });
-        return;
-      }
-    }
-
-    setMediaUploadState({ status: 'uploading', progress: 0, message: `Uploading ${files.length} gallery image(s)...`, target: 'gallery' });
-    const uploaded = [];
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const res = await uploadStorageAsset(file, 'projects/gallery', (pct) => {
-        const aggregated = Math.round(((i + pct / 100) / files.length) * 100);
-        setMediaUploadState((prev) => ({ ...prev, progress: aggregated }));
-      });
-      if (res.success && res.downloadUrl) {
-        uploaded.push(res.downloadUrl);
-      }
-    }
-    if (uploaded.length > 0) {
-      setFormData((prev) => ({
-        ...prev,
-        galleryImages: [...(prev.galleryImages || []), ...uploaded],
-      }));
-      setMediaUploadState({ status: 'completed', progress: 100, message: `${uploaded.length} image(s) added to gallery`, target: 'gallery' });
-      setTimeout(() => setMediaUploadState({ status: 'idle', progress: 0, message: '', target: '' }), 3000);
-    } else {
-      setMediaUploadState({ status: 'error', progress: 0, message: 'Failed to upload gallery images', target: 'gallery' });
-    }
-  };
-
   const handleSetAsCover = (url) => {
     setFormData((prev) => ({
       ...prev,
@@ -291,54 +225,6 @@ const VaultProjectEditor = ({ project, isNew, onClose, onSaved }) => {
     items[index] = items[targetIdx];
     items[targetIdx] = temp;
     setFormData((prev) => ({ ...prev, galleryImages: items }));
-  };
-
-  // Media Management: Video Upload
-  const handleUploadVideo = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const validation = validateVideoFile(file);
-    if (!validation.valid) {
-      setMediaUploadState({ status: 'error', progress: 0, message: validation.error, target: 'video' });
-      return;
-    }
-
-    setMediaUploadState({ status: 'uploading', progress: 0, message: 'Uploading project video (MP4/WebM)...', target: 'video' });
-    const res = await uploadStorageAsset(file, 'projects/videos', (pct) => {
-      setMediaUploadState((prev) => ({ ...prev, progress: pct }));
-    });
-    if (res.success && res.downloadUrl) {
-      setFormData((prev) => ({
-        ...prev,
-        videoUrl: res.downloadUrl,
-        videoSource: 'upload',
-      }));
-      setMediaUploadState({ status: 'completed', progress: 100, message: 'Video uploaded successfully', target: 'video' });
-      setTimeout(() => setMediaUploadState({ status: 'idle', progress: 0, message: '', target: '' }), 3000);
-    } else {
-      setMediaUploadState({ status: 'error', progress: 0, message: res.error || 'Video upload failed', target: 'video' });
-    }
-  };
-
-  // Media Management: Video Poster Upload
-  const handleUploadVideoPoster = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setMediaUploadState({ status: 'uploading', progress: 0, message: 'Uploading video poster...', target: 'videoPoster' });
-    const res = await uploadStorageAsset(file, 'projects/posters', (pct) => {
-      setMediaUploadState((prev) => ({ ...prev, progress: pct }));
-    });
-    if (res.success && res.downloadUrl) {
-      setFormData((prev) => ({
-        ...prev,
-        videoPosterUrl: res.downloadUrl,
-      }));
-      setMediaUploadState({ status: 'completed', progress: 100, message: 'Video poster uploaded successfully', target: 'videoPoster' });
-      setTimeout(() => setMediaUploadState({ status: 'idle', progress: 0, message: '', target: '' }), 3000);
-    } else {
-      setMediaUploadState({ status: 'error', progress: 0, message: res.error || 'Poster upload failed', target: 'videoPoster' });
-    }
   };
 
   const handleSave = async (targetStatus = formData.status) => {
@@ -685,18 +571,23 @@ const VaultProjectEditor = ({ project, isNew, onClose, onSaved }) => {
                 <div className="md:col-span-7 space-y-3">
                   <div className="space-y-1">
                     <label className="block font-mono text-[10px] text-neutral-400 uppercase">
-                      Upload from Device (Direct to Firebase Storage)
+                      Upload Cover Visual (Firebase Storage)
                     </label>
-                    <label className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white font-mono text-xs cursor-pointer transition-colors">
-                      <Upload className="w-3.5 h-3.5 text-red-400" />
-                      <span>Select Cover Image...</span>
-                      <input
-                        type="file"
-                        accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif"
-                        onChange={handleUploadCover}
-                        className="hidden"
-                      />
-                    </label>
+                    <MediaUploadControl
+                      label="Select Cover Image"
+                      folderPath="projects/covers"
+                      accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif"
+                      currentUrl={formData.coverImageUrl}
+                      onSuccess={(res) => {
+                        if (res.downloadUrl) {
+                          setFormData((prev) => ({
+                            ...prev,
+                            coverImageUrl: res.downloadUrl,
+                            heroImage: res.downloadUrl,
+                          }));
+                        }
+                      }}
+                    />
                   </div>
 
                   <div className="space-y-1">
@@ -754,17 +645,21 @@ const VaultProjectEditor = ({ project, isNew, onClose, onSaved }) => {
                   </p>
                 </div>
 
-                <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-mono text-xs cursor-pointer self-start sm:self-auto">
-                  <Upload className="w-3.5 h-3.5 text-red-400" />
-                  <span>Upload Images</span>
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={handleUploadGallery}
-                    className="hidden"
+                <div className="w-full sm:w-auto">
+                  <MediaUploadControl
+                    label="Add Gallery Image"
+                    folderPath="projects/gallery"
+                    accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif"
+                    onSuccess={(res) => {
+                      if (res.downloadUrl) {
+                        setFormData((prev) => ({
+                          ...prev,
+                          galleryImages: [...(prev.galleryImages || []), res.downloadUrl],
+                        }));
+                      }
+                    }}
                   />
-                </label>
+                </div>
               </div>
 
               {/* Add by URL */}
@@ -901,16 +796,22 @@ const VaultProjectEditor = ({ project, isNew, onClose, onSaved }) => {
                   <label className="block font-mono text-[10px] text-neutral-400 uppercase">
                     Upload Video Asset (MP4 / WebM &middot; Max 100MB)
                   </label>
-                  <label className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-mono text-xs cursor-pointer transition-colors">
-                    <Video className="w-4 h-4 text-red-400" />
-                    <span>Choose Video File...</span>
-                    <input
-                      type="file"
-                      accept="video/mp4,video/webm"
-                      onChange={handleUploadVideo}
-                      className="hidden"
-                    />
-                  </label>
+                  <MediaUploadControl
+                    label="Select Project Video Asset"
+                    mediaType="video"
+                    folderPath="projects/videos"
+                    accept="video/mp4,video/webm,video/quicktime"
+                    currentUrl={formData.videoUrl}
+                    onSuccess={(res) => {
+                      if (res.downloadUrl) {
+                        setFormData((prev) => ({
+                          ...prev,
+                          videoUrl: res.downloadUrl,
+                          videoSource: 'upload',
+                        }));
+                      }
+                    }}
+                  />
                   {formData.videoUrl && (
                     <div className="text-[11px] font-mono text-emerald-400 truncate max-w-md pt-1">
                       Uploaded: {formData.videoUrl}
@@ -950,16 +851,20 @@ const VaultProjectEditor = ({ project, isNew, onClose, onSaved }) => {
                   <label className="block font-mono text-[10px] text-neutral-400 uppercase">
                     Or Upload Poster
                   </label>
-                  <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-mono text-xs cursor-pointer transition-colors">
-                    <Upload className="w-3.5 h-3.5 text-red-400" />
-                    <span>Upload Poster</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleUploadVideoPoster}
-                      className="hidden"
-                    />
-                  </label>
+                  <MediaUploadControl
+                    label="Select Poster Image"
+                    folderPath="projects/posters"
+                    accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif"
+                    currentUrl={formData.videoPosterUrl}
+                    onSuccess={(res) => {
+                      if (res.downloadUrl) {
+                        setFormData((prev) => ({
+                          ...prev,
+                          videoPosterUrl: res.downloadUrl,
+                        }));
+                      }
+                    }}
+                  />
                 </div>
               </div>
 

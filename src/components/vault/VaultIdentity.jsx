@@ -4,6 +4,7 @@ import { saveItem } from '../../lib/dbService';
 import { isValidHttpUrl } from '../../lib/projectLinks';
 import { Save, Check, AlertCircle, RefreshCw, UserCheck, Eye, EyeOff, Film, Play, Upload, Image as ImageIcon } from 'lucide-react';
 import { uploadStorageAsset } from '../../lib/storageService';
+import MediaUploadControl from './MediaUploadControl';
 
 const VaultIdentity = () => {
   const { identity, refreshAllData } = usePortfolioData();
@@ -728,40 +729,18 @@ const VaultIdentity = () => {
                   <label className="block text-[10px] font-mono text-neutral-400 uppercase">
                     Upload MP4/WebM Video (Max 100MB)
                   </label>
-                  <label className="flex items-center justify-center gap-2 p-3 rounded-lg border border-dashed border-white/20 bg-[#131520] hover:bg-[#181a28] cursor-pointer transition-colors text-xs font-mono text-neutral-300">
-                    <Upload className="w-4 h-4 text-red-400" />
-                    <span>Choose Video File</span>
-                    <input
-                      type="file"
-                      accept="video/mp4,video/webm,video/quicktime"
-                      className="hidden"
-                      onChange={async (e) => {
-                        const file = e.target.files?.[0];
-                        if (!file) return;
-                        setUploadProgress((p) => ({ ...p, video: 10 }));
-                        try {
-                          const res = await uploadStorageAsset(file, 'identity/intro', (pct) => {
-                            setUploadProgress((p) => ({ ...p, video: pct }));
-                          });
-                          if (res.success) {
-                            setIntroVideo((prev) => ({ ...prev, videoUrl: res.downloadUrl }));
-                            setUploadProgress((p) => ({ ...p, video: null }));
-                          } else {
-                            alert('Upload error: ' + res.error);
-                            setUploadProgress((p) => ({ ...p, video: null }));
-                          }
-                        } catch (err) {
-                          alert('Upload failed: ' + err.message);
-                          setUploadProgress((p) => ({ ...p, video: null }));
-                        }
-                      }}
-                    />
-                  </label>
-                  {uploadProgress.video !== null && (
-                    <div className="w-full bg-neutral-800 rounded-full h-1.5 overflow-hidden">
-                      <div className="bg-red-500 h-1.5 rounded-full transition-all" style={{ width: `${uploadProgress.video}%` }} />
-                    </div>
-                  )}
+                  <MediaUploadControl
+                    label="Choose Intro Video"
+                    mediaType="video"
+                    folderPath="identity/intro"
+                    accept="video/mp4,video/webm,video/quicktime"
+                    currentUrl={introVideo.videoUrl}
+                    onSuccess={(res) => {
+                      if (res.downloadUrl) {
+                        setIntroVideo((prev) => ({ ...prev, videoUrl: res.downloadUrl }));
+                      }
+                    }}
+                  />
                   {introVideo.videoUrl && (
                     <div className="text-[10px] font-mono text-emerald-400 truncate">
                       Asset: {introVideo.videoUrl}
@@ -786,40 +765,27 @@ const VaultIdentity = () => {
               {/* Poster Image */}
               <div className="space-y-1.5 pt-1">
                 <label className="block text-[10px] font-mono text-neutral-400 uppercase">
-                  Video Poster Image URL
+                  Video Poster Image
                 </label>
-                <div className="flex items-center gap-2">
+                <div className="space-y-2">
+                  <MediaUploadControl
+                    label="Select Poster Image"
+                    folderPath="identity/posters"
+                    accept="image/*"
+                    currentUrl={introVideo.videoPosterUrl}
+                    onSuccess={(res) => {
+                      if (res.downloadUrl) {
+                        setIntroVideo((prev) => ({ ...prev, videoPosterUrl: res.downloadUrl }));
+                      }
+                    }}
+                  />
                   <input
                     type="text"
                     value={introVideo.videoPosterUrl}
                     onChange={(e) => setIntroVideo((prev) => ({ ...prev, videoPosterUrl: e.target.value }))}
-                    placeholder="https://images.unsplash.com/..."
+                    placeholder="Or paste image URL (https://...)"
                     className="w-full min-h-[40px] px-3 py-2 rounded-lg bg-[#141620] border border-white/15 text-white text-xs font-mono focus:outline-none"
                   />
-                  <label className="p-2.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/15 cursor-pointer shrink-0">
-                    <ImageIcon className="w-4 h-4 text-neutral-300" />
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={async (e) => {
-                        const file = e.target.files?.[0];
-                        if (!file) return;
-                        setUploadProgress((p) => ({ ...p, poster: 10 }));
-                        try {
-                          const res = await uploadStorageAsset(file, 'identity/posters', (pct) => {
-                            setUploadProgress((p) => ({ ...p, poster: pct }));
-                          });
-                          if (res.success) {
-                            setIntroVideo((prev) => ({ ...prev, videoPosterUrl: res.downloadUrl }));
-                            setUploadProgress((p) => ({ ...p, poster: null }));
-                          }
-                        } finally {
-                          setUploadProgress((p) => ({ ...p, poster: null }));
-                        }
-                      }}
-                    />
-                  </label>
                 </div>
               </div>
             </div>

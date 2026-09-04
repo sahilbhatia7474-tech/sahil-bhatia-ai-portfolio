@@ -60,7 +60,7 @@ const normalizeIdentity = (data) => {
 export const PortfolioDataProvider = ({ children }) => {
   const [identity, setIdentity] = useState(() => normalizeIdentity(DEFAULT_IDENTITY));
   const [featuredPortrait, setFeaturedPortrait] = useState({
-    imageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800',
+    imageUrl: '/sahil-bhatia-portrait.svg',
     focalX: 50,
     focalY: 20,
     altText: 'Sahil Bhatia — AI-Native Builder and Systems Architect',
@@ -132,7 +132,14 @@ export const PortfolioDataProvider = ({ children }) => {
       const portDoc = doc(db, 'featuredPortrait', 'primary');
       unsubs.push(
         onSnapshot(portDoc, (snap) => {
-          if (snap.exists()) setFeaturedPortrait((prev) => ({ ...prev, ...snap.data() }));
+          if (snap.exists()) {
+            const data = snap.data();
+            let safeImageUrl = data.imageUrl?.trim() || '/sahil-bhatia-portrait.svg';
+            if (safeImageUrl.includes('photo-1534528741775-53994a69daeb') || safeImageUrl.includes('images.unsplash.com')) {
+              safeImageUrl = '/sahil-bhatia-portrait.svg';
+            }
+            setFeaturedPortrait((prev) => ({ ...prev, ...data, imageUrl: safeImageUrl }));
+          }
         }, (err) => console.warn('Portrait snap warning:', err.message))
       );
 

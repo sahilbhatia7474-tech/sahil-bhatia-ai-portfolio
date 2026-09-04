@@ -1,30 +1,24 @@
 import { useState, useEffect } from 'react';
 import { usePortfolioData } from '../../context/PortfolioDataContext';
 import { saveItem } from '../../lib/dbService';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { doc, getDoc } from 'firebase/firestore';
-import { storage, db } from '../../lib/firebase';
+import { db } from '../../lib/firebase';
+import MediaUploadControl from './MediaUploadControl';
 import FeaturedBuilderCard3D from '../FeaturedBuilderCard3D';
-import { Save, Sparkles, Upload, Check, AlertCircle, RefreshCw, Crosshair, Eye, CheckCircle2, Type } from 'lucide-react';
+import { Save, Sparkles, Check, AlertCircle, RefreshCw, Crosshair, Eye, CheckCircle2, Type, Upload } from 'lucide-react';
 
 const PORTRAIT_PRESETS = [
   {
-    name: 'Cinematic Ambient (Default)',
-    url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800',
+    name: 'Sahil Bhatia — Cybernetic Systems (Official)',
+    url: '/sahil-bhatia-portrait.svg',
     focalX: 50,
     focalY: 20,
   },
   {
-    name: 'High-Contrast Studio Dark',
-    url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=800',
+    name: 'Sahil Bhatia — Studio Asset Path',
+    url: '/assets/sahil-bhatia-portrait.svg',
     focalX: 50,
     focalY: 20,
-  },
-  {
-    name: 'Executive Systems Architectural',
-    url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=800',
-    focalX: 50,
-    focalY: 22,
   },
 ];
 
@@ -32,7 +26,7 @@ const VaultPortrait = () => {
   const { featuredPortrait, refreshAllData } = usePortfolioData();
 
   // Core Visual & Positioning State
-  const [imageUrl, setImageUrl] = useState('');
+  const [imageUrl, setImageUrl] = useState('/sahil-bhatia-portrait.svg');
   const [focalX, setFocalX] = useState(50);
   const [focalY, setFocalY] = useState(20);
   const [altText, setAltText] = useState('Sahil Bhatia — AI-Native Builder and Systems Architect');
@@ -57,12 +51,25 @@ const VaultPortrait = () => {
   const [isSaved, setIsSaved] = useState(false);
   const [message, setMessage] = useState(null);
 
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const handlePortraitUploadSuccess = (res) => {
+    if (res.downloadUrl) {
+      setImageUrl(res.downloadUrl);
+      setMessage({
+        type: 'success',
+        text: 'Uploaded to Firebase Storage, verified, and persisted to Firestore.',
+      });
+      setIsSaved(true);
+      refreshAllData();
+    }
+  };
 
   useEffect(() => {
     if (featuredPortrait) {
-      setImageUrl(featuredPortrait.imageUrl || PORTRAIT_PRESETS[0].url);
+      let currentUrl = featuredPortrait.imageUrl?.trim();
+      if (!currentUrl || currentUrl.includes('photo-1534528741775-53994a69daeb') || currentUrl.includes('images.unsplash.com')) {
+        currentUrl = PORTRAIT_PRESETS[0].url;
+      }
+      setImageUrl(currentUrl);
       setFocalX(featuredPortrait.focalX ?? 50);
       setFocalY(featuredPortrait.focalY ?? 20);
       setAltText(featuredPortrait.altText || 'Sahil Bhatia — AI-Native Builder and Systems Architect');
@@ -88,76 +95,6 @@ const VaultPortrait = () => {
     }
   }, [featuredPortrait]);
 
-  const handleFileUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-      setMessage({
-        type: 'error',
-        text: 'Invalid file type. Please upload a valid image (JPEG, PNG, WebP, GIF).',
-      });
-      return;
-    }
-
-    if (file.size > 10 * 1024 * 1024) {
-      setMessage({
-        type: 'error',
-        text: 'File size exceeds 10MB. Please select an optimized image under 10MB.',
-      });
-      return;
-    }
-
-    setIsUploading(true);
-    setUploadProgress(0);
-    setMessage(null);
-
-    try {
-      const timestamp = Date.now();
-      const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-      const storageRef = ref(storage, `portraits/${timestamp}_${sanitizedName}`);
-      
-      const uploadTask = uploadBytesResumable(storageRef, file);
-
-      uploadTask.on(
-        'state_changed',
-        (snapshot) => {
-          const progress = Math.round(
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-          );
-          setUploadProgress(progress);
-        },
-        (error) => {
-          console.error('Firebase Storage upload error:', error);
-          setMessage({
-            type: 'error',
-            text: `Firebase Storage upload failed (${error.code || error.message}). You can also paste an image URL directly below.`
-          });
-          setIsUploading(false);
-        },
-        async () => {
-          try {
-            const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
-            setImageUrl(downloadUrl);
-            setIsUploading(false);
-            setMessage({
-              type: 'success',
-              text: 'Image uploaded to Firebase Storage. Click "Save Founder Card" to verify and persist to Firestore.'
-            });
-          } catch (urlErr) {
-            console.error('Failed to get download URL:', urlErr);
-            setMessage({ type: 'error', text: 'Failed to retrieve uploaded image URL from Firebase Storage.' });
-            setIsUploading(false);
-          }
-        }
-      );
-    } catch (err) {
-      console.error('Upload initiation error:', err);
-      setMessage({ type: 'error', text: `Upload initialization error: ${err.message}` });
-      setIsUploading(false);
-    }
-  };
-
   const handleSave = async () => {
     setSaving(true);
     setIsSaved(false);
@@ -173,11 +110,18 @@ const VaultPortrait = () => {
       .map((s) => s.trim())
       .filter(Boolean);
 
+    // Step 1: Sanitize image source - never permit unsplash
+    let cleanImageUrl = imageUrl.trim();
+    if (!cleanImageUrl || cleanImageUrl.includes('photo-1534528741775-53994a69daeb') || cleanImageUrl.includes('images.unsplash.com')) {
+      cleanImageUrl = '/sahil-bhatia-portrait.svg';
+    }
+
+    // Step 2: Collect all card fields
     const payload = {
-      imageUrl: imageUrl.trim(),
+      imageUrl: cleanImageUrl,
       focalX: Number(focalX),
       focalY: Number(focalY),
-      altText: altText.trim(),
+      altText: altText.trim() || 'Sahil Bhatia — AI-Native Builder and Systems Architect',
       visibility,
       featured,
       publicationState,
@@ -204,7 +148,7 @@ const VaultPortrait = () => {
         if (readBackSnap.exists()) {
           const data = readBackSnap.data();
           // Step 6: Confirm the saved values
-          setImageUrl(data.imageUrl || '');
+          setImageUrl(data.imageUrl || '/sahil-bhatia-portrait.svg');
           setFocalX(Number(data.focalX ?? 50));
           setFocalY(Number(data.focalY ?? 20));
           setAltText(data.altText || '');
@@ -234,6 +178,7 @@ const VaultPortrait = () => {
         });
       }
     } else {
+      // Step 8: If Firestore write fails, display error and DO NOT show success
       setMessage({
         type: 'error',
         text: res.error || 'Failed to persist Founder Card configuration to Firestore.'
@@ -285,7 +230,7 @@ const VaultPortrait = () => {
 
         <button
           onClick={handleSave}
-          disabled={saving || isUploading}
+          disabled={saving}
           className="min-h-[44px] px-6 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
         >
           {saving ? (
@@ -347,32 +292,33 @@ const VaultPortrait = () => {
               />
             </div>
 
-            {/* Firebase Storage File Upload */}
+            {/* Firebase Storage Unified File Upload */}
             <div className="space-y-1.5">
               <label className="block text-xs font-mono text-neutral-400">
                 Upload New Image (Firebase Storage):
               </label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileUpload}
-                disabled={isUploading}
-                className="w-full text-xs font-mono text-neutral-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-mono file:bg-red-600/20 file:border file:border-red-500/30 file:text-red-200 hover:file:bg-red-600/30 file:cursor-pointer"
+              <MediaUploadControl
+                label="Choose Founder Portrait Image"
+                folderPath="portraits"
+                accept="image/jpeg,image/png,image/webp,image/svg+xml"
+                currentUrl={imageUrl}
+                persistConfig={{
+                  collectionName: 'featuredPortrait',
+                  docId: 'primary',
+                  fieldName: 'imageUrl',
+                  additionalFields: {
+                    focalX: Number(focalX),
+                    focalY: Number(focalY),
+                    altText: altText.trim() || 'Sahil Bhatia — AI-Native Builder and Systems Architect',
+                    visibility,
+                    featured,
+                    publicationState,
+                    name: name.trim(),
+                    role: role.trim(),
+                  }
+                }}
+                onSuccess={handlePortraitUploadSuccess}
               />
-              {isUploading && (
-                <div className="space-y-1 pt-1">
-                  <div className="flex justify-between text-[10px] font-mono text-neutral-400">
-                    <span>Uploading to Firebase Storage...</span>
-                    <span>{uploadProgress}%</span>
-                  </div>
-                  <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-red-500 transition-all duration-200"
-                      style={{ width: `${uploadProgress}%` }}
-                    />
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* Curated Presets */}
@@ -380,7 +326,7 @@ const VaultPortrait = () => {
               <span className="text-[11px] font-mono text-neutral-400 uppercase">
                 Curated Presets:
               </span>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {PORTRAIT_PRESETS.map((preset) => (
                   <button
                     key={preset.name}

@@ -2,7 +2,7 @@ import { useRef, useState, useEffect, useCallback } from 'react';
 import { usePortfolioData } from '../context/PortfolioDataContext';
 import { Terminal } from 'lucide-react';
 
-const DEFAULT_PORTRAIT = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800';
+const DEFAULT_PORTRAIT = '/sahil-bhatia-portrait.svg';
 
 const FeaturedBuilderCard3D = ({ identity: propIdentity, featuredPortrait: propPortrait, inVault = false } = {}) => {
   const contextData = usePortfolioData() || {};
@@ -140,8 +140,12 @@ const FeaturedBuilderCard3D = ({ identity: propIdentity, featuredPortrait: propP
     return () => cancelAnimationFrame(animFrameRef.current);
   }, []);
 
-  // Strict Source Priority: 1. Custom image in Firestore/Storage, 2. Direct URL, 3. High-quality default
-  const portraitUrl = featuredPortrait?.imageUrl?.trim() || DEFAULT_PORTRAIT;
+  // Strict Source Priority: 1. Custom image in Firestore/Storage, 2. Direct URL, 3. Safe local asset
+  let rawUrl = featuredPortrait?.imageUrl?.trim();
+  if (!rawUrl || rawUrl.includes('photo-1534528741775-53994a69daeb') || rawUrl.includes('images.unsplash.com')) {
+    rawUrl = DEFAULT_PORTRAIT;
+  }
+  const portraitUrl = rawUrl;
   const focalX = featuredPortrait?.focalX ?? 50;
   const focalY = featuredPortrait?.focalY ?? 20;
   const altText = featuredPortrait?.altText || 'Sahil Bhatia — AI-Native Builder and Systems Architect';
@@ -183,7 +187,7 @@ const FeaturedBuilderCard3D = ({ identity: propIdentity, featuredPortrait: propP
         className={`relative w-full ${
           inVault
             ? 'max-w-[380px] h-[600px]'
-            : 'max-w-[295px] xs:max-w-[330px] sm:max-w-[380px] md:max-w-[380px] lg:max-w-[380px] xl:w-[646px] xl:max-w-[646px] h-[520px] sm:h-[600px] md:h-[600px] lg:h-[600px] xl:h-[1020px]'
+            : 'max-w-[295px] xs:max-w-[330px] sm:max-w-[380px] md:max-w-[380px] lg:max-w-[380px] xl:w-[570px] xl:max-w-[570px] 2xl:w-[580px] 2xl:max-w-[580px] h-[520px] sm:h-[600px] md:h-[600px] lg:h-[600px] xl:h-[900px] 2xl:h-[915px]'
         } rounded-2xl bg-[#090a0f] border border-red-500/30 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.9),0_0_35px_rgba(255,42,58,0.12)] cursor-grab active:cursor-grabbing transition-shadow duration-300`}
         style={{
           transformStyle: 'preserve-3d',

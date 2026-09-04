@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { usePortfolioData } from '../../context/PortfolioDataContext';
 import { saveItem, deleteItem } from '../../lib/dbService';
+import MediaUploadControl from './MediaUploadControl';
 import {
   Award,
   Plus,
@@ -67,7 +68,7 @@ const VaultCertificates = ({ openCreateSignal, clearCreateSignal }) => {
       title: '',
       issuer: '',
       date: new Date().getFullYear().toString(),
-      imageUrl: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&q=80&w=600',
+      imageUrl: '',
       verificationUrl: '',
       description: '',
       skills: [],
@@ -351,6 +352,36 @@ const VaultCertificates = ({ openCreateSignal, clearCreateSignal }) => {
                   placeholder="https://coursera.org/verify/..."
                   className="w-full min-h-[40px] px-3.5 py-2 rounded-lg bg-[#141620] border border-white/15 text-white font-mono text-xs focus:outline-none focus:border-red-500"
                 />
+              </div>
+
+              {/* Certificate Media & Badge Asset */}
+              <div className="space-y-2 p-3.5 rounded-lg bg-[#0e1017] border border-white/10">
+                <label className="block font-mono text-[11px] text-neutral-300 uppercase font-semibold">
+                  Certificate Media / Credential Badge Asset
+                </label>
+                <MediaUploadControl
+                  label="Upload Certificate Media (Firebase Storage)"
+                  folderPath="certificates"
+                  accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf"
+                  currentUrl={formData.imageUrl}
+                  onSuccess={(res) => {
+                    if (res.downloadUrl) {
+                      setFormData((prev) => ({ ...prev, imageUrl: res.downloadUrl }));
+                    }
+                  }}
+                />
+                <div className="space-y-1 pt-1">
+                  <label className="block font-mono text-[10px] text-neutral-500 uppercase">
+                    Or Image / Badge Web URL
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.imageUrl}
+                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                    placeholder="https://..."
+                    className="w-full px-3 py-1.5 rounded-lg bg-[#141620] border border-white/10 text-white font-mono text-xs focus:outline-none"
+                  />
+                </div>
               </div>
 
               <div className="space-y-1.5">

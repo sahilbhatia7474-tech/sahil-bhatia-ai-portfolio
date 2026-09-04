@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { usePortfolioData } from '../../context/PortfolioDataContext';
 import { saveItem, deleteItem } from '../../lib/dbService';
+import MediaUploadControl from './MediaUploadControl';
 import {
   Image as ImageIcon,
   Copy,
@@ -46,28 +47,6 @@ const VaultMedia = ({ openCreateSignal, clearCreateSignal }) => {
     fileSize: '',
     fileType: 'image',
   });
-
-  const handleFileUpload = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const sizeStr = `${(file.size / 1024).toFixed(1)} KB`;
-    setFormData((prev) => ({
-      ...prev,
-      fileSize: sizeStr,
-      fileType: file.type.startsWith('image/') ? 'image' : 'file',
-      title: prev.title || file.name.replace(/\.[^/.]+$/, ''),
-    }));
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setFormData((prev) => ({
-        ...prev,
-        url: event.target.result,
-      }));
-    };
-    reader.readAsDataURL(file);
-  };
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -312,9 +291,33 @@ const VaultMedia = ({ openCreateSignal, clearCreateSignal }) => {
                 </select>
               </div>
 
+              <div className="space-y-2 p-3 rounded-lg bg-[#0e1017] border border-white/10">
+                <label className="block font-mono text-[11px] text-neutral-300 uppercase font-semibold">
+                  Upload Asset (Firebase Storage)
+                </label>
+                <MediaUploadControl
+                  label="Select Media File to Upload"
+                  folderPath="media"
+                  accept="image/*,video/*,application/pdf"
+                  currentUrl={formData.url}
+                  onSuccess={(res) => {
+                    if (res.downloadUrl) {
+                      const sizeStr = res.fileSize ? `${(res.fileSize / 1024).toFixed(1)} KB` : '';
+                      setFormData((prev) => ({
+                        ...prev,
+                        url: res.downloadUrl,
+                        fileSize: sizeStr || prev.fileSize,
+                        fileType: res.mimeType?.startsWith('video/') ? 'video' : 'image',
+                        title: prev.title || res.fileName?.replace(/\.[^/.]+$/, '') || 'Media Asset',
+                      }));
+                    }
+                  }}
+                />
+              </div>
+
               <div className="space-y-1.5">
                 <label className="block font-mono text-[11px] text-neutral-400 uppercase">
-                  Asset Web URL:
+                  Asset Web URL (or uploaded link):
                 </label>
                 <input
                   type="text"
@@ -322,17 +325,6 @@ const VaultMedia = ({ openCreateSignal, clearCreateSignal }) => {
                   onChange={(e) => setFormData({ ...formData, url: e.target.value })}
                   placeholder="https://..."
                   className="w-full min-h-[40px] px-3.5 py-2 rounded-lg bg-[#141620] border border-white/15 text-white font-mono text-xs focus:outline-none focus:border-red-500"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="block font-mono text-[11px] text-neutral-400 uppercase">
-                  Or Choose File from Device:
-                </label>
-                <input
-                  type="file"
-                  onChange={handleFileUpload}
-                  className="w-full text-xs font-mono text-neutral-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-mono file:bg-white/10 file:text-white hover:file:bg-white/20 file:cursor-pointer"
                 />
               </div>
 
