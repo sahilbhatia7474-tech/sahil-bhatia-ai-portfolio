@@ -14,7 +14,7 @@ export const SITE_CONFIG = {
   githubUrl: 'https://github.com/sahilbhatia7474-tech',
   linkedinUrl: 'https://www.linkedin.com/in/sahil-bhatia-b3bb3a3a2',
   instagramUrl: 'https://www.instagram.com/neutronverse.ai',
-  ogImage: '/sahil-bhatia-portrait.svg',
+  ogImage: 'https://i.ibb.co/svvJ3Fnc/793090671-2240593123170371-3167005344409012686-n.jpg',
 };
 
 export default SITE_CONFIG;

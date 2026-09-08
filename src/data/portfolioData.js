@@ -111,6 +111,16 @@ export const CAPABILITY_MAP = [
   },
 ];
 
+export const PROJECT_COVER_IMAGES = {
+  "NEUTRACAP": "https://i.ibb.co/67FMRQL9/795808562-1773867493854420-478149987776418853-n-1.jpg",
+  "LYRA V2": "https://i.ibb.co/kgYt4byW/792595717-1594033032399956-7564398864942703301-n.jpg",
+  "SAHIL AI OS": "https://i.ibb.co/YTpQH0Fx/793069760-1637900457750676-7193237836254523298-n.jpg",
+  "DENTAL CARE": "https://i.ibb.co/sJk9xmRV/792053478-4509128749305781-5178679919735574459-n.jpg",
+  "LINKBIO": "https://i.ibb.co/ZqnKNNN/796527702-964622123319366-7685205643786953639-n.jpg",
+  "SHOWTIME CINEMA BOOKING": "https://i.ibb.co/rGW9S12d/798290543-910758595093787-2834963228184310565-n-2.jpg",
+  "SAHIL AI CONSULTANCY OS": "https://i.ibb.co/kFk9NTs/796640947-1585777913334535-5654389141656902287-n-1.jpg",
+};
+
 export const CURATED_PROJECTS = [
   {
     id: "01",
@@ -120,15 +130,23 @@ export const CURATED_PROJECTS = [
     status: "BUILT",
     category: "Industrial Hardware & Digital Showcase",
     year: "2025",
-    coverImageUrl: "",
-    heroImage: "",
-    galleryImages: [],
+    coverImageUrl: "https://i.ibb.co/67FMRQL9/795808562-1773867493854420-478149987776418853-n-1.jpg",
+    heroImage: "https://i.ibb.co/67FMRQL9/795808562-1773867493854420-478149987776418853-n-1.jpg",
+    galleryImages: [
+      "https://i.ibb.co/67FMRQL9/795808562-1773867493854420-478149987776418853-n-1.jpg"
+    ],
     videoUrl: "",
     videoSource: "upload",
     videoPosterUrl: "",
-    media: [],
+    media: [
+      {
+        url: "https://i.ibb.co/67FMRQL9/795808562-1773867493854420-478149987776418853-n-1.jpg",
+        type: "image",
+        caption: "NeutraCap industrial specifications and dielectric parameter filtering"
+      }
+    ],
     mediaCaption: "NeutraCap industrial specifications and dielectric parameter filtering",
-    mediaAltText: "NeutraCap digital product catalog interface",
+    mediaAltText: "NeutraCap industrial capacitors hardware interface",
     summary:
       "A high-precision digital product catalog and technical specification showcase designed for heavy-duty industrial capacitor engineering.",
     description:
@@ -154,13 +172,21 @@ export const CURATED_PROJECTS = [
     status: "BUILT",
     category: "AI Systems & Directed Acyclic Graphs",
     year: "2025",
-    coverImageUrl: "",
-    heroImage: "",
-    galleryImages: [],
+    coverImageUrl: "https://i.ibb.co/kgYt4byW/792595717-1594033032399956-7564398864942703301-n.jpg",
+    heroImage: "https://i.ibb.co/kgYt4byW/792595717-1594033032399956-7564398864942703301-n.jpg",
+    galleryImages: [
+      "https://i.ibb.co/kgYt4byW/792595717-1594033032399956-7564398864942703301-n.jpg"
+    ],
     videoUrl: "",
     videoSource: "upload",
     videoPosterUrl: "",
-    media: [],
+    media: [
+      {
+        url: "https://i.ibb.co/kgYt4byW/792595717-1594033032399956-7564398864942703301-n.jpg",
+        type: "image",
+        caption: "Directed Acyclic Graph (DAG) state visualization and node execution graph"
+      }
+    ],
     mediaCaption: "Directed Acyclic Graph (DAG) state visualization and node execution graph",
     mediaAltText: "LYRA V2 execution graph workspace",
     summary:
@@ -188,13 +214,21 @@ export const CURATED_PROJECTS = [
     status: "BUILT",
     category: "Personal Operating Framework",
     year: "2026",
-    coverImageUrl: "",
-    heroImage: "",
-    galleryImages: [],
+    coverImageUrl: "https://i.ibb.co/YTpQH0Fx/793069760-1637900457750676-7193237836254523298-n.jpg",
+    heroImage: "https://i.ibb.co/YTpQH0Fx/793069760-1637900457750676-7193237836254523298-n.jpg",
+    galleryImages: [
+      "https://i.ibb.co/YTpQH0Fx/793069760-1637900457750676-7193237836254523298-n.jpg"
+    ],
     videoUrl: "",
     videoSource: "upload",
     videoPosterUrl: "",
-    media: [],
+    media: [
+      {
+        url: "https://i.ibb.co/YTpQH0Fx/793069760-1637900457750676-7193237836254523298-n.jpg",
+        type: "image",
+        caption: "AI OS personal operating framework and model dispatch cockpit"
+      }
+    ],
     mediaCaption: "AI OS personal operating framework and model dispatch cockpit",
     mediaAltText: "Sahil AI OS interface overview",
     summary:
@@ -222,13 +256,21 @@ export const CURATED_PROJECTS = [
     status: "BUILT",
     category: "Healthcare Digital Experience",
     year: "2025",
-    coverImageUrl: "",
-    heroImage: "",
-    galleryImages: [],
+    coverImageUrl: "https://i.ibb.co/sJk9xmRV/792053478-4509128749305781-5178679919735574459-n.jpg",
+    heroImage: "https://i.ibb.co/sJk9xmRV/792053478-4509128749305781-5178679919735574459-n.jpg",
+    galleryImages: [
+      "https://i.ibb.co/sJk9xmRV/792053478-4509128749305781-5178679919735574459-n.jpg"
+    ],
     videoUrl: "",
     videoSource: "upload",
     videoPosterUrl: "",
-    media: [],
+    media: [
+      {
+        url: "https://i.ibb.co/sJk9xmRV/792053478-4509128749305781-5178679919735574459-n.jpg",
+        type: "image",
+        caption: "Modern patient booking and clinical procedure roadmap"
+      }
+    ],
     mediaCaption: "Modern patient booking and clinical procedure roadmap",
     mediaAltText: "Dental Care clinical platform",
     summary:
@@ -269,13 +311,21 @@ export const CURATED_PROJECTS = [
     status: "BUILT",
     category: "Creator Utility & Digital Identity",
     year: "2025",
-    coverImageUrl: "",
-    heroImage: "",
-    galleryImages: [],
+    coverImageUrl: "https://i.ibb.co/ZqnKNNN/796527702-964622123319366-7685205643786953639-n.jpg",
+    heroImage: "https://i.ibb.co/ZqnKNNN/796527702-964622123319366-7685205643786953639-n.jpg",
+    galleryImages: [
+      "https://i.ibb.co/ZqnKNNN/796527702-964622123319366-7685205643786953639-n.jpg"
+    ],
     videoUrl: "",
     videoSource: "upload",
     videoPosterUrl: "",
-    media: [],
+    media: [
+      {
+        url: "https://i.ibb.co/ZqnKNNN/796527702-964622123319366-7685205643786953639-n.jpg",
+        type: "image",
+        caption: "Consolidated link-in-bio engine and responsive personal profile cards"
+      }
+    ],
     mediaCaption: "Consolidated link-in-bio engine and responsive personal profile cards",
     mediaAltText: "LinkBio hub interface",
     summary:
@@ -316,13 +366,21 @@ export const CURATED_PROJECTS = [
     status: "BUILT",
     category: "Entertainment & Transaction Flow",
     year: "2025",
-    coverImageUrl: "",
-    heroImage: "",
-    galleryImages: [],
+    coverImageUrl: "https://i.ibb.co/rGW9S12d/798290543-910758595093787-2834963228184310565-n-2.jpg",
+    heroImage: "https://i.ibb.co/rGW9S12d/798290543-910758595093787-2834963228184310565-n-2.jpg",
+    galleryImages: [
+      "https://i.ibb.co/rGW9S12d/798290543-910758595093787-2834963228184310565-n-2.jpg"
+    ],
     videoUrl: "",
     videoSource: "upload",
     videoPosterUrl: "",
-    media: [],
+    media: [
+      {
+        url: "https://i.ibb.co/rGW9S12d/798290543-910758595093787-2834963228184310565-n-2.jpg",
+        type: "image",
+        caption: "Interactive SVG auditorium seat grid and checkout flow"
+      }
+    ],
     mediaCaption: "Interactive SVG auditorium seat grid and checkout flow",
     mediaAltText: "ShowTime ticket reservation system",
     summary:
@@ -350,13 +408,21 @@ export const CURATED_PROJECTS = [
     status: "IN PROGRESS",
     category: "Enterprise Advisory & Operating System",
     year: "2026",
-    coverImageUrl: "",
-    heroImage: "",
-    galleryImages: [],
+    coverImageUrl: "https://i.ibb.co/kFk9NTs/796640947-1585777913334535-5654389141656902287-n-1.jpg",
+    heroImage: "https://i.ibb.co/kFk9NTs/796640947-1585777913334535-5654389141656902287-n-1.jpg",
+    galleryImages: [
+      "https://i.ibb.co/kFk9NTs/796640947-1585777913334535-5654389141656902287-n-1.jpg"
+    ],
     videoUrl: "",
     videoSource: "upload",
     videoPosterUrl: "",
-    media: [],
+    media: [
+      {
+        url: "https://i.ibb.co/kFk9NTs/796640947-1585777913334535-5654389141656902287-n-1.jpg",
+        type: "image",
+        caption: "SME business workflow bottleneck diagnostic and AI readiness matrices"
+      }
+    ],
     mediaCaption: "SME business workflow bottleneck diagnostic and AI readiness matrices",
     mediaAltText: "AI Consultancy OS framework",
     summary:

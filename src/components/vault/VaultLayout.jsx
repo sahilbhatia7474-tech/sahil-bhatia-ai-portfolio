@@ -15,6 +15,7 @@ import VaultApps from './VaultApps';
 import VaultNavigation from './VaultNavigation';
 import VaultSiteSettings from './VaultSiteSettings';
 import VaultActivityLog from './VaultActivityLog';
+import VaultDiagnostics from './VaultDiagnostics';
 
 import {
   LayoutDashboard,
@@ -35,6 +36,7 @@ import {
   Menu,
   X,
   Cpu,
+  Wrench,
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
@@ -52,6 +54,7 @@ const TABS = [
   { id: 'navigation', label: 'Navigation', icon: Compass },
   { id: 'settings', label: 'Site Settings', icon: Settings },
   { id: 'activity', label: 'Activity Log', icon: Activity },
+  { id: 'diagnostics', label: 'Diagnostics & Storage', icon: Wrench },
 ];
 
 const VaultLayout = () => {
@@ -274,6 +277,7 @@ const VaultLayout = () => {
             {activeTab === 'navigation' && <VaultNavigation />}
             {activeTab === 'settings' && <VaultSiteSettings />}
             {activeTab === 'activity' && <VaultActivityLog />}
+            {activeTab === 'diagnostics' && <VaultDiagnostics />}
           </div>
         </main>
       </div>

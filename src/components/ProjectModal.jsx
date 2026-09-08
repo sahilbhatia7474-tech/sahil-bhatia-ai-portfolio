@@ -7,6 +7,7 @@ import {
 import { getProjectPublicLinks, deriveProjectBadge } from '../lib/projectLinks';
 import ProjectSymbol from './ProjectSymbol';
 import ProjectMediaPlaceholder from './ProjectMediaPlaceholder';
+import { PROJECT_COVER_IMAGES } from '../data/portfolioData';
 
 const LINK_TYPE_ICONS = {
   LIVE_WEBSITE: Globe,
@@ -35,7 +36,8 @@ const ProjectModal = ({ project, onClose }) => {
   const primaryLink = publicLinks.find((l) => l.isPrimary) || publicLinks[0];
   const fallbackBadge = deriveProjectBadge(project);
 
-  const coverImage = project.coverImageUrl || project.heroImage;
+  const titleKey = (project.title || '').trim().toUpperCase();
+  const coverImage = (PROJECT_COVER_IMAGES && PROJECT_COVER_IMAGES[titleKey]) || project.coverImageUrl || project.heroImage;
   const gallery = Array.isArray(project.galleryImages) ? project.galleryImages : [];
   const hasVideo = Boolean((project.videoUrl || '').trim());
   const hasGallery = gallery.length > 0;

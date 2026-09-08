@@ -1,4 +1,5 @@
 import ProjectSymbol from './ProjectSymbol';
+import { PROJECT_COVER_IMAGES } from '../data/portfolioData';
 
 /**
  * Dedicated Technical Media Placeholder Component
@@ -12,6 +13,23 @@ import ProjectSymbol from './ProjectSymbol';
  */
 const ProjectMediaPlaceholder = ({ project, className = '', aspect = 'video' }) => {
   const aspectClass = aspect === 'video' ? 'aspect-[16/9]' : 'aspect-video';
+  const titleKey = (project?.title || '').trim().toUpperCase();
+  const coverUrl = (PROJECT_COVER_IMAGES && PROJECT_COVER_IMAGES[titleKey]) || project?.coverImageUrl || project?.heroImage;
+
+  if (coverUrl) {
+    return (
+      <div className={`relative w-full ${aspectClass} rounded-lg overflow-hidden border border-white/10 bg-[#12131b] ${className}`}>
+        <img
+          src={coverUrl}
+          alt={`${project?.title || 'Project'} cover`}
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0c0d12] via-transparent to-transparent opacity-60 pointer-events-none" />
+      </div>
+    );
+  }
 
   return (
     <div

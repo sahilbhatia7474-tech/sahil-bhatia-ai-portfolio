@@ -2,7 +2,7 @@ import { useRef, useState, useEffect, useCallback } from 'react';
 import { usePortfolioData } from '../context/PortfolioDataContext';
 import { Terminal } from 'lucide-react';
 
-const DEFAULT_PORTRAIT = '/sahil-bhatia-portrait.svg';
+const DEFAULT_PORTRAIT = 'https://i.ibb.co/svvJ3Fnc/793090671-2240593123170371-3167005344409012686-n.jpg';
 
 const FeaturedBuilderCard3D = ({ identity: propIdentity, featuredPortrait: propPortrait, inVault = false } = {}) => {
   const contextData = usePortfolioData() || {};
@@ -142,7 +142,7 @@ const FeaturedBuilderCard3D = ({ identity: propIdentity, featuredPortrait: propP
 
   // Strict Source Priority: 1. Custom image in Firestore/Storage, 2. Direct URL, 3. Safe local asset
   let rawUrl = featuredPortrait?.imageUrl?.trim();
-  if (!rawUrl || rawUrl.includes('photo-1534528741775-53994a69daeb') || rawUrl.includes('images.unsplash.com')) {
+  if (!rawUrl || rawUrl === '/sahil-bhatia-portrait.svg' || rawUrl === '/assets/sahil-bhatia-portrait.svg' || rawUrl.includes('photo-1534528741775-53994a69daeb') || rawUrl.includes('images.unsplash.com') || rawUrl.includes('6b11af4b15e4af08250249f3e7843105207218b7d28134efe4d9b12deb0ae097') || rawUrl.includes('SDv65zB3')) {
     rawUrl = DEFAULT_PORTRAIT;
   }
   const portraitUrl = rawUrl;
@@ -269,10 +269,17 @@ const FeaturedBuilderCard3D = ({ identity: propIdentity, featuredPortrait: propP
               <img
                 src={portraitUrl}
                 alt={altText}
-                className="w-full h-full object-cover grayscale contrast-110 brightness-95 opacity-90 transition-all duration-300"
+                className="w-full h-full object-cover transition-all duration-300"
                 style={{
-                  objectPosition: `${focalX}% ${focalY}%`,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  objectPosition: 'center top',
+                  display: 'block',
+                  filter: 'grayscale(25%) contrast(106%) brightness(98%) saturate(95%)',
+                  opacity: 0.95,
                 }}
+                referrerPolicy="no-referrer"
                 onError={() => {
                   setImgLoadFailed(true);
                 }}

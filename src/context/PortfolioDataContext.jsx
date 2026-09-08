@@ -10,6 +10,7 @@ import {
   IDENTITY as DEFAULT_IDENTITY,
   DEFAULT_SOCIAL_LINKS,
   CURATED_PROJECTS as DEFAULT_PROJECTS,
+  PROJECT_COVER_IMAGES,
   AI_SYSTEMS as DEFAULT_AI_SYSTEMS,
   PROFESSIONAL_JOURNEY as DEFAULT_JOURNEY,
   PROOF_MATRIX as DEFAULT_PROOF,
@@ -60,7 +61,7 @@ const normalizeIdentity = (data) => {
 export const PortfolioDataProvider = ({ children }) => {
   const [identity, setIdentity] = useState(() => normalizeIdentity(DEFAULT_IDENTITY));
   const [featuredPortrait, setFeaturedPortrait] = useState({
-    imageUrl: '/sahil-bhatia-portrait.svg',
+    imageUrl: 'https://i.ibb.co/svvJ3Fnc/793090671-2240593123170371-3167005344409012686-n.jpg',
     focalX: 50,
     focalY: 20,
     altText: 'Sahil Bhatia — AI-Native Builder and Systems Architect',
@@ -134,9 +135,9 @@ export const PortfolioDataProvider = ({ children }) => {
         onSnapshot(portDoc, (snap) => {
           if (snap.exists()) {
             const data = snap.data();
-            let safeImageUrl = data.imageUrl?.trim() || '/sahil-bhatia-portrait.svg';
-            if (safeImageUrl.includes('photo-1534528741775-53994a69daeb') || safeImageUrl.includes('images.unsplash.com')) {
-              safeImageUrl = '/sahil-bhatia-portrait.svg';
+            let safeImageUrl = data.imageUrl?.trim() || 'https://i.ibb.co/svvJ3Fnc/793090671-2240593123170371-3167005344409012686-n.jpg';
+            if (safeImageUrl === '/sahil-bhatia-portrait.svg' || safeImageUrl === '/assets/sahil-bhatia-portrait.svg' || safeImageUrl.includes('photo-1534528741775-53994a69daeb') || safeImageUrl.includes('images.unsplash.com') || safeImageUrl.includes('6b11af4b15e4af08250249f3e7843105207218b7d28134efe4d9b12deb0ae097') || safeImageUrl.includes('SDv65zB3')) {
+              safeImageUrl = 'https://i.ibb.co/svvJ3Fnc/793090671-2240593123170371-3167005344409012686-n.jpg';
             }
             setFeaturedPortrait((prev) => ({ ...prev, ...data, imageUrl: safeImageUrl }));
           }
@@ -156,7 +157,21 @@ export const PortfolioDataProvider = ({ children }) => {
       unsubs.push(
         onSnapshot(projCol, (snap) => {
           if (!snap.empty) {
-            const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+            const list = snap.docs.map((d) => {
+              const item = { id: d.id, ...d.data() };
+              const titleKey = (item.title || '').trim().toUpperCase();
+              if (PROJECT_COVER_IMAGES[titleKey]) {
+                item.coverImageUrl = PROJECT_COVER_IMAGES[titleKey];
+                item.heroImage = PROJECT_COVER_IMAGES[titleKey];
+              } else {
+                const fallbackProj = DEFAULT_PROJECTS.find(p => p.id === item.id || p.slug === item.slug);
+                if (fallbackProj && fallbackProj.coverImageUrl) {
+                  item.coverImageUrl = fallbackProj.coverImageUrl;
+                  item.heroImage = fallbackProj.heroImage;
+                }
+              }
+              return item;
+            });
             list.sort((a, b) => (a.sortOrder || 99) - (b.sortOrder || 99));
             setAllProjects(list);
             setProjects(list.filter((p) => p.status === 'PUBLISHED' && p.visibility === 'PUBLIC'));

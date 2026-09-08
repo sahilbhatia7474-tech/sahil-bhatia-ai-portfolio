@@ -6,6 +6,7 @@ import { ArrowUpRight, ExternalLink, Globe, Code2, Play } from 'lucide-react';
 import { getProjectPublicLinks, deriveProjectBadge } from '../lib/projectLinks';
 import ProjectSymbol from './ProjectSymbol';
 import ProjectMediaPlaceholder from './ProjectMediaPlaceholder';
+import { PROJECT_COVER_IMAGES } from '../data/portfolioData';
 
 const Projects = () => {
   const { projects } = usePortfolioData();
@@ -157,27 +158,34 @@ const Projects = () => {
                   </div>
 
                   {/* Cover Visual Preview if Present OR Architectural Blueprint Placeholder */}
-                  {(project.coverImageUrl || project.heroImage) ? (
-                    <div className="relative w-full aspect-[16/9] mb-4 rounded-lg overflow-hidden border border-white/10 bg-[#12131b]">
-                      <img
-                        src={project.coverImageUrl || project.heroImage}
-                        alt={project.mediaAltText || project.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        loading="lazy"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#0c0d12] via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
-                      {Boolean((project.videoUrl || '').trim()) && (
-                        <div className="absolute bottom-2 right-2 flex items-center gap-1 px-2 py-0.5 rounded bg-black/80 backdrop-blur-md border border-white/20 text-[9px] font-mono text-white shadow-sm">
-                          <Play className="w-2.5 h-2.5 text-red-500 fill-red-500" />
-                          <span>PLAY VIDEO</span>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="mb-4">
-                      <ProjectMediaPlaceholder project={project} />
-                    </div>
-                  )}
+                  {(() => {
+                    const titleKey = (project.title || '').trim().toUpperCase();
+                    const coverImg = (PROJECT_COVER_IMAGES && PROJECT_COVER_IMAGES[titleKey]) || project.coverImageUrl || project.heroImage;
+
+                    return coverImg ? (
+                      <div className="relative w-full aspect-[16/9] mb-4 rounded-lg overflow-hidden border border-white/10 bg-[#12131b]">
+                        <img
+                          src={coverImg}
+                          alt={`${project.title} cover`}
+                          loading="lazy"
+                          referrerPolicy="no-referrer"
+                          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#0c0d12] via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity pointer-events-none" />
+                        {Boolean((project.videoUrl || '').trim()) && (
+                          <div className="absolute bottom-2 right-2 flex items-center gap-1 px-2 py-0.5 rounded bg-black/80 backdrop-blur-md border border-white/20 text-[9px] font-mono text-white shadow-sm">
+                            <Play className="w-2.5 h-2.5 text-red-500 fill-red-500" />
+                            <span>PLAY VIDEO</span>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="mb-4">
+                        <ProjectMediaPlaceholder project={project} />
+                      </div>
+                    );
+                  })()}
 
                   {/* Title & Subtitle with [PROJECT SYMBOL] PROJECT NAME */}
                   <div className="flex items-center gap-2.5 mb-1.5">

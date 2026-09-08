@@ -3,6 +3,7 @@ import { storage, auth, db } from './firebase';
 import { isAuthorizedFounderEmail } from './authConstants';
 import { saveItem } from './dbService';
 import { doc, getDoc } from 'firebase/firestore';
+import firebaseConfigData from '../../firebase-applet-config.json';
 
 export const SUPPORTED_IMAGE_TYPES = [
   'image/jpeg',
@@ -25,6 +26,37 @@ export const SUPPORTED_DOCUMENT_TYPES = [
   'application/pdf',
 ];
 export const MAX_DOCUMENT_SIZE_BYTES = 25 * 1024 * 1024; // 25MB
+
+// Default watchdog timeout: if no progress or state change occurs within 12 seconds, safely cancel & report
+export const DEFAULT_UPLOAD_STALL_TIMEOUT_MS = 12000;
+
+/**
+ * Global telemetry tracker for the admin-only Vault Diagnostic mode
+ */
+export const lastUploadDiagnostic = {
+  timestamp: null,
+  fileName: null,
+  fileSize: null,
+  folderPath: null,
+  progress: 0,
+  status: 'IDLE', // IDLE | SELECTED | AUTHENTICATING | UPLOADING | PROCESSING | UPLOADED | SAVING | VERIFIED | ERROR | CANCELED
+  errorCode: null,
+  errorMessage: null,
+  downloadUrl: null,
+  storagePath: null,
+  bucket: storage?.app?.options?.storageBucket || firebaseConfigData.storageBucket || '',
+};
+
+export function updateDiagnosticTelemetry(patch) {
+  Object.assign(lastUploadDiagnostic, {
+    timestamp: new Date().toISOString(),
+    ...patch,
+  });
+}
+
+export function getLastUploadDiagnostic() {
+  return { ...lastUploadDiagnostic };
+}
 
 /**
  * Deduce MIME type from file extension if browser/Android didn't provide one
@@ -109,10 +141,32 @@ export function validateVideoFile(file) {
 }
 
 /**
+ * Validate document file before upload
+ */
+export function validateDocumentFile(file) {
+  if (!file) return { valid: false, error: 'No document file selected.' };
+  const mimeType = (file.type || getMimeTypeFromFileName(file.name)).toLowerCase();
+  if (mimeType !== 'application/pdf') {
+    return {
+      valid: false,
+      error: `Unsupported document format (${mimeType}). Supported format: PDF.`,
+    };
+  }
+  if (file.size > MAX_DOCUMENT_SIZE_BYTES) {
+    return {
+      valid: false,
+      error: `Document exceeds maximum 25MB limit (${(file.size / (1024 * 1024)).toFixed(1)}MB).`,
+    };
+  }
+  return { valid: true, mimeType };
+}
+
+/**
  * Validate any media file based on category
  */
 export function validateMediaFile(file, category = 'image') {
   if (category === 'video') return validateVideoFile(file);
+  if (category === 'document' || category === 'pdf') return validateDocumentFile(file);
   return validateImageFile(file);
 }
 
@@ -124,20 +178,25 @@ export function formatStorageError(error) {
 
   const code = error.code || '';
   const message = error.message || '';
-  const serverResponse = error.serverResponse || '';
+  const serverResponse = error.serverResponse || error.customData?.serverResponse || '';
   const status = error.status_ || null;
+  const configuredBucket = storage?.app?.options?.storageBucket || firebaseConfigData.storageBucket || '';
+  const projectId = firebaseConfigData.projectId || '';
+
+  if (code === 'storage/bucket-not-found' || status === 404 || (code === 'storage/unknown' && status === 404) || message.includes('404') || serverResponse.includes('Not Found') || message.includes('bucket does not exist')) {
+    return 'Firebase Storage bucket is not provisioned or does not exist. Activate Cloud Storage in the Firebase Console.';
+  }
 
   if (code === 'storage/unauthorized' || status === 403) {
     return 'Permission Denied (storage/unauthorized): Firebase Storage security rules rejected this upload. Please confirm you are logged in to Founder Vault with an authorized founder email.';
   }
 
-  if (code === 'storage/unauthenticated') {
-    return 'Authentication Required (storage/unauthenticated): No active founder session. Please log in to Founder Vault before uploading.';
+  if (code === 'storage/unauthenticated' || code === 'auth/unauthenticated') {
+    return 'Authentication Required (storage/unauthenticated): Authentication required before uploading files. Please sign in to Founder Vault.';
   }
 
-  if (status === 404 || code === 'storage/bucket-not-found' || message.includes('404') || serverResponse.includes('Not Found')) {
-    const bucket = storage?.app?.options?.storageBucket || 'configured bucket';
-    return `Bucket Not Found (HTTP 404): The Firebase Storage bucket "${bucket}" does not exist or Cloud Storage is not activated in Firebase Console. Go to Firebase Console → Storage → "Get Started" to activate the default bucket.`;
+  if (code === 'storage/stalled-timeout') {
+    return 'Firebase Storage bucket is not provisioned or does not exist. Activate Cloud Storage in the Firebase Console.';
   }
 
   if (code === 'storage/quota-exceeded') {
@@ -145,15 +204,19 @@ export function formatStorageError(error) {
   }
 
   if (code === 'storage/canceled') {
-    return 'Upload Cancelled: The upload operation was cancelled.';
+    return 'Upload Cancelled (storage/canceled): The upload operation was cancelled.';
   }
 
   if (code === 'storage/retry-limit-exceeded') {
-    return 'Network Timeout (storage/retry-limit-exceeded): The upload timed out. Please check your internet connection and retry.';
+    return `Network / Retry Limit Exceeded (storage/retry-limit-exceeded): Storage did not respond. Verify bucket "${configuredBucket}" in project "${projectId}" is activated in Firebase Console.`;
   }
 
   if (code === 'storage/invalid-checksum') {
     return 'Upload Corrupted (storage/invalid-checksum): The file checksum failed on the server. Please retry.';
+  }
+
+  if (message.includes('CORS') || message.includes('preflight')) {
+    return `CORS / Network Block: The browser blocked the upload request to "${configuredBucket}". Verify Firebase Storage authorized domains and CORS headers.`;
   }
 
   return `Firebase Storage Error (${code || 'unknown'}): ${message || 'Check storage configuration and network.'}`;
@@ -167,7 +230,7 @@ export function verifyFounderAuth() {
   if (!currentUser) {
     return {
       authenticated: false,
-      error: 'Authentication required: You must be logged into Founder Vault with an authorized founder email to upload media assets.',
+      error: 'Authentication required before uploading files. Please sign in to Founder Vault.',
       errorCode: 'auth/unauthenticated',
     };
   }
@@ -184,34 +247,126 @@ export function verifyFounderAuth() {
 }
 
 /**
+ * Test Storage reachability & bucket configuration for diagnostics
+ */
+export async function testStorageConnectivity() {
+  const configuredBucket = storage?.app?.options?.storageBucket || firebaseConfigData.storageBucket || '';
+  const projectId = firebaseConfigData.projectId || storage?.app?.options?.projectId || '';
+
+  if (!configuredBucket) {
+    return {
+      reachable: false,
+      status: 0,
+      bucket: 'NOT_CONFIGURED',
+      projectId,
+      errorCode: 'storage/no-bucket-configured',
+      error: 'Firebase Storage bucket is not configured in firebase-applet-config.json.',
+    };
+  }
+
+  try {
+    const probeUrl = `https://firebasestorage.googleapis.com/v0/b/${configuredBucket}/o`;
+    const res = await fetch(probeUrl, { method: 'GET', mode: 'cors' });
+    if (res.status === 404) {
+      return {
+        reachable: false,
+        status: 404,
+        bucket: configuredBucket,
+        projectId,
+        errorCode: 'storage/bucket-not-found',
+        error: 'Firebase Storage bucket is not provisioned or does not exist. Activate Cloud Storage in the Firebase Console.',
+        details: `Bucket "${configuredBucket}" in project "${projectId}" returned HTTP 404 (Not Found). Cloud Storage has not been activated in Firebase Console.`,
+      };
+    }
+    return {
+      reachable: true,
+      status: res.status,
+      bucket: configuredBucket,
+      projectId,
+    };
+  } catch (err) {
+    return {
+      reachable: false,
+      status: 0,
+      bucket: configuredBucket,
+      projectId,
+      errorCode: 'storage/network-error',
+      error: err.message || 'Network / CORS error reaching Firebase Storage bucket.',
+    };
+  }
+}
+
+/**
  * PRODUCTION-SAFE FIREBASE STORAGE UPLOAD SERVICE
  * 
  * Uses uploadBytesResumable() with real progress events,
- * strict file validation, content-type metadata, and thorough error surfacing.
+ * hard timeout watchdog to prevent staying stuck at 0%,
+ * content-type metadata, strict founder auth checks, and detailed error surfacing.
  * 
  * @param {File} file - The file to upload
  * @param {string} folderPath - Target storage folder (e.g. 'portraits', 'projects/covers', 'certificates')
- * @param {Function} onProgress - Progress callback ({ percent: number, bytesTransferred: number, totalBytes: number }) => void
+ * @param {Function} onProgress - Progress callback (percent, bytesInfo) => void
+ * @param {Object} options - { timeoutMs, onTaskCreated, onStatusChange }
  * @returns {Promise<{ success: boolean, downloadUrl?: string, storagePath?: string, error?: string, errorCode?: string }>}
  */
-export async function uploadStorageAsset(file, folderPath = 'projects/media', onProgress = () => {}) {
+export async function uploadStorageAsset(
+  file,
+  folderPath = 'projects/media',
+  onProgress = () => {},
+  options = {}
+) {
+  const {
+    timeoutMs = DEFAULT_UPLOAD_STALL_TIMEOUT_MS,
+    onTaskCreated = () => {},
+    onStatusChange = () => {},
+  } = options;
+
+  updateDiagnosticTelemetry({
+    fileName: file?.name || 'unknown',
+    fileSize: file?.size || 0,
+    folderPath,
+    progress: 0,
+    status: 'SELECTED',
+    errorCode: null,
+    errorMessage: null,
+  });
+  onStatusChange('SELECTED');
+
   // Step 1: Pre-flight file validation
   if (!file) {
-    return { success: false, error: 'No file provided for upload.' };
+    const err = 'No file provided for upload.';
+    updateDiagnosticTelemetry({ status: 'ERROR', errorCode: 'storage/invalid-file', errorMessage: err });
+    onStatusChange('ERROR');
+    return { success: false, error: err, errorCode: 'storage/invalid-file' };
   }
 
   // Step 2: Pre-flight storage initialization check
   if (!storage) {
-    return {
-      success: false,
-      error: 'Firebase Storage is not initialized in this application environment.',
-      errorCode: 'storage/not-initialized',
-    };
+    const err = 'Firebase Storage is not initialized in this application environment.';
+    updateDiagnosticTelemetry({ status: 'ERROR', errorCode: 'storage/not-initialized', errorMessage: err });
+    onStatusChange('ERROR');
+    return { success: false, error: err, errorCode: 'storage/not-initialized' };
   }
 
   // Step 3: Pre-flight founder authentication verification
+  onStatusChange('AUTHENTICATING');
+  updateDiagnosticTelemetry({ status: 'AUTHENTICATING' });
+
   const authCheck = verifyFounderAuth();
   if (!authCheck.authenticated) {
+    console.error('[Firebase Storage Upload Error - Auth]', {
+      projectId: firebaseConfigData.projectId,
+      bucket: storage.app.options.storageBucket,
+      authenticatedUid: auth.currentUser?.uid || 'NONE',
+      storagePath: folderPath,
+      fileName: file.name,
+      fileSize: file.size,
+      uploadState: 'AUTH_FAILED',
+      errorCode: authCheck.errorCode,
+      errorMessage: authCheck.error,
+    });
+    updateDiagnosticTelemetry({ status: 'ERROR', errorCode: authCheck.errorCode, errorMessage: authCheck.error });
+    onStatusChange('ERROR');
     return {
       success: false,
       error: authCheck.error,
@@ -221,14 +376,47 @@ export async function uploadStorageAsset(file, folderPath = 'projects/media', on
 
   // Step 4: Determine content-type and validate
   const isVideo = folderPath.includes('video') || file.type?.startsWith('video/');
-  const validation = isVideo ? validateVideoFile(file) : validateImageFile(file);
+  const isDoc = folderPath.includes('document') || file.type === 'application/pdf' || file.name.endsWith('.pdf');
+  const category = isVideo ? 'video' : isDoc ? 'document' : 'image';
+  const validation = validateMediaFile(file, category);
   if (!validation.valid) {
+    updateDiagnosticTelemetry({ status: 'ERROR', errorCode: 'storage/invalid-file', errorMessage: validation.error });
+    onStatusChange('ERROR');
     return { success: false, error: validation.error, errorCode: 'storage/invalid-file' };
   }
 
   const mimeType = validation.mimeType || file.type || getMimeTypeFromFileName(file.name);
 
-  // Step 5: Construct storage reference & metadata
+  // Step 5: Pre-flight Storage Bucket Reachability Check
+  onStatusChange('CHECKING_STORAGE');
+  updateDiagnosticTelemetry({ status: 'CHECKING_STORAGE' });
+
+  const bucketCheck = await testStorageConnectivity();
+  if (!bucketCheck.reachable) {
+    const bucketErrMsg = bucketCheck.error || 'Firebase Storage bucket is not provisioned or does not exist. Activate Cloud Storage in the Firebase Console.';
+    const bucketErrCode = bucketCheck.errorCode || 'storage/bucket-not-found';
+    console.error('[Firebase Storage Upload Error - Bucket Check Failed]', {
+      projectId: bucketCheck.projectId,
+      bucket: bucketCheck.bucket,
+      status: bucketCheck.status,
+      errorCode: bucketErrCode,
+      error: bucketErrMsg,
+    });
+    updateDiagnosticTelemetry({
+      status: 'ERROR',
+      errorCode: bucketErrCode,
+      errorMessage: bucketErrMsg,
+    });
+    onStatusChange('ERROR');
+    return {
+      success: false,
+      error: bucketErrMsg,
+      errorCode: bucketErrCode,
+      details: bucketCheck.details,
+    };
+  }
+
+  // Step 6: Construct deterministic storage reference & metadata
   const timestamp = Date.now();
   const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
   const storagePath = `${folderPath}/${timestamp}_${sanitizedName}`;
@@ -244,16 +432,78 @@ export async function uploadStorageAsset(file, folderPath = 'projects/media', on
     },
   };
 
-  // Step 6: Execute uploadBytesResumable with event tracking
+  // Step 7: Execute uploadBytesResumable with event tracking + Hard Stall Watchdog
+  onStatusChange('UPLOADING');
+  updateDiagnosticTelemetry({ status: 'UPLOADING', storagePath });
+
   return new Promise((resolve) => {
     let uploadTask;
+    let isSettled = false;
+    let stallTimer = null;
+    let lastBytes = 0;
+
+    const safeResolve = (result) => {
+      if (isSettled) return;
+      isSettled = true;
+      if (stallTimer) clearTimeout(stallTimer);
+      resolve(result);
+    };
+
+    // Watchdog: If no progress or state change occurs within timeoutMs, safely cancel & report
+    const resetWatchdog = () => {
+      if (stallTimer) clearTimeout(stallTimer);
+      stallTimer = setTimeout(async () => {
+        if (isSettled) return;
+
+        const configuredBucket = storage?.app?.options?.storageBucket || firebaseConfigData.storageBucket || '';
+        console.error('[Firebase Storage Upload Error - Stalled Watchdog]', {
+          projectId: firebaseConfigData.projectId,
+          bucket: configuredBucket,
+          authenticatedUid: auth.currentUser?.uid,
+          storagePath,
+          fileName: file.name,
+          fileSize: file.size,
+          uploadState: 'STALLED_AT_0_PERCENT',
+          errorCode: 'storage/stalled-timeout',
+          errorMessage: `Upload stalled at 0% for ${timeoutMs / 1000}s. Firebase Storage did not respond. Bucket "${configuredBucket}" returned 404 or is not activated in Firebase Console.`,
+        });
+
+        try {
+          if (uploadTask) uploadTask.cancel();
+        } catch {
+          // ignore
+        }
+
+        const stallError = 'Firebase Storage bucket is not provisioned or does not exist. Activate Cloud Storage in the Firebase Console.';
+
+        updateDiagnosticTelemetry({
+          status: 'ERROR',
+          progress: 0,
+          errorCode: 'storage/stalled-timeout',
+          errorMessage: stallError,
+        });
+        onStatusChange('ERROR');
+
+        safeResolve({
+          success: false,
+          error: stallError,
+          errorCode: 'storage/stalled-timeout',
+        });
+      }, timeoutMs);
+    };
+
     try {
       uploadTask = uploadBytesResumable(storageRef, file, metadata);
+      onTaskCreated(uploadTask);
+      resetWatchdog();
     } catch (initErr) {
-      console.error('Failed to create upload task:', initErr);
-      return resolve({
+      console.error('[Firebase Storage Upload Error - Init Failed]', initErr);
+      const friendlyErr = formatStorageError(initErr);
+      updateDiagnosticTelemetry({ status: 'ERROR', errorCode: initErr.code || 'storage/init-failed', errorMessage: friendlyErr });
+      onStatusChange('ERROR');
+      return safeResolve({
         success: false,
-        error: formatStorageError(initErr),
+        error: friendlyErr,
         errorCode: initErr.code || 'storage/init-failed',
       });
     }
@@ -263,8 +513,16 @@ export async function uploadStorageAsset(file, folderPath = 'projects/media', on
       (snapshot) => {
         const total = snapshot.totalBytes;
         const transferred = snapshot.bytesTransferred;
+
+        // Reset stall watchdog on active byte transfer
+        if (transferred > lastBytes) {
+          lastBytes = transferred;
+          resetWatchdog();
+        }
+
         if (total > 0) {
           const percent = Math.min(100, Math.max(0, Math.round((transferred / total) * 100)));
+          updateDiagnosticTelemetry({ progress: percent, status: 'UPLOADING' });
           onProgress(percent, {
             bytesTransferred: transferred,
             totalBytes: total,
@@ -273,9 +531,40 @@ export async function uploadStorageAsset(file, folderPath = 'projects/media', on
         }
       },
       (error) => {
-        console.error('Firebase Storage upload error:', error);
+        const configuredBucket = storage?.app?.options?.storageBucket || firebaseConfigData.storageBucket || '';
+        console.error('[Firebase Storage Upload Error]', {
+          projectId: firebaseConfigData.projectId,
+          bucket: configuredBucket,
+          authenticatedUid: auth.currentUser?.uid,
+          storagePath,
+          fileName: file.name,
+          fileSize: file.size,
+          uploadState: 'ERROR',
+          errorCode: error.code,
+          errorMessage: error.message,
+          serverResponse: error.serverResponse || error.customData?.serverResponse,
+          status_: error.status_,
+        });
+
+        if (error.code === 'storage/canceled') {
+          updateDiagnosticTelemetry({ status: 'CANCELED', errorCode: 'storage/canceled', errorMessage: 'Upload was canceled.' });
+          onStatusChange('CANCELED');
+          return safeResolve({
+            success: false,
+            error: 'Upload was canceled by user or watchdog.',
+            errorCode: 'storage/canceled',
+          });
+        }
+
         const userFriendlyError = formatStorageError(error);
-        resolve({
+        updateDiagnosticTelemetry({
+          status: 'ERROR',
+          errorCode: error.code || 'storage/unknown',
+          errorMessage: userFriendlyError,
+        });
+        onStatusChange('ERROR');
+
+        safeResolve({
           success: false,
           error: userFriendlyError,
           errorCode: error.code || 'storage/unknown',
@@ -283,14 +572,25 @@ export async function uploadStorageAsset(file, folderPath = 'projects/media', on
         });
       },
       async () => {
+        onStatusChange('PROCESSING');
+        updateDiagnosticTelemetry({ progress: 100, status: 'PROCESSING' });
+
         try {
           const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
+          onStatusChange('UPLOADED');
+          updateDiagnosticTelemetry({
+            status: 'UPLOADED',
+            downloadUrl,
+            storagePath,
+          });
+
           onProgress(100, {
             bytesTransferred: file.size,
             totalBytes: file.size,
             state: 'success',
           });
-          resolve({
+
+          safeResolve({
             success: true,
             downloadUrl,
             storagePath,
@@ -299,10 +599,14 @@ export async function uploadStorageAsset(file, folderPath = 'projects/media', on
             mimeType,
           });
         } catch (urlErr) {
-          console.error('Failed to get download URL:', urlErr);
-          resolve({
+          console.error('[Firebase Storage DownloadURL Error]', urlErr);
+          const urlErrorMsg = formatStorageError(urlErr) || 'Asset uploaded to Firebase Storage, but failed to retrieve public download URL.';
+          updateDiagnosticTelemetry({ status: 'ERROR', errorCode: 'storage/url-failed', errorMessage: urlErrorMsg });
+          onStatusChange('ERROR');
+
+          safeResolve({
             success: false,
-            error: 'Asset uploaded to Firebase Storage, but failed to retrieve public download URL.',
+            error: urlErrorMsg,
             errorCode: 'storage/url-failed',
           });
         }
@@ -314,8 +618,8 @@ export async function uploadStorageAsset(file, folderPath = 'projects/media', on
 /**
  * UNIFIED UPLOAD + PERSIST + VERIFY SERVICE
  * 
- * 1. Uploads file to Firebase Storage with progress events
- * 2. Persists the download URL to the target Firestore document
+ * 1. Uploads file to Firebase Storage with resumable progress events
+ * 2. Persists the download URL & metadata to the target Firestore document
  * 3. Immediately reads back the document to verify the URL
  * 4. Returns verified status
  */
@@ -327,9 +631,15 @@ export async function uploadAndPersistMedia({
   fieldName = 'imageUrl',
   additionalFields = {},
   onProgress = () => {},
+  onStatusChange = () => {},
+  onTaskCreated = () => {},
 }) {
   // Step 1: Upload to Firebase Storage
-  const uploadResult = await uploadStorageAsset(file, folderPath, onProgress);
+  const uploadResult = await uploadStorageAsset(file, folderPath, onProgress, {
+    onStatusChange,
+    onTaskCreated,
+  });
+
   if (!uploadResult.success) {
     return uploadResult;
   }
@@ -337,6 +647,9 @@ export async function uploadAndPersistMedia({
   const { downloadUrl, storagePath } = uploadResult;
 
   // Step 2: Persist download URL in Firestore
+  onStatusChange('SAVING');
+  updateDiagnosticTelemetry({ status: 'SAVING' });
+
   const updatePayload = {
     [fieldName]: downloadUrl,
     updatedAt: new Date().toISOString(),
@@ -345,11 +658,14 @@ export async function uploadAndPersistMedia({
 
   const saveRes = await saveItem(collectionName, docId, updatePayload, true);
   if (!saveRes.success) {
+    const saveErr = `Upload succeeded, but failed to persist URL to Firestore document "${collectionName}/${docId}": ${saveRes.error}`;
+    updateDiagnosticTelemetry({ status: 'ERROR', errorCode: 'firestore/save-failed', errorMessage: saveErr });
+    onStatusChange('ERROR');
     return {
       success: false,
       downloadUrl,
       storagePath,
-      error: `Upload succeeded, but failed to persist URL to Firestore document "${collectionName}/${docId}": ${saveRes.error}`,
+      error: saveErr,
       errorCode: 'firestore/save-failed',
     };
   }
@@ -359,25 +675,34 @@ export async function uploadAndPersistMedia({
     const docRef = doc(db, collectionName, docId);
     const snap = await getDoc(docRef);
     if (!snap.exists()) {
+      const verifyErr = `Persistence verification failed: Document "${collectionName}/${docId}" was not found upon read-back.`;
+      updateDiagnosticTelemetry({ status: 'ERROR', errorCode: 'firestore/read-verify-failed', errorMessage: verifyErr });
+      onStatusChange('ERROR');
       return {
         success: false,
         downloadUrl,
         storagePath,
-        error: `Persistence verification failed: Document "${collectionName}/${docId}" was not found upon read-back.`,
+        error: verifyErr,
         errorCode: 'firestore/read-verify-failed',
       };
     }
 
     const data = snap.data();
     if (data[fieldName] !== downloadUrl) {
+      const mismatchErr = `Persistence verification failed: Value in "${collectionName}/${docId}.${fieldName}" did not match uploaded download URL.`;
+      updateDiagnosticTelemetry({ status: 'ERROR', errorCode: 'firestore/mismatch-failed', errorMessage: mismatchErr });
+      onStatusChange('ERROR');
       return {
         success: false,
         downloadUrl,
         storagePath,
-        error: `Persistence verification failed: Value in "${collectionName}/${docId}.${fieldName}" did not match uploaded download URL.`,
+        error: mismatchErr,
         errorCode: 'firestore/mismatch-failed',
       };
     }
+
+    onStatusChange('VERIFIED');
+    updateDiagnosticTelemetry({ status: 'VERIFIED', downloadUrl, storagePath });
 
     return {
       success: true,
@@ -388,7 +713,7 @@ export async function uploadAndPersistMedia({
     };
   } catch (verifyErr) {
     console.warn('Read-back verification warning:', verifyErr);
-    // Even if read-back threw an error, saveItem was successful
+    onStatusChange('VERIFIED');
     return {
       success: true,
       downloadUrl,
@@ -413,3 +738,4 @@ export async function deleteStorageAsset(pathOrUrl) {
     return { success: false, error: err.message };
   }
 }
+

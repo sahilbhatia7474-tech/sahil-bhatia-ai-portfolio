@@ -1,15 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { usePortfolioData } from '../../context/PortfolioDataContext';
 import { saveItem } from '../../lib/dbService';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
+import { useAuth } from '../../lib/authContext';
 import MediaUploadControl from './MediaUploadControl';
 import FeaturedBuilderCard3D from '../FeaturedBuilderCard3D';
 import { Save, Sparkles, Check, AlertCircle, RefreshCw, Crosshair, Eye, CheckCircle2, Type, Upload } from 'lucide-react';
 
+const OFFICIAL_PORTRAIT_URL = 'https://i.ibb.co/svvJ3Fnc/793090671-2240593123170371-3167005344409012686-n.jpg';
+
 const PORTRAIT_PRESETS = [
   {
-    name: 'Sahil Bhatia — Cybernetic Systems (Official)',
+    name: 'Sahil Bhatia — Cybernetic Systems (Official Direct Photo)',
+    url: 'https://i.ibb.co/svvJ3Fnc/793090671-2240593123170371-3167005344409012686-n.jpg',
+    focalX: 50,
+    focalY: 20,
+  },
+  {
+    name: 'Sahil Bhatia — Cybernetic Systems (Vector)',
     url: '/sahil-bhatia-portrait.svg',
     focalX: 50,
     focalY: 20,
@@ -24,9 +33,11 @@ const PORTRAIT_PRESETS = [
 
 const VaultPortrait = () => {
   const { featuredPortrait, refreshAllData } = usePortfolioData();
+  const { isFounder } = useAuth();
+  const autoSyncedRef = useRef(false);
 
   // Core Visual & Positioning State
-  const [imageUrl, setImageUrl] = useState('/sahil-bhatia-portrait.svg');
+  const [imageUrl, setImageUrl] = useState(OFFICIAL_PORTRAIT_URL);
   const [focalX, setFocalX] = useState(50);
   const [focalY, setFocalY] = useState(20);
   const [altText, setAltText] = useState('Sahil Bhatia — AI-Native Builder and Systems Architect');
@@ -66,8 +77,8 @@ const VaultPortrait = () => {
   useEffect(() => {
     if (featuredPortrait) {
       let currentUrl = featuredPortrait.imageUrl?.trim();
-      if (!currentUrl || currentUrl.includes('photo-1534528741775-53994a69daeb') || currentUrl.includes('images.unsplash.com')) {
-        currentUrl = PORTRAIT_PRESETS[0].url;
+      if (!currentUrl || currentUrl === '/sahil-bhatia-portrait.svg' || currentUrl === '/assets/sahil-bhatia-portrait.svg' || currentUrl.includes('photo-1534528741775-53994a69daeb') || currentUrl.includes('images.unsplash.com')) {
+        currentUrl = OFFICIAL_PORTRAIT_URL;
       }
       setImageUrl(currentUrl);
       setFocalX(featuredPortrait.focalX ?? 50);
@@ -95,7 +106,7 @@ const VaultPortrait = () => {
     }
   }, [featuredPortrait]);
 
-  const handleSave = async () => {
+  const handleSave = async (overrideUrl = null) => {
     setSaving(true);
     setIsSaved(false);
     setMessage(null);
@@ -111,9 +122,9 @@ const VaultPortrait = () => {
       .filter(Boolean);
 
     // Step 1: Sanitize image source - never permit unsplash
-    let cleanImageUrl = imageUrl.trim();
+    let cleanImageUrl = (typeof overrideUrl === 'string' && overrideUrl.trim()) ? overrideUrl.trim() : imageUrl.trim();
     if (!cleanImageUrl || cleanImageUrl.includes('photo-1534528741775-53994a69daeb') || cleanImageUrl.includes('images.unsplash.com')) {
-      cleanImageUrl = '/sahil-bhatia-portrait.svg';
+      cleanImageUrl = OFFICIAL_PORTRAIT_URL;
     }
 
     // Step 2: Collect all card fields
@@ -148,7 +159,7 @@ const VaultPortrait = () => {
         if (readBackSnap.exists()) {
           const data = readBackSnap.data();
           // Step 6: Confirm the saved values
-          setImageUrl(data.imageUrl || '/sahil-bhatia-portrait.svg');
+          setImageUrl(data.imageUrl || OFFICIAL_PORTRAIT_URL);
           setFocalX(Number(data.focalX ?? 50));
           setFocalY(Number(data.focalY ?? 20));
           setAltText(data.altText || '');
@@ -186,6 +197,25 @@ const VaultPortrait = () => {
     }
     setSaving(false);
   };
+
+  // Auto-sync portrait if founder authenticated and still pointing to outdated default
+  useEffect(() => {
+    if (isFounder && featuredPortrait && !autoSyncedRef.current) {
+      const currentUrl = featuredPortrait.imageUrl?.trim();
+      if (currentUrl !== OFFICIAL_PORTRAIT_URL && (!currentUrl || currentUrl === '/sahil-bhatia-portrait.svg' || currentUrl === '/assets/sahil-bhatia-portrait.svg' || currentUrl.includes('unsplash'))) {
+        autoSyncedRef.current = true;
+        saveItem('featuredPortrait', 'primary', {
+          ...featuredPortrait,
+          imageUrl: OFFICIAL_PORTRAIT_URL,
+          focalX: 50,
+          focalY: 20,
+          visibility: 'PUBLIC',
+          publicationState: 'PUBLISHED',
+          updatedAt: new Date().toISOString(),
+        }).catch((err) => console.warn('Auto-sync note:', err.message));
+      }
+    }
+  }, [isFounder, featuredPortrait]);
 
   const currentPreviewData = {
     imageUrl,
@@ -229,7 +259,8 @@ const VaultPortrait = () => {
         </div>
 
         <button
-          onClick={handleSave}
+          id="btn-save-founder-card"
+          onClick={() => handleSave()}
           disabled={saving}
           className="min-h-[44px] px-6 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
         >
@@ -284,6 +315,7 @@ const VaultPortrait = () => {
                 Image Web URL or Firebase Storage Link:
               </label>
               <input
+                id="input-portrait-image-source"
                 type="text"
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
@@ -363,6 +395,7 @@ const VaultPortrait = () => {
                   <span className="text-red-400 font-bold">{focalX}%</span>
                 </div>
                 <input
+                  id="input-focal-x"
                   type="range"
                   min="0"
                   max="100"
@@ -378,6 +411,7 @@ const VaultPortrait = () => {
                   <span className="text-red-400 font-bold">{focalY}%</span>
                 </div>
                 <input
+                  id="input-focal-y"
                   type="range"
                   min="0"
                   max="100"
@@ -557,6 +591,7 @@ const VaultPortrait = () => {
                   Visibility Status
                 </label>
                 <select
+                  id="select-card-visibility"
                   value={visibility}
                   onChange={(e) => setVisibility(e.target.value)}
                   className="w-full min-h-[44px] px-3.5 py-2 rounded-lg bg-[#0e1017] border border-white/15 text-white text-xs font-mono focus:outline-none focus:border-red-500"
@@ -571,6 +606,7 @@ const VaultPortrait = () => {
                   Publication State
                 </label>
                 <select
+                  id="select-card-publication-state"
                   value={publicationState}
                   onChange={(e) => setPublicationState(e.target.value)}
                   className="w-full min-h-[44px] px-3.5 py-2 rounded-lg bg-[#0e1017] border border-white/15 text-white text-xs font-mono focus:outline-none focus:border-red-500"
