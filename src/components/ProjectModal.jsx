@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { 
   X, ShieldCheck, Cpu, Code2, Layers, CheckCircle2, 
   ExternalLink, Globe, ArrowUpRight, FileText, BookOpen, Smartphone,
@@ -8,6 +8,7 @@ import { getProjectPublicLinks, deriveProjectBadge } from '../lib/projectLinks';
 import ProjectSymbol from './ProjectSymbol';
 import ProjectMediaPlaceholder from './ProjectMediaPlaceholder';
 import { PROJECT_COVER_IMAGES } from '../data/portfolioData';
+import { useBodyScrollLock } from '../lib/scrollLock';
 
 const LINK_TYPE_ICONS = {
   LIVE_WEBSITE: Globe,
@@ -29,6 +30,23 @@ const ProjectModal = ({ project, onClose }) => {
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+
+  // Unified body scroll lock management
+  useBodyScrollLock(Boolean(project));
+
+  // Escape key closes modal & handle browser back
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose?.();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose]);
 
   if (!project) return null;
 
@@ -83,18 +101,26 @@ const ProjectModal = ({ project, onClose }) => {
 
   return (
     <>
-      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+      <div
+        id="project-modal-backdrop"
+        onClick={onClose}
+        className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-black/80 backdrop-blur-md animate-in fade-in duration-200 cursor-pointer"
+      >
         <div
-          className="relative w-full max-w-3xl rounded-xl bg-[#0e0f14] border border-white/20 p-6 sm:p-8 shadow-2xl text-left my-8 max-h-[92vh] overflow-y-auto"
+          className="relative w-full max-w-3xl rounded-2xl bg-[#0e0f14] border border-white/20 p-6 sm:p-8 shadow-2xl text-left my-8 max-h-[92vh] overflow-y-auto cursor-default"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Close Button */}
+          {/* Close Button with generous touch target */}
           <button
-            onClick={onClose}
-            className="absolute top-5 right-5 p-2 rounded-md bg-[#181920] border border-white/10 text-neutral-400 hover:text-white hover:border-white/20 transition-all cursor-pointer z-10"
-            aria-label="Close project inspection"
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose?.();
+            }}
+            className="absolute top-5 right-5 w-10 h-10 min-w-[40px] min-h-[40px] rounded-xl bg-white/10 hover:bg-white/20 active:bg-red-600/40 border border-white/15 hover:border-red-500/50 flex items-center justify-center text-neutral-300 hover:text-white transition-all cursor-pointer z-10 active:scale-95 shadow-sm"
+            aria-label="Close project inspection (Esc)"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5 pointer-events-none" />
           </button>
 
           {/* Header Metadata & Primary CTA */}

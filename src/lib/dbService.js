@@ -7,8 +7,12 @@ import {
   updateDoc,
   deleteDoc,
   serverTimestamp,
+  query,
+  where,
+  orderBy,
 } from 'firebase/firestore';
 import { db, auth } from './firebase';
+import { handleFirestoreError, OperationType } from './firestoreErrorHandler';
 import { isAuthorizedFounderEmail } from './authConstants';
 import {
   IDENTITY,
@@ -19,9 +23,12 @@ import {
   APPS_HUB,
 } from '../data/portfolioData';
 
-// Safe activity logger
+// Safe activity logger (only authenticated founder sessions can write to the private activityLog)
 export const logActivity = async (action, summary, details = {}) => {
   try {
+    if (!auth?.currentUser || !isAuthorizedFounderEmail(auth.currentUser.email)) {
+      return;
+    }
     const activityRef = doc(collection(db, 'activityLog'));
     await setDoc(activityRef, {
       id: activityRef.id,
@@ -31,8 +38,8 @@ export const logActivity = async (action, summary, details = {}) => {
       timestamp: new Date().toISOString(),
       createdAt: serverTimestamp(),
     });
-  } catch (err) {
-    console.warn('Activity logging fallback/warning:', err.message);
+  } catch {
+    // Non-blocking fallback for activity log
   }
 };
 
@@ -116,14 +123,22 @@ export const SEED_DATA = {
   ],
   certificates: [
     {
-      id: 'cert-1',
-      title: 'Generative AI & Agentic Systems Architecture',
-      issuer: 'DeepLearning.AI / Leading AI Institutes',
-      issueDate: '2025',
-      certificateImage: 'https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?auto=format&fit=crop&q=80&w=600',
-      verificationUrl: 'https://verify.example.org/cert-01',
-      description: 'Advanced mastery of multi-model prompting, structured JSON schema validation, and tool-calling execution agents.',
-      skillsCovered: ['LLMs', 'Agent Loops', 'Function Calling', 'RAG'],
+      id: 'cert-outskill-01',
+      title: 'Generative AI Mastermind',
+      issuer: 'Outskill',
+      provider: 'Outskill',
+      recipient: 'Sahil Bhatia',
+      category: 'Certification',
+      issueDate: '2026',
+      date: '2026',
+      certificateImage: 'https://plain-apac-prod-public.komododecks.com/202609/14/0A0suE8RRdgDrQXPyc2f/image.jpg',
+      imageUrl: 'https://plain-apac-prod-public.komododecks.com/202609/14/0A0suE8RRdgDrQXPyc2f/image.jpg',
+      verificationUrl: 'https://kommodo.ai/i/0A0suE8RRdgDrQXPyc2f',
+      url: 'https://kommodo.ai/i/0A0suE8RRdgDrQXPyc2f',
+      description: 'Certificate of Completion awarded to Sahil Bhatia for completing the Generative AI Mastermind with Outskill.',
+      skills: ['Generative AI', 'LLMs & System Prompting', 'Agent Orchestration', 'Autonomous AI Systems'],
+      skillsCovered: ['Generative AI', 'LLMs & System Prompting', 'Agent Orchestration', 'Autonomous AI Systems'],
+      topics: ['Generative AI', 'LLMs & System Prompting', 'Agent Orchestration', 'Autonomous AI Systems'],
       visibility: 'PUBLIC',
       featured: true,
       status: 'PUBLISHED',
@@ -132,18 +147,49 @@ export const SEED_DATA = {
       updatedAt: new Date().toISOString(),
     },
     {
-      id: 'cert-2',
-      title: 'Full-Stack Modern Web Engineering & Systems',
-      issuer: 'Advanced Web Certification Consortium',
-      issueDate: '2024',
-      certificateImage: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=600',
-      verificationUrl: 'https://verify.example.org/cert-02',
-      description: 'Enterprise React performance, asynchronous state synchronization, and reactive UI architecture.',
-      skillsCovered: ['React', 'TypeScript', 'Tailwind', 'REST/GraphQL'],
+      id: 'cert-be10x-01',
+      title: 'AI Tools & ChatGPT Workshop',
+      issuer: 'be10x',
+      provider: 'be10x',
+      recipient: 'Sahil Bhatia',
+      category: 'Workshop Certification',
+      issueDate: 'June 21, 2026',
+      date: 'June 21, 2026',
+      credentialId: '0270772f-3809-4400-b29b-1e1c61cd09971465833',
+      verificationUrl: 'https://certx.in/certificate/0270772f-3809-4400-b29b-1e1c61cd09971465833',
+      url: 'https://certx.in/certificate/0270772f-3809-4400-b29b-1e1c61cd09971465833',
+      description: 'Verified completion of AI Tools & ChatGPT Workshop covering AI Productivity, Workplace Automation, AI Business Applications, and AI Workflow Optimization.',
+      skills: ['AI Tools', 'ChatGPT Workflows', 'AI Productivity', 'Workplace Automation', 'AI Data Analysis', 'Coding & Debugging'],
+      skillsCovered: ['AI Tools', 'ChatGPT Workflows', 'AI Productivity', 'Workplace Automation', 'AI Data Analysis', 'Coding & Debugging'],
+      topics: ['AI Tools', 'ChatGPT Workflows', 'AI Productivity', 'Workplace Automation', 'AI Data Analysis', 'Coding & Debugging'],
       visibility: 'PUBLIC',
       featured: true,
       status: 'PUBLISHED',
       sortOrder: 2,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: 'cert-freedom-ai-01',
+      title: 'Freedom with AI Masterclass',
+      issuer: 'Freedom with AI',
+      provider: 'Freedom with AI',
+      recipient: 'Sahil Bhatia',
+      category: 'Masterclass Certification',
+      issueDate: '12/09/2026',
+      date: '12/09/2026',
+      certificateImage: 'https://plain-apac-prod-public.komododecks.com/202609/14/VNSmjNTSGk0xw9tDx5ct/image.jpg',
+      imageUrl: 'https://plain-apac-prod-public.komododecks.com/202609/14/VNSmjNTSGk0xw9tDx5ct/image.jpg',
+      verificationUrl: 'https://kommodo.ai/i/VNSmjNTSGk0xw9tDx5ct',
+      url: 'https://kommodo.ai/i/VNSmjNTSGk0xw9tDx5ct',
+      description: 'Certificate of Completion awarded to Sahil Bhatia for completing the Freedom with AI Masterclass on autonomous productivity pipelines.',
+      skills: ['AI Workflows', 'Agentic Automation', 'No-Code AI Leverage', 'AI Productivity Pipelines'],
+      skillsCovered: ['AI Workflows', 'Agentic Automation', 'No-Code AI Leverage', 'AI Productivity Pipelines'],
+      topics: ['AI Workflows', 'Agentic Automation', 'No-Code AI Leverage', 'AI Productivity Pipelines'],
+      visibility: 'PUBLIC',
+      featured: true,
+      status: 'PUBLISHED',
+      sortOrder: 3,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     },
@@ -155,9 +201,10 @@ export const SEED_DATA = {
     { id: 'nav-4', label: 'AI Systems', target: '/ai-systems', sortOrder: 4, visible: true },
     { id: 'nav-5', label: 'Journey', target: '/journey', sortOrder: 5, visible: true },
     { id: 'nav-6', label: 'Proof', target: '/proof', sortOrder: 6, visible: true },
-    { id: 'nav-7', label: 'Future Vault', target: '/future-vault', sortOrder: 7, visible: true },
-    { id: 'nav-8', label: 'Apps Hub', target: '/apps', sortOrder: 8, visible: true },
-    { id: 'nav-9', label: 'Contact', target: '/contact', sortOrder: 9, visible: true },
+    { id: 'nav-6b', label: 'Certificates', target: '/certificates', sortOrder: 7, visible: true },
+    { id: 'nav-7', label: 'Future Vault', target: '/future-vault', sortOrder: 8, visible: true },
+    { id: 'nav-8', label: 'Apps Hub', target: '/apps', sortOrder: 9, visible: true },
+    { id: 'nav-9', label: 'Contact', target: '/contact', sortOrder: 10, visible: true },
   ],
   media: [
     {
@@ -311,6 +358,13 @@ export const seedInitialDatabase = async (force = false) => {
     for (const cert of SEED_DATA.certificates) {
       await setDoc(doc(db, 'certificates', cert.id), cert);
     }
+    // Clean up legacy template mock certs if present
+    try {
+      await deleteDoc(doc(db, 'certificates', 'cert-1'));
+      await deleteDoc(doc(db, 'certificates', 'cert-2'));
+    } catch {
+      // ignore
+    }
 
     // Seed proof matrix
     for (let i = 0; i < PROOF_MATRIX.length; i++) {
@@ -364,26 +418,71 @@ export const seedInitialDatabase = async (force = false) => {
 // Generic CRUD Operations
 export const fetchCollectionDocs = async (collectionName, includeAll = false) => {
   try {
-    const colRef = collection(db, collectionName);
-    const snapshot = await getDocs(colRef);
+    let q;
+    if (includeAll) {
+      q = collection(db, collectionName);
+    } else {
+      if (collectionName === 'media') {
+        q = query(collection(db, collectionName), where('visibility', '==', 'PUBLIC'));
+      } else if (['projects', 'journey', 'apps', 'certificates', 'education', 'proof', 'aiSystems'].includes(collectionName)) {
+        q = query(
+          collection(db, collectionName),
+          where('visibility', '==', 'PUBLIC'),
+          where('status', '==', 'PUBLISHED')
+        );
+      } else {
+        q = collection(db, collectionName);
+      }
+    }
+    const snapshot = await getDocs(q);
     const items = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
 
-    if (includeAll) {
-      return items.sort((a, b) => (a.sortOrder || 99) - (b.sortOrder || 99));
-    }
-
-    // Public filtering: only PUBLISHED and PUBLIC
-    return items
-      .filter((item) => item.status === 'PUBLISHED' && item.visibility === 'PUBLIC')
-      .sort((a, b) => (a.sortOrder || 99) - (b.sortOrder || 99));
+    return items.sort((a, b) => (a.sortOrder || 99) - (b.sortOrder || 99));
   } catch (err) {
-    console.warn(`Fetch ${collectionName} error:`, err.message);
+    handleFirestoreError(err, OperationType.LIST, collectionName);
     return [];
   }
 };
 
+// Check whether the active session has Founder edit authorization
+export const assertFounderEditor = () => {
+  const currentUser = auth.currentUser;
+  const isAnonymous = currentUser?.isAnonymous;
+  const email = currentUser?.email?.toLowerCase().trim();
+
+  // If session explicitly flagged as public viewer, reject write immediately
+  if (typeof window !== 'undefined') {
+    const role = sessionStorage.getItem('sahil_vault_role');
+    if (role === 'PUBLIC_VIEWER') {
+      throw new Error('ACCESS DENIED: Vault is in Read-Only Specimen Mode. Only Sahil Bhatia (sahilbhatia7474@gmail.com) is authorized to edit or modify portfolio systems.');
+    }
+  }
+
+  // If authenticated via Firebase Auth
+  if (currentUser) {
+    if (isAnonymous) {
+      throw new Error('ACCESS DENIED: Anonymous visitors have read-only clearance. All write and edit operations are restricted to Sahil Bhatia (sahilbhatia7474@gmail.com).');
+    }
+    if (!isAuthorizedFounderEmail(email)) {
+      throw new Error(`ACCESS DENIED: Account (${email || 'guest'}) is not authorized to edit. Only Sahil Bhatia (sahilbhatia7474@gmail.com) has edit privileges.`);
+    }
+    return true;
+  }
+
+  // Fallback to verified local founder session
+  if (typeof window !== 'undefined') {
+    const isFounderSession = sessionStorage.getItem('sahil_founder_authorized') === 'true' && sessionStorage.getItem('sahil_vault_role') === 'FOUNDER_OWNER';
+    if (isFounderSession) {
+      return true;
+    }
+  }
+
+  throw new Error('ACCESS DENIED: Founder authentication required. Only Sahil Bhatia (sahilbhatia7474@gmail.com) can modify vault data.');
+};
+
 export const saveItem = async (collectionName, docId, data, isNew = false) => {
   try {
+    assertFounderEditor();
     const targetId = docId || doc(collection(db, collectionName)).id;
     const itemRef = doc(db, collectionName, targetId);
     const payload = {
@@ -409,6 +508,7 @@ export const saveItem = async (collectionName, docId, data, isNew = false) => {
 
 export const deleteItem = async (collectionName, docId) => {
   try {
+    assertFounderEditor();
     await deleteDoc(doc(db, collectionName, docId));
     await logActivity(
       `${collectionName.toUpperCase()}_DELETED`,
@@ -423,6 +523,7 @@ export const deleteItem = async (collectionName, docId) => {
 
 export const publishItem = async (collectionName, docId, publish = true) => {
   try {
+    assertFounderEditor();
     const itemRef = doc(db, collectionName, docId);
     const newStatus = publish ? 'PUBLISHED' : 'DRAFT';
     const newVisibility = publish ? 'PUBLIC' : 'PRIVATE';
@@ -444,6 +545,7 @@ export const publishItem = async (collectionName, docId, publish = true) => {
 
 export const saveNavigationItems = async (items) => {
   try {
+    assertFounderEditor();
     for (const item of items) {
       const targetId = item.id || `nav-${Date.now()}`;
       await setDoc(doc(db, 'navigation', targetId), {
@@ -462,6 +564,7 @@ export const saveNavigationItems = async (items) => {
 
 export const saveSiteSettings = async (settings) => {
   try {
+    assertFounderEditor();
     const docRef = doc(db, 'siteSettings', 'primary');
     await setDoc(docRef, {
       ...settings,
@@ -475,3 +578,144 @@ export const saveSiteSettings = async (settings) => {
     return { success: false, error: err.message };
   }
 };
+
+/**
+ * SECURE CLIENT INQUIRY & CONTACT FORM SUBMISSION
+ * 
+ * Public visitors can create documents into the 'messages' collection.
+ * Enforces sanitization, length boundaries, honeypot protection, and security metadata.
+ */
+export const submitInquiry = async (inquiryData) => {
+  try {
+    const { 
+      name, 
+      email, 
+      message, 
+      subject, 
+      category, 
+      timeline, 
+      budget, 
+      confidentialityRequested,
+      honeypot 
+    } = inquiryData;
+
+    // Honeypot anti-bot defense: bots auto-fill hidden honeypots
+    if (honeypot && String(honeypot).trim().length > 0) {
+      // Silently return success to waste bot compute without writing to Firestore
+      return { success: true, id: 'discarded-bot-trap' };
+    }
+
+    // Strict input trimming & length validation (aligned with firestore.rules)
+    const trimmedName = (name || '').trim().slice(0, 200);
+    const trimmedEmail = (email || '').trim().toLowerCase().slice(0, 254);
+    const trimmedMessage = (message || '').trim().slice(0, 5000);
+
+    if (!trimmedName || trimmedName.length < 2) {
+      return { success: false, error: 'Please provide a valid name or organization (minimum 2 characters).' };
+    }
+
+    const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!trimmedEmail || trimmedEmail.length < 4 || !EMAIL_REGEX.test(trimmedEmail)) {
+      return { success: false, error: 'Please provide a valid direct email address.' };
+    }
+
+    if (!trimmedMessage || trimmedMessage.length < 5) {
+      return { success: false, error: 'Please outline your project scope or system challenge (minimum 5 characters).' };
+    }
+
+    // Generate unique message document reference in messages collection
+    const targetRef = doc(collection(db, 'messages'));
+    const nowIso = new Date().toISOString();
+
+    const payload = {
+      id: targetRef.id,
+      name: trimmedName,
+      email: trimmedEmail,
+      message: trimmedMessage,
+      subject: (subject || `Consultation: ${category || 'General'}`).trim().slice(0, 200),
+      category: (category || 'AI Systems').trim().slice(0, 100),
+      problem: trimmedMessage,
+      timeline: (timeline || 'STANDARD').trim().slice(0, 100),
+      budget: (budget || 'MVP / Production Build ($5k - $20k)').trim().slice(0, 100),
+      confidentialityRequested: Boolean(confidentialityRequested),
+      status: 'UNREAD',
+      createdAt: nowIso,
+      updatedAt: nowIso,
+    };
+
+    // setDoc creates the document in Firestore
+    await setDoc(targetRef, payload);
+
+    return { 
+      success: true, 
+      id: targetRef.id,
+      receiptTimestamp: nowIso 
+    };
+  } catch (err) {
+    console.error('Submit inquiry error:', err);
+    return { 
+      success: false, 
+      error: err.message || 'Transmission failed. Please check network connectivity and try again.' 
+    };
+  }
+};
+
+/**
+ * FETCH ALL INQUIRIES (Founder Protected)
+ */
+export const getInquiries = async () => {
+  try {
+    if (!auth?.currentUser || !isAuthorizedFounderEmail(auth.currentUser.email)) {
+      return [];
+    }
+    const q = query(collection(db, 'messages'), orderBy('createdAt', 'desc'));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((docSnap) => ({
+      id: docSnap.id,
+      ...docSnap.data(),
+    }));
+  } catch (err) {
+    console.error('Get inquiries error:', err);
+    handleFirestoreError(err, OperationType.LIST, 'messages');
+    return [];
+  }
+};
+
+/**
+ * UPDATE INQUIRY STATUS (Founder Protected)
+ */
+export const updateInquiryStatus = async (inquiryId, status) => {
+  try {
+    if (!auth?.currentUser || !isAuthorizedFounderEmail(auth.currentUser.email)) {
+      return { success: false, error: 'Unauthorized founder session' };
+    }
+    const docRef = doc(db, 'messages', inquiryId);
+    await updateDoc(docRef, {
+      status,
+      updatedAt: new Date().toISOString(),
+    });
+    await logActivity('INQUIRY_STATUS_UPDATED', `Inquiry ${inquiryId} marked as ${status}`, { inquiryId, status });
+    return { success: true };
+  } catch (err) {
+    console.error('Update inquiry status error:', err);
+    return { success: false, error: err.message };
+  }
+};
+
+/**
+ * DELETE INQUIRY (Founder Protected)
+ */
+export const deleteInquiry = async (inquiryId) => {
+  try {
+    if (!auth?.currentUser || !isAuthorizedFounderEmail(auth.currentUser.email)) {
+      return { success: false, error: 'Unauthorized founder session' };
+    }
+    await deleteDoc(doc(db, 'messages', inquiryId));
+    await logActivity('INQUIRY_DELETED', `Inquiry ${inquiryId} deleted`, { inquiryId });
+    return { success: true };
+  } catch (err) {
+    console.error('Delete inquiry error:', err);
+    return { success: false, error: err.message };
+  }
+};
+

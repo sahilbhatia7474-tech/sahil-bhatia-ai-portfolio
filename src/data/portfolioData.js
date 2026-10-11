@@ -116,7 +116,9 @@ export const PROJECT_COVER_IMAGES = {
   "LYRA V2": "https://i.ibb.co/kgYt4byW/792595717-1594033032399956-7564398864942703301-n.jpg",
   "SAHIL AI OS": "https://i.ibb.co/YTpQH0Fx/793069760-1637900457750676-7193237836254523298-n.jpg",
   "DENTAL CARE": "https://i.ibb.co/sJk9xmRV/792053478-4509128749305781-5178679919735574459-n.jpg",
+  "DENTAL CARE MODERN DENTISTRY": "https://i.ibb.co/sJk9xmRV/792053478-4509128749305781-5178679919735574459-n.jpg",
   "LINKBIO": "https://i.ibb.co/ZqnKNNN/796527702-964622123319366-7685205643786953639-n.jpg",
+  "LINKVAULT": "https://i.ibb.co/ZqnKNNN/796527702-964622123319366-7685205643786953639-n.jpg",
   "SHOWTIME CINEMA BOOKING": "https://i.ibb.co/rGW9S12d/798290543-910758595093787-2834963228184310565-n-2.jpg",
   "SAHIL AI CONSULTANCY OS": "https://i.ibb.co/kFk9NTs/796640947-1585777913334535-5654389141656902287-n-1.jpg",
 };
@@ -158,6 +160,19 @@ export const CURATED_PROJECTS = [
       "Responsive layout optimized for procurement engineers on tablet and mobile",
     ],
     techStack: ["React", "Tailwind CSS", "Framer Motion", "Vite", "Node.js"],
+    liveWebsiteUrl: "https://neutracap-industrial-capacitor-cata.vercel.app/",
+    links: [
+      {
+        id: "lnk-neutracap-live",
+        type: "LIVE_WEBSITE",
+        label: "Visit Website",
+        actionLabel: "VIEW LIVE PROJECT",
+        url: "https://neutracap-industrial-capacitor-cata.vercel.app/",
+        isPrimary: true,
+        visibility: "PUBLIC",
+        sortOrder: 1,
+      },
+    ],
     highlights: [
       "Direct technical spec navigation",
       "Zero-latency client quote routing",
@@ -284,14 +299,14 @@ export const CURATED_PROJECTS = [
       "HIPAA-conscious client data handling and secure doctor note storage",
     ],
     techStack: ["React", "Tailwind CSS", "Calendar Integration", "Framer Motion", "Vite"],
-    liveWebsiteUrl: "https://dental-care-modern-2026.vercel.app/",
+    liveWebsiteUrl: "https://dental-care-modern-dentistry.ai.studio",
     links: [
       {
         id: "lnk-dental-live",
         type: "LIVE_WEBSITE",
         label: "Visit Website",
         actionLabel: "VIEW LIVE PROJECT",
-        url: "https://dental-care-modern-2026.vercel.app/",
+        url: "https://dental-care-modern-dentistry.ai.studio",
         isPrimary: true,
         visibility: "PUBLIC",
         sortOrder: 1,
@@ -306,7 +321,7 @@ export const CURATED_PROJECTS = [
   {
     id: "05",
     slug: "linkbio",
-    title: "LinkBio",
+    title: "LinkVault",
     subtitle: "Personal Link Hub / Link-in-Bio Builder",
     status: "BUILT",
     category: "Creator Utility & Digital Identity",
@@ -327,7 +342,7 @@ export const CURATED_PROJECTS = [
       }
     ],
     mediaCaption: "Consolidated link-in-bio engine and responsive personal profile cards",
-    mediaAltText: "LinkBio hub interface",
+    mediaAltText: "LinkVault hub interface",
     summary:
       "A consolidated, ultra-fast link hub and micro-landing page engine for creators, professionals, and brands. (Single consolidated build).",
     description:
@@ -342,7 +357,7 @@ export const CURATED_PROJECTS = [
     liveWebsiteUrl: "https://linkvault-henna.vercel.app/",
     links: [
       {
-        id: "lnk-linkbio-live",
+        id: "lnk-linkvault-live",
         type: "LIVE_WEBSITE",
         label: "Visit Website",
         actionLabel: "VIEW LIVE PROJECT",
@@ -394,6 +409,19 @@ export const CURATED_PROJECTS = [
       "Mobile-optimized touch selection with haptic feedback simulation",
     ],
     techStack: ["React", "SVG Canvas", "Tailwind CSS", "Framer Motion", "Vite"],
+    liveWebsiteUrl: "https://showtime-cinema-booking.ai.studio",
+    links: [
+      {
+        id: "lnk-showtime-live",
+        type: "LIVE_WEBSITE",
+        label: "Visit Website",
+        actionLabel: "VIEW LIVE PROJECT",
+        url: "https://showtime-cinema-booking.ai.studio",
+        isPrimary: true,
+        visibility: "PUBLIC",
+        sortOrder: 1,
+      },
+    ],
     highlights: [
       "Spatial auditorium seat mapping",
       "Seamless multi-tier ticket selection",
@@ -621,37 +649,134 @@ export const PROFESSIONAL_JOURNEY = [
 
 export const DEFAULT_CERTIFICATES = [
   {
-    id: "cert-be10x-01",
-    title: "AI Tools Workshop — be10x",
-    provider: "be10x",
-    credentialType: "Certificate of Completion",
-    issueDate: "June 21, 2026",
+    id: "cert-outskill-01",
+    title: "Generative AI Mastermind",
+    issuer: "Outskill",
+    provider: "Outskill",
     recipient: "Sahil Bhatia",
+    category: "Certification",
+    date: "2026",
+    issueDate: "2026",
+    url: "https://kommodo.ai/i/0A0suE8RRdgDrQXPyc2f",
+    verificationUrl: "https://kommodo.ai/i/0A0suE8RRdgDrQXPyc2f",
+    imageUrl: "https://plain-apac-prod-public.komododecks.com/202609/14/0A0suE8RRdgDrQXPyc2f/image.jpg",
+    certificateImage: "https://plain-apac-prod-public.komododecks.com/202609/14/0A0suE8RRdgDrQXPyc2f/image.jpg",
+    status: "VERIFIED",
+    visibility: "PUBLIC",
+    featured: true,
+    sortOrder: 1,
+    topics: [
+      "Generative AI",
+      "LLMs & System Prompting",
+      "Agent Orchestration",
+      "Autonomous AI Systems"
+    ],
+    skills: [
+      "Generative AI",
+      "LLMs & System Prompting",
+      "Agent Orchestration",
+      "Autonomous AI Systems"
+    ],
+    description: "Certificate of Completion awarded to Sahil Bhatia for completing the Generative AI Mastermind with Outskill.",
+    verified: true,
+  },
+  {
+    id: "cert-be10x-01",
+    title: "AI Tools & ChatGPT Workshop",
+    issuer: "be10x",
+    provider: "be10x",
+    recipient: "Sahil Bhatia",
+    category: "Workshop Certification",
+    date: "June 21, 2026",
+    issueDate: "June 21, 2026",
     credentialId: "0270772f-3809-4400-b29b-1e1c61cd09971465833",
     url: "https://certx.in/certificate/0270772f-3809-4400-b29b-1e1c61cd09971465833",
+    verificationUrl: "https://certx.in/certificate/0270772f-3809-4400-b29b-1e1c61cd09971465833",
+    status: "VERIFIED",
+    visibility: "PUBLIC",
+    featured: true,
+    sortOrder: 2,
     topics: [
       "AI Tools",
-      "ChatGPT",
+      "ChatGPT Workflows",
       "AI Productivity",
-      "Presentation creation",
-      "AI data analysis",
-      "Coding and debugging assistance"
+      "Workplace Automation",
+      "AI Data Analysis",
+      "Coding & Debugging"
     ],
+    skills: [
+      "AI Tools",
+      "ChatGPT Workflows",
+      "AI Productivity",
+      "Workplace Automation",
+      "AI Data Analysis",
+      "Coding & Debugging"
+    ],
+    description: "Verified completion of AI Tools & ChatGPT Workshop covering AI Productivity, Workplace Automation, AI Business Applications, and AI Workflow Optimization.",
     verified: true,
+  },
+  {
+    id: "cert-freedom-ai-01",
+    title: "Freedom with AI Masterclass",
+    issuer: "Freedom with AI",
+    provider: "Freedom with AI",
+    recipient: "Sahil Bhatia",
+    category: "Masterclass Certification",
+    date: "12/09/2026",
+    issueDate: "12/09/2026",
+    url: "https://kommodo.ai/i/VNSmjNTSGk0xw9tDx5ct",
+    verificationUrl: "https://kommodo.ai/i/VNSmjNTSGk0xw9tDx5ct",
+    imageUrl: "https://plain-apac-prod-public.komododecks.com/202609/14/VNSmjNTSGk0xw9tDx5ct/image.jpg",
+    certificateImage: "https://plain-apac-prod-public.komododecks.com/202609/14/VNSmjNTSGk0xw9tDx5ct/image.jpg",
     status: "VERIFIED",
-  }
+    visibility: "PUBLIC",
+    featured: true,
+    sortOrder: 3,
+    topics: [
+      "AI Workflows",
+      "Agentic Automation",
+      "No-Code AI Leverage",
+      "AI Productivity Pipelines"
+    ],
+    skills: [
+      "AI Workflows",
+      "Agentic Automation",
+      "No-Code AI Leverage",
+      "AI Productivity Pipelines"
+    ],
+    description: "Certificate of Completion awarded to Sahil Bhatia for completing the Freedom with AI Masterclass on autonomous productivity pipelines.",
+    verified: true,
+  },
 ];
 
 export const PROOF_MATRIX = [
   {
+    id: "prf-cert-outskill",
+    title: "Generative AI Mastermind — Outskill",
+    category: "Certifications",
+    date: "2026",
+    status: "VERIFIED",
+    evidence: "Certificate of Completion issued to Sahil Bhatia by Outskill. Verified coverage: Generative AI, LLMs & System Prompting, Agent Orchestration, Autonomous AI Systems.",
+    linkText: "VERIFY CREDENTIAL →",
+    target: "certificates",
+    url: "https://kommodo.ai/i/0A0suE8RRdgDrQXPyc2f",
+    provider: "Outskill",
+    recipient: "Sahil Bhatia",
+    topics: [
+      "Generative AI",
+      "LLMs & System Prompting",
+      "Agent Orchestration"
+    ],
+  },
+  {
     id: "prf-cert-01",
-    title: "AI Tools Workshop — be10x",
+    title: "AI Tools & ChatGPT Workshop — be10x",
     category: "Certifications",
     date: "June 21, 2026",
     status: "VERIFIED",
     evidence: "Certificate of Completion issued to Sahil Bhatia (Credential ID: 0270772f-3809-4400-b29b-1e1c61cd09971465833). Verified coverage: AI Tools, ChatGPT, AI Productivity, presentation creation, AI data analysis, coding and debugging.",
     linkText: "VERIFY CREDENTIAL →",
-    target: "proof",
+    target: "certificates",
     url: "https://certx.in/certificate/0270772f-3809-4400-b29b-1e1c61cd09971465833",
     provider: "be10x",
     credentialId: "0270772f-3809-4400-b29b-1e1c61cd09971465833",
@@ -663,6 +788,24 @@ export const PROOF_MATRIX = [
       "Presentation creation",
       "AI data analysis",
       "Coding & Debugging"
+    ],
+  },
+  {
+    id: "prf-cert-freedom",
+    title: "Freedom with AI Masterclass",
+    category: "Certifications",
+    date: "12/09/2026",
+    status: "VERIFIED",
+    evidence: "Certificate of Completion issued to Sahil Bhatia by Freedom with AI. Verified coverage: AI Workflows, Agentic Automation, No-Code AI Leverage, AI Productivity Pipelines.",
+    linkText: "VERIFY CREDENTIAL →",
+    target: "certificates",
+    url: "https://kommodo.ai/i/VNSmjNTSGk0xw9tDx5ct",
+    provider: "Freedom with AI",
+    recipient: "Sahil Bhatia",
+    topics: [
+      "AI Workflows",
+      "Agentic Automation",
+      "AI Productivity"
     ],
   },
   {

@@ -18,7 +18,7 @@ const DEFAULT_TYPE_LABELS = {
   OTHER: 'External Link',
 };
 
-const VaultProjectEditor = ({ project, isNew, onClose, onSaved }) => {
+const VaultProjectEditor = ({ project, isNew, readOnly = false, onClose, onSaved }) => {
   // Initialize links with full support for legacy and new link schemas
   const [links, setLinks] = useState(() => {
     if (Array.isArray(project?.links) && project.links.length > 0) {
@@ -228,6 +228,11 @@ const VaultProjectEditor = ({ project, isNew, onClose, onSaved }) => {
   };
 
   const handleSave = async (targetStatus = formData.status) => {
+    if (readOnly) {
+      setError('ACCESS DENIED: Editing is restricted to Sahil Bhatia (sahilbhatia7474@gmail.com). Visitors have read-only access.');
+      return;
+    }
+
     if (!formData.title.trim()) {
       setError('Title is required.');
       return;
@@ -331,6 +336,17 @@ const VaultProjectEditor = ({ project, isNew, onClose, onSaved }) => {
             <X className="w-5 h-5" />
           </button>
         </div>
+
+        {readOnly && (
+          <div className="mx-6 mt-4 p-3.5 rounded-xl bg-gradient-to-r from-[#0c1424] via-[#09101c] to-[#070b14] border border-cyan-400/40 flex items-center justify-between text-xs font-mono text-cyan-200">
+            <div className="flex items-center gap-2.5">
+              <Eye className="w-4 h-4 text-cyan-400 shrink-0" />
+              <span>
+                <strong>SPECIMEN INSPECTOR (READ-ONLY)</strong> &bull; Full project architecture and parameters available for technical review. Write &amp; edit privileges are restricted exclusively to <span className="text-red-400 font-bold">Sahil Bhatia</span> (sahilbhatia7474@gmail.com).
+              </span>
+            </div>
+          </div>
+        )}
 
         {error && (
           <div className="mx-6 mt-4 p-3 rounded-lg bg-red-950/40 border border-red-500/50 flex items-center gap-2 text-xs font-mono text-red-300">
@@ -1137,32 +1153,39 @@ const VaultProjectEditor = ({ project, isNew, onClose, onSaved }) => {
             onClick={onClose}
             className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white font-mono text-xs cursor-pointer"
           >
-            Cancel
+            {readOnly ? 'Close Specimen' : 'Cancel'}
           </button>
 
-          <div className="flex items-center gap-3">
-            {/* Save as Draft Button */}
-            <button
-              type="button"
-              onClick={() => handleSave('DRAFT')}
-              disabled={saving}
-              className="min-h-[42px] px-5 py-2 rounded-lg bg-[#181b26] hover:bg-[#202433] border border-white/15 text-neutral-200 hover:text-white font-mono text-xs uppercase tracking-wider font-semibold transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50"
-            >
-              {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4 text-amber-400" />}
-              <span>Save as Draft</span>
-            </button>
+          {readOnly ? (
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#0e1320] border border-cyan-400/30 text-cyan-300 font-mono text-xs">
+              <Eye className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Read-Only Specimen (Editing Locked to Sahil Bhatia)</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3">
+              {/* Save as Draft Button */}
+              <button
+                type="button"
+                onClick={() => handleSave('DRAFT')}
+                disabled={saving}
+                className="min-h-[42px] px-5 py-2 rounded-lg bg-[#181b26] hover:bg-[#202433] border border-white/15 text-neutral-200 hover:text-white font-mono text-xs uppercase tracking-wider font-semibold transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4 text-amber-400" />}
+                <span>Save as Draft</span>
+              </button>
 
-            {/* Save and Publish Button */}
-            <button
-              type="button"
-              onClick={() => handleSave('PUBLISHED')}
-              disabled={saving}
-              className="min-h-[42px] px-6 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center gap-2 cursor-pointer disabled:opacity-50"
-            >
-              {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Eye className="w-4 h-4" />}
-              <span>Save &amp; Publish (Live)</span>
-            </button>
-          </div>
+              {/* Save and Publish Button */}
+              <button
+                type="button"
+                onClick={() => handleSave('PUBLISHED')}
+                disabled={saving}
+                className="min-h-[42px] px-6 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Eye className="w-4 h-4" />}
+                <span>Save &amp; Publish (Live)</span>
+              </button>
+            </div>
+          )}
         </div>
 
       </div>

@@ -7,6 +7,7 @@ import {
   PROOF_MATRIX as DEFAULT_PROOF,
   FUTURE_VAULT,
   APPS_HUB as DEFAULT_APPS,
+  DEFAULT_CERTIFICATES,
 } from '../data/portfolioData';
 import { getProjectPublicLinks } from './projectLinks';
 
@@ -20,7 +21,7 @@ export function buildKnowledgeIndex(data = {}) {
   const aiSystems = data.aiSystems && data.aiSystems.length > 0 ? data.aiSystems : DEFAULT_AI_SYSTEMS;
   const journey = data.journey && data.journey.length > 0 ? data.journey : DEFAULT_JOURNEY;
   const proofItems = data.proofItems && data.proofItems.length > 0 ? data.proofItems : DEFAULT_PROOF;
-  const certificates = data.certificates || [];
+  const certificates = data.certificates && data.certificates.length > 0 ? data.certificates : DEFAULT_CERTIFICATES;
   const apps = data.apps && data.apps.length > 0 ? data.apps : DEFAULT_APPS;
 
   const items = [];
@@ -122,6 +123,20 @@ export function buildKnowledgeIndex(data = {}) {
     });
   });
 
+  // 4.5 AI Engineering Benchmarks & Case Studies
+  items.push({
+    id: 'benchmarks-overview',
+    type: 'BENCHMARK',
+    categoryLabel: 'Empirical Metrics & Benchmarks',
+    title: 'AI Engineering Case Studies & Benchmarks',
+    subtitle: 'Latency Reduction & Throughput Comparison Bar Charts',
+    description: 'Empirical comparison visualizer displaying measured latency reduction (-80% to -87%), throughput scaling (+420% to +1,180%), and token efficiency across production AI systems.',
+    destination: '#benchmarks',
+    targetSection: 'benchmarks',
+    tags: ['benchmark', 'metrics', 'latency', 'throughput', 'case study', 'bar chart', 'comparison', 'speedup', 'performance', 'optimization'],
+    badge: 'VERIFIED',
+  });
+
   // 5. Professional Journey
   journey.forEach((entry) => {
     items.push({
@@ -167,13 +182,23 @@ export function buildKnowledgeIndex(data = {}) {
     items.push({
       id: `cert-${cert.id || cert.title.toLowerCase().replace(/[^a-z0-9]/g, '-')}`,
       type: 'CERTIFICATE',
-      categoryLabel: 'Certificate / Credential',
+      categoryLabel: 'Certificates & Credentials',
       title: cert.title,
-      subtitle: cert.issuer || cert.organization || 'Verified Credential',
-      description: cert.description || cert.field || '',
-      destination: '#proof',
-      targetSection: 'proof',
-      tags: ['certificate', 'credential', 'education', cert.title.toLowerCase()],
+      subtitle: `${cert.issuer || cert.provider || 'Credential'} • ${cert.date || cert.issueDate || 'Verified'}`,
+      description: cert.description || (cert.topics || cert.skills || []).join(', ') || '',
+      destination: '#certificates',
+      targetSection: 'certificates',
+      tags: [
+        'certificate',
+        'credential',
+        'education',
+        'workshop',
+        'mastermind',
+        'masterclass',
+        cert.title.toLowerCase(),
+        (cert.issuer || cert.provider || '').toLowerCase(),
+        ...(cert.skills || cert.skillsCovered || cert.topics || []).map((t) => t.toLowerCase()),
+      ],
       badge: 'VERIFIED',
     });
   });
@@ -238,6 +263,72 @@ export function buildKnowledgeIndex(data = {}) {
     badge: 'PROTECTED',
   });
 
+  // 12. Legal & Business Disclosures
+  items.push({
+    id: 'legal-business-info',
+    type: 'LEGAL',
+    categoryLabel: 'Legal & Business',
+    title: 'Business Information & Merchant Profile',
+    subtitle: 'Legal Entity, Role & Operating Disclosures',
+    description: 'Official commercial disclosures, verified contact channels, and digital services capabilities for Sahil Bhatia.',
+    destination: '/business-info',
+    targetSection: 'legal-route',
+    tags: ['business', 'legal', 'company', 'merchant', 'address', 'profile', 'payu', 'verification', 'sahil bhatia'],
+    badge: 'VERIFIED',
+  });
+
+  items.push({
+    id: 'legal-services',
+    type: 'LEGAL',
+    categoryLabel: 'Legal & Business',
+    title: 'Services & Digital Solutions',
+    subtitle: 'Portfolio, Business Web, AI & Automations',
+    description: 'Bespoke web development, landing pages, custom AI-powered digital solutions, and business workflow automation.',
+    destination: '/services',
+    targetSection: 'legal-route',
+    tags: ['services', 'offerings', 'web development', 'portfolio', 'landing page', 'ai solutions', 'automation', 'n8n'],
+    badge: 'AVAILABLE',
+  });
+
+  items.push({
+    id: 'legal-privacy',
+    type: 'LEGAL',
+    categoryLabel: 'Legal & Business',
+    title: 'Privacy Policy',
+    subtitle: 'Data Governance & Protection Standard',
+    description: 'Transparent overview of minimal data collection, security measures, inquiry processing, and user privacy rights.',
+    destination: '/privacy-policy',
+    targetSection: 'legal-route',
+    tags: ['privacy', 'policy', 'data', 'gdpr', 'security', 'cookies', 'encryption'],
+    badge: 'STANDARD',
+  });
+
+  items.push({
+    id: 'legal-terms',
+    type: 'LEGAL',
+    categoryLabel: 'Legal & Business',
+    title: 'Terms & Conditions',
+    subtitle: 'Commercial Service Engagement Framework',
+    description: 'Client engagement terms, project deliverables, payment milestones, IP ownership, and revision guidelines.',
+    destination: '/terms-and-conditions',
+    targetSection: 'legal-route',
+    tags: ['terms', 'conditions', 'contract', 'agreement', 'milestones', 'ip', 'delivery'],
+    badge: 'STANDARD',
+  });
+
+  items.push({
+    id: 'legal-refund',
+    type: 'LEGAL',
+    categoryLabel: 'Legal & Business',
+    title: 'Refund & Cancellation Policy',
+    subtitle: 'Milestone Invoicing & Cancellation Guidelines',
+    description: 'Clear guidelines regarding digital services cancellations, deposit eligibility, warranty defect resolution, and refund processing.',
+    destination: '/refund-policy',
+    targetSection: 'legal-route',
+    tags: ['refund', 'cancellation', 'return', 'billing', 'deposit', 'warranty'],
+    badge: 'STANDARD',
+  });
+
   return items;
 }
 
@@ -246,12 +337,15 @@ export function buildKnowledgeIndex(data = {}) {
  */
 export function searchKnowledgeIndex(index, query) {
   if (!query || !query.trim()) {
-    // Return curated recommendations
+    // Return curated recommendations across core dimensions
     return index.filter((item) =>
       ['identity-core', 'project-01', 'project-02', 'project-03', 'system-sys-01', 'system-sys-02', 'contact-channel'].includes(item.id) ||
       item.type === 'PROJECT' ||
-      item.type === 'AI SYSTEM'
-    ).slice(0, 8);
+      item.type === 'AI SYSTEM' ||
+      item.type === 'JOURNEY' ||
+      item.type === 'CERTIFICATE' ||
+      item.type === 'APP'
+    ).slice(0, 12);
   }
 
   const q = query.trim().toLowerCase();
@@ -302,13 +396,69 @@ export function queryAIAssistant(userPrompt, portfolioData = {}) {
   const projects = portfolioData.projects && portfolioData.projects.length > 0 ? portfolioData.projects : DEFAULT_PROJECTS;
   const identity = portfolioData.identity || DEFAULT_IDENTITY;
 
-  // 1. "WHO IS SAHIL?" / BIO / ABOUT / IDENTITY
+  // 0. GREETINGS & CASUAL INTRODUCTIONS (English & Hindi / Hinglish)
+  if (
+    prompt === 'hi' ||
+    prompt === 'hello' ||
+    prompt === 'hey' ||
+    prompt.startsWith('hi ') ||
+    prompt.startsWith('hello ') ||
+    prompt.startsWith('hey ') ||
+    prompt.includes('namaste') ||
+    prompt.includes('kaise ho') ||
+    prompt.includes('kya haal') ||
+    prompt.includes('kya haal hai') ||
+    prompt.includes('kya chal raha') ||
+    prompt.includes('help') ||
+    prompt.includes('madad') ||
+    prompt.includes('kya kar sakte ho') ||
+    prompt.includes('what can you do')
+  ) {
+    return {
+      text: `Namaste & Hello! I am the Sahil Portfolio OS Intelligence Engine.\n\nI can assist you with:\n1. Sahil's verified production projects (NeutraCap, LYRA V2, Sahil AI OS)\n2. AI Systems Architecture & DAG workflows (SYS-01, SYS-02, SYS-03)\n3. Professional Journey (Paytm, Airtel Broadband, Excitel)\n4. Technical Skills & Capability Vectors\n5. Proof Matrix, Verified Certificates, or Direct Consultation\n\nHow can I help you navigate?`,
+      actions: [
+        { label: 'WHO IS SAHIL?', prompt: 'WHO IS SAHIL?' },
+        { label: 'WHAT HAS HE BUILT?', prompt: 'WHAT HAS HE BUILT?' },
+        { label: 'SHOW AI SYSTEMS', prompt: 'SHOW AI SYSTEMS' },
+        { label: 'SHOW PROFESSIONAL JOURNEY', prompt: 'SHOW PROFESSIONAL JOURNEY' },
+      ],
+    };
+  }
+
+  // 1. "AI VERSION" / VERSION / SYSTEM RELEASES
+  if (
+    prompt.includes('version') ||
+    prompt.includes('ai version') ||
+    prompt.includes('system version') ||
+    prompt.includes('v2.6.4') ||
+    prompt.includes('release') ||
+    prompt.includes('kya version') ||
+    prompt.includes('kaunsa version')
+  ) {
+    return {
+      text: `Portfolio OS & AI Architecture Version Registry:\n\n• Core OS Runtime: v2.6.4 (Production Stack: React 19, Vite, Tailwind CSS v4, Motion)\n• SYS-01: SAHIL AI OS Companion: v1.4.2 (Personal Agentic Operating Framework, Android APK & PWA)\n• SYS-02: LYRA V2: v0.9.5-beta (Directed Acyclic Graph DAG Execution Planner)\n• SYS-03: AI Consultancy OS: v1.0.0 (Diagnostic & SME Business Automation Playbook)\n• LinkBio Pro Builder: v2.1.0 (High-Speed Creator Gateway, <100ms load time)\n\nAll systems run active operational runtime checks and directed routing.`,
+      actions: [
+        { label: 'VIEW AI SYSTEMS LAB', destination: '#ai-systems', type: 'scroll' },
+        { label: 'SELECT SYS-01 (SAHIL AI OS)', destination: '#ai-systems', systemCode: 'SYS-01', type: 'ai-system' },
+        { label: 'SELECT SYS-02 (LYRA V2)', destination: '#ai-systems', systemCode: 'SYS-02', type: 'ai-system' },
+        { label: 'EXPLORE APPS HUB', destination: '#apps', type: 'scroll' },
+      ],
+    };
+  }
+
+  // 2. "WHO IS SAHIL?" / BIO / ABOUT / IDENTITY (English & Hindi)
   if (
     prompt.includes('who is') ||
     prompt.includes('about sahil') ||
     prompt.includes('who are you') ||
     prompt.includes('bio') ||
     prompt.includes('background') ||
+    prompt.includes('kaun hai') ||
+    prompt.includes('sahil kaun') ||
+    prompt.includes('sahil ke bare') ||
+    prompt.includes('koun hai') ||
+    prompt.includes('introduce') ||
+    prompt.includes('tell me about yourself') ||
     prompt === 'who is sahil?' ||
     prompt === 'who is sahil'
   ) {
@@ -322,33 +472,48 @@ export function queryAIAssistant(userPrompt, portfolioData = {}) {
     };
   }
 
-  // 2. "WHAT HAS HE BUILT?" / PROJECTS / WORK
+  // 3. "WHAT HAS HE BUILT?" / PROJECTS / WORK / HINDI
   if (
     prompt.includes('what has he built') ||
     prompt.includes('projects') ||
     prompt.includes('what did he build') ||
     prompt.includes('portfolio') ||
     prompt.includes('work') ||
+    prompt.includes('built') ||
+    prompt.includes('kya banaya') ||
+    prompt.includes('kya banaye') ||
+    prompt.includes('projects dikhao') ||
+    prompt.includes('kaam dikhao') ||
+    prompt.includes('work dikhao') ||
     prompt === 'what has he built?'
   ) {
+    const lyraProj = (projects || []).find((p) => p.slug === 'lyra-v2');
+    const neutraProj = (projects || []).find((p) => p.slug === 'neutracap');
+
     return {
       text: `Sahil has engineered a curated suite of verifiable production applications and AI systems:\n\n• NeutraCap: High-precision industrial capacitor spec platform with instant RFQ dispatch.\n• LYRA V2: Strategic architect and Directed Acyclic Graph (DAG) task engine.\n• Sahil AI OS: Personal agentic operating framework and model routing gateway.\n• Dental Care: Modern clinical booking experience with interactive treatment roadmaps.\n• LinkBio: Consolidated high-speed creator link hub (<100ms load time).\n• ShowTime Cinema: Theatrical seat-selection and concession transaction flow.\n• Sahil AI Consultancy OS: SME AI readiness assessment & diagnostic toolkit.`,
       actions: [
         { label: 'INSPECT CURATED PROJECTS', destination: '#projects', type: 'scroll' },
-        { label: 'OPEN LYRA V2', destination: '#projects', projectSlug: 'lyra-v2', type: 'project' },
-        { label: 'OPEN NEUTRACAP', destination: '#projects', projectSlug: 'neutracap', type: 'project' },
+        { label: 'OPEN LYRA V2', destination: '#projects', projectSlug: 'lyra-v2', projectData: lyraProj, type: 'project' },
+        { label: 'OPEN NEUTRACAP', destination: '#projects', projectSlug: 'neutracap', projectData: neutraProj, type: 'project' },
         { label: 'EXPLORE APPS HUB', destination: '#apps', type: 'scroll' },
       ],
     };
   }
 
-  // 3. "SHOW AI SYSTEMS" / SYSTEMS / LYRA / AGENTS
+  // 4. "SHOW AI SYSTEMS" / SYSTEMS / LYRA / AGENTS
   if (
     prompt.includes('ai systems') ||
     prompt.includes('systems') ||
     prompt.includes('agent') ||
+    prompt.includes('agents') ||
     prompt.includes('dag') ||
     prompt.includes('execution graph') ||
+    prompt.includes('ai architecture') ||
+    prompt.includes('sys-01') ||
+    prompt.includes('sys-02') ||
+    prompt.includes('sys-03') ||
+    prompt.includes('workflow') ||
     prompt === 'show ai systems'
   ) {
     return {
@@ -362,7 +527,52 @@ export function queryAIAssistant(userPrompt, portfolioData = {}) {
     };
   }
 
-  // 4. "SHOW PROFESSIONAL JOURNEY" / CAREER / SALES / PAYTM / AIRTEL / EXCITEL
+  // 4.5. EMPIRICAL BENCHMARKS & AI CASE STUDIES (Latency, Throughput, Efficiency)
+  if (
+    prompt.includes('benchmark') ||
+    prompt.includes('metrics') ||
+    prompt.includes('latency') ||
+    prompt.includes('throughput') ||
+    prompt.includes('case stud') ||
+    prompt.includes('bar chart') ||
+    prompt.includes('speedup') ||
+    prompt.includes('reduction') ||
+    prompt.includes('gains') ||
+    prompt === 'show benchmarks' ||
+    prompt === 'show metrics'
+  ) {
+    return {
+      text: `AI Engineering Empirical Benchmarks & Case Studies:\n\n1. LYRA V2 (DAG Scheduler): Latency down from 3,420ms to 680ms (-80.1%), Throughput up from 14 ops/s to 88 ops/s (+528%), Token waste reduced by -79.3%.\n\n2. Sahil AI OS (Model Router & Cache): p95 Latency reduced from 1,850ms to 240ms (-87.0%), Request capacity up from 22 to 145 req/s (+559%), Cost cut by -88.7%.\n\n3. Neutracap (Hybrid RAG): Retrieval time down from 2,100ms to 410ms (-80.5%), Search throughput up +422%, Precision up to 96.2%.\n\n4. Consultancy OS (Async Pipeline): Turnaround down from 14.2s to 1.8s (-87.3%), Processing throughput surged +1,180%.\n\nExplore interactive comparison bar charts in the Benchmarks section.`,
+      actions: [
+        { label: 'VIEW BENCHMARKS & BAR CHARTS', destination: '#benchmarks', type: 'scroll' },
+        { label: 'VIEW AI SYSTEMS LAB', destination: '#ai-systems', type: 'scroll' },
+      ],
+    };
+  }
+
+  // 5. CAPABILITIES & TECHNICAL SKILLS
+  if (
+    prompt.includes('skill') ||
+    prompt.includes('skills') ||
+    prompt.includes('capabilities') ||
+    prompt.includes('tech stack') ||
+    prompt.includes('technologies') ||
+    prompt.includes('tools') ||
+    prompt.includes('coding') ||
+    prompt.includes('competenc') ||
+    prompt.includes('kya skills')
+  ) {
+    return {
+      text: `Sahil's technical & architectural capabilities are grouped across 5 verified clusters:\n\n1. AI & LLM Systems: Prompt Engineering, Agentic Workflows, DAG Scheduling, Multimodal Vision, Structured JSON Extraction\n2. Modern Software Development: React 19, TypeScript, Tailwind CSS, Vite, Next.js, Node.js, WebSockets\n3. Automation & Orchestration: n8n pipelines, Webhook integrations, Firebase, REST/GraphQL\n4. Commercial & Ground Sales: Frontline Merchant Onboarding (Paytm), Technical Solution Selling (Airtel Broadband), Territory Acquisition (Excitel)\n5. Systems Architecture: High-throughput micro-tools, state machines, self-healing runtime systems.`,
+      actions: [
+        { label: 'EXPLORE CAPABILITY MAP', destination: '#capabilities', type: 'scroll' },
+        { label: 'VIEW AI SYSTEMS LAB', destination: '#ai-systems', type: 'scroll' },
+        { label: 'INSPECT CURATED PROJECTS', destination: '#projects', type: 'scroll' },
+      ],
+    };
+  }
+
+  // 6. "SHOW PROFESSIONAL JOURNEY" / CAREER / SALES / PAYTM / AIRTEL / EXCITEL
   if (
     prompt.includes('journey') ||
     prompt.includes('career') ||
@@ -371,19 +581,45 @@ export function queryAIAssistant(userPrompt, portfolioData = {}) {
     prompt.includes('airtel') ||
     prompt.includes('excitel') ||
     prompt.includes('experience') ||
+    prompt.includes('kaam kiya') ||
+    prompt.includes('kaha kaam') ||
+    prompt.includes('history') ||
+    prompt.includes('resume') ||
+    prompt.includes('cv') ||
     prompt === 'show professional journey'
   ) {
     return {
       text: `Sahil's trajectory follows a strict ground-truth evolution:\n\n1. Paytm (Jul 2024 – Mar 2025): On-ground Field Sales Executive driving QR and Soundbox merchant adoption in fast-paced retail markets.\n\n2. Airtel Broadband (Mar 2025 – Dec 2025): Consultative selling and high-tier fiber infrastructure client acquisition.\n\n3. Excitel Broadband (Jan 2026 – Jun 2026): Territory conquest and tactical sales agility in hyper-competitive markets.\n\n4. Independent Practice & AI Systems (2025 – Present): Merging commercial sales psychology with generative AI, agentic DAGs, and full-stack software.`,
       actions: [
-        { label: 'VIEW PROFESSIONAL JOURNEY', destination: '#journey', type: 'scroll' },
-        { label: 'INSPECT PAYTM PHASE', destination: '#journey-j-1', type: 'scroll' },
-        { label: 'INSPECT AIRTEL PHASE', destination: '#journey-j-2', type: 'scroll' },
+        { label: 'OPEN VERTICAL TIMELINE', destination: '/journey', type: 'journey-timeline' },
+        { label: 'DISPATCH CONSULTATION', destination: '#contact', type: 'scroll' },
       ],
     };
   }
 
-  // 5. "SHOW PROOF" / EVIDENCE / AUDIT / REPOSITORIES
+  // 7. SERVICES, PRICING & HIRE
+  if (
+    prompt.includes('service') ||
+    prompt.includes('services') ||
+    prompt.includes('pricing') ||
+    prompt.includes('cost') ||
+    prompt.includes('rate') ||
+    prompt.includes('hire') ||
+    prompt.includes('consult') ||
+    prompt.includes('consulting') ||
+    prompt.includes('freelance') ||
+    prompt.includes('fees')
+  ) {
+    return {
+      text: `Sahil provides tailored engineering & consulting engagements:\n\n• High-Conversion Narrative Pages & Portfolios: Cinematic 3D interactive web experiences.\n• AI-Powered Web Applications: Custom intelligent interfaces, DAG task systems, and model routing.\n• Workflow Automations: End-to-end n8n, API, and webhook pipelines saving 15+ hours/week.\n• Advisory & Diagnostic Sprints: Practical roadmap for SME business automation.\n\nDirect milestone pricing, transparent deliverables, and inquiry dispatch available via Direct Channel.`,
+      actions: [
+        { label: 'VIEW SERVICES PAGE', destination: '/services', type: 'scroll' },
+        { label: 'OPEN DIRECT CHANNEL', destination: '#contact', type: 'scroll' },
+      ],
+    };
+  }
+
+  // 8. "SHOW PROOF" / EVIDENCE / AUDIT / REPOSITORIES
   if (
     prompt.includes('proof') ||
     prompt.includes('evidence') ||
@@ -401,7 +637,7 @@ export function queryAIAssistant(userPrompt, portfolioData = {}) {
     };
   }
 
-  // 6. "SHOW CERTIFICATES" / CREDENTIALS / EDUCATION
+  // 9. "SHOW CERTIFICATES" / CREDENTIALS / EDUCATION
   if (
     prompt.includes('certificate') ||
     prompt.includes('credential') ||
@@ -412,13 +648,14 @@ export function queryAIAssistant(userPrompt, portfolioData = {}) {
     return {
       text: `Verified technical credentials and research benchmarks include:\n\n• Advanced Prompt Architecture & Agent Workflows (Systematic evaluation on structured JSON schemas, multimodal reasoning, and long reasoning chain context preservation).\n• Verified competency across LLM prompt engineering, n8n automations, TypeScript/React systems, and Directed Acyclic Graphs.`,
       actions: [
-        { label: 'VIEW CREDENTIALS', destination: '#proof', type: 'scroll' },
+        { label: 'VIEW CERTIFICATES & CREDENTIALS', destination: '#certificates', type: 'scroll' },
+        { label: 'VIEW PROOF MATRIX', destination: '#proof', type: 'scroll' },
         { label: 'INSPECT SKILLS MAP', destination: '#capabilities', type: 'scroll' },
       ],
     };
   }
 
-  // 7. SPECIFIC PROJECT INQUIRIES
+  // 10. SPECIFIC PROJECT INQUIRIES
   const matchedProject = projects.find(
     (p) =>
       prompt.includes(p.title.toLowerCase()) ||
@@ -451,7 +688,7 @@ export function queryAIAssistant(userPrompt, portfolioData = {}) {
     };
   }
 
-  // 8. APPS HUB / DOWNLOADS
+  // 11. APPS HUB / DOWNLOADS
   if (prompt.includes('app') || prompt.includes('apk') || prompt.includes('download')) {
     const activeDomain = identity?.domain && identity.domain !== 'SAHILBHATIA.COM' ? identity.domain : 'sahil-bhatia-ai-portfolio.vercel.app';
     return {
@@ -462,13 +699,19 @@ export function queryAIAssistant(userPrompt, portfolioData = {}) {
     };
   }
 
-  // 9. CONTACT / HIRE
+  // 12. CONTACT / HIRE (English & Hindi)
   if (
     prompt.includes('contact') ||
-    prompt.includes('hire') ||
     prompt.includes('email') ||
+    prompt.includes('phone') ||
+    prompt.includes('number') ||
     prompt.includes('message') ||
-    prompt.includes('reach out')
+    prompt.includes('reach out') ||
+    prompt.includes('kaise contact') ||
+    prompt.includes('baat kaise') ||
+    prompt.includes('linkedin') ||
+    prompt.includes('github') ||
+    prompt.includes('instagram')
   ) {
     return {
       text: `You can reach Sahil directly for AI consulting, agentic product builds, and technical advisory at ${identity.contactEmail || 'sahilbhatia7474@gmail.com'}.\n\nDirect contact form and verified social channels (LinkedIn, GitHub) are accessible in the Direct Channel section.`,
@@ -478,7 +721,7 @@ export function queryAIAssistant(userPrompt, portfolioData = {}) {
     };
   }
 
-  // 10. SMART FALLBACK VIA KNOWLEDGE SEARCH
+  // 13. SMART FALLBACK VIA KNOWLEDGE SEARCH
   const searchIndex = buildKnowledgeIndex(portfolioData);
   const searchHits = searchKnowledgeIndex(searchIndex, prompt);
 
@@ -500,7 +743,7 @@ export function queryAIAssistant(userPrompt, portfolioData = {}) {
   }
 
   return {
-    text: `I'm Sahil's portfolio AI assistant. I have full knowledge of his published projects (NeutraCap, LYRA V2, Sahil AI OS), AI systems architectures, professional career journey (Paytm, Airtel, Excitel), proof matrix, and technical skills.\n\nTry asking: "Who is Sahil?", "What has he built?", "Show AI systems", or "Show professional journey".`,
+    text: `I'm Sahil's portfolio AI assistant. I have full knowledge of his published projects (NeutraCap, LYRA V2, Sahil AI OS), AI systems architectures, professional career journey (Paytm, Airtel, Excitel), proof matrix, and technical skills.\n\nTry asking: "Who is Sahil?", "What has he built?", "Show AI systems", or "What is the AI version?".`,
     actions: [
       { label: 'EXPLORE IDENTITY', destination: '#hero', type: 'scroll' },
       { label: 'CURATED PROJECTS', destination: '#projects', type: 'scroll' },

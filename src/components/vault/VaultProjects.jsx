@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { usePortfolioData } from '../../context/PortfolioDataContext';
+import { useAuth } from '../../lib/authContext';
 import { saveItem, deleteItem, publishItem } from '../../lib/dbService';
 import {
   FolderKanban,
@@ -14,11 +15,13 @@ import {
   CheckCircle2,
   AlertCircle,
   Star,
+  Lock,
 } from 'lucide-react';
 import VaultProjectEditor from './VaultProjectEditor';
 
 const VaultProjects = ({ openCreateSignal, clearCreateSignal }) => {
   const { allProjects, refreshAllData } = usePortfolioData();
+  const { canEdit } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [categoryFilter, setCategoryFilter] = useState('ALL');
@@ -28,7 +31,9 @@ const VaultProjects = ({ openCreateSignal, clearCreateSignal }) => {
 
   // If parent triggered creation
   if (openCreateSignal && !isCreatingNew) {
-    setIsCreatingNew(true);
+    if (canEdit) {
+      setIsCreatingNew(true);
+    }
     if (clearCreateSignal) clearCreateSignal();
   }
 
@@ -103,16 +108,23 @@ const VaultProjects = ({ openCreateSignal, clearCreateSignal }) => {
           </p>
         </div>
 
-        <button
-          onClick={() => {
-            setEditingProject(null);
-            setIsCreatingNew(true);
-          }}
-          className="min-h-[44px] px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center justify-center gap-2 cursor-pointer"
-        >
-          <Plus className="w-4 h-4" />
-          <span>New Project</span>
-        </button>
+        {canEdit ? (
+          <button
+            onClick={() => {
+              setEditingProject(null);
+              setIsCreatingNew(true);
+            }}
+            className="min-h-[44px] px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>New Project</span>
+          </button>
+        ) : (
+          <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#0c1424] to-[#070b14] border border-cyan-400/40 text-cyan-300 font-mono text-xs shadow-md">
+            <Lock className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+            <span>Read-Only Specimen Mode &bull; Sole Editor: Sahil Bhatia</span>
+          </div>
+        )}
       </div>
 
       {feedback && (
@@ -248,50 +260,78 @@ const VaultProjects = ({ openCreateSignal, clearCreateSignal }) => {
 
               {/* Action Buttons Toolbar */}
               <div className="flex flex-wrap items-center gap-2 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-white/10">
-                {/* Publish / Unpublish Toggle */}
-                <button
-                  onClick={() => handleTogglePublish(proj)}
-                  title={isPublished ? 'Unpublish to Draft' : 'Publish to Live'}
-                  className={`min-h-[38px] px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${
-                    isPublished
-                      ? 'bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-900/60'
-                      : 'bg-amber-950/40 border border-amber-500/40 text-amber-300 hover:bg-amber-900/60'
-                  }`}
-                >
-                  {isPublished ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
-                  <span>{isPublished ? 'Live' : 'Draft'}</span>
-                </button>
+                {canEdit ? (
+                  <>
+                    {/* Publish / Unpublish Toggle */}
+                    <button
+                      onClick={() => handleTogglePublish(proj)}
+                      title={isPublished ? 'Unpublish to Draft' : 'Publish to Live'}
+                      className={`min-h-[38px] px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${
+                        isPublished
+                          ? 'bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-900/60'
+                          : 'bg-amber-950/40 border border-amber-500/40 text-amber-300 hover:bg-amber-900/60'
+                      }`}
+                    >
+                      {isPublished ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                      <span>{isPublished ? 'Live' : 'Draft'}</span>
+                    </button>
 
-                {/* Edit */}
-                <button
-                  onClick={() => {
-                    setEditingProject(proj);
-                    setIsCreatingNew(false);
-                  }}
-                  title="Edit full project specs"
-                  className="min-h-[38px] px-3 py-1.5 rounded-lg bg-[#141620] hover:bg-[#1d202e] border border-white/15 text-neutral-200 hover:text-white text-xs font-mono flex items-center gap-1.5 cursor-pointer"
-                >
-                  <Edit2 className="w-3.5 h-3.5 text-neutral-400" />
-                  <span>Edit</span>
-                </button>
+                    {/* Edit */}
+                    <button
+                      onClick={() => {
+                        setEditingProject(proj);
+                        setIsCreatingNew(false);
+                      }}
+                      title="Edit full project specs"
+                      className="min-h-[38px] px-3 py-1.5 rounded-lg bg-[#141620] hover:bg-[#1d202e] border border-white/15 text-neutral-200 hover:text-white text-xs font-mono flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <Edit2 className="w-3.5 h-3.5 text-neutral-400" />
+                      <span>Edit</span>
+                    </button>
 
-                {/* Duplicate */}
-                <button
-                  onClick={() => handleDuplicate(proj)}
-                  title="Duplicate as new draft"
-                  className="min-h-[38px] p-2 rounded-lg bg-[#141620] hover:bg-[#1d202e] border border-white/15 text-neutral-400 hover:text-white cursor-pointer"
-                >
-                  <Copy className="w-3.5 h-3.5" />
-                </button>
+                    {/* Duplicate */}
+                    <button
+                      onClick={() => handleDuplicate(proj)}
+                      title="Duplicate as new draft"
+                      className="min-h-[38px] p-2 rounded-lg bg-[#141620] hover:bg-[#1d202e] border border-white/15 text-neutral-400 hover:text-white cursor-pointer"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                    </button>
 
-                {/* Delete */}
-                <button
-                  onClick={() => handleDelete(proj.id, proj.title)}
-                  title="Delete project"
-                  className="min-h-[38px] p-2 rounded-lg bg-red-950/20 hover:bg-red-950/40 border border-red-500/20 text-red-400 hover:text-red-300 cursor-pointer"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
+                    {/* Delete */}
+                    <button
+                      onClick={() => handleDelete(proj.id, proj.title)}
+                      title="Delete project"
+                      className="min-h-[38px] p-2 rounded-lg bg-red-950/20 hover:bg-red-950/40 border border-red-500/20 text-red-400 hover:text-red-300 cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    {/* Public Visitor Specimen Inspector */}
+                    <div className="flex items-center gap-2">
+                      <span className={`px-2.5 py-1 rounded text-[10px] font-mono font-bold border ${
+                        isPublished 
+                          ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-300' 
+                          : 'bg-amber-950/40 border-amber-500/40 text-amber-300'
+                      }`}>
+                        {isPublished ? 'PUBLISHED' : 'DRAFT'}
+                      </span>
+                      <button
+                        onClick={() => {
+                          setEditingProject(proj);
+                          setIsCreatingNew(false);
+                        }}
+                        title="Inspect full project architecture and data"
+                        className="min-h-[38px] px-3.5 py-1.5 rounded-lg bg-cyan-950/30 hover:bg-cyan-900/40 border border-cyan-400/40 text-cyan-200 hover:text-white text-xs font-mono flex items-center gap-1.5 cursor-pointer shadow-sm transition-colors"
+                      >
+                        <Eye className="w-3.5 h-3.5 text-cyan-400" />
+                        <span>Inspect Specs</span>
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           );
@@ -319,6 +359,7 @@ const VaultProjects = ({ openCreateSignal, clearCreateSignal }) => {
         <VaultProjectEditor
           project={editingProject}
           isNew={isCreatingNew}
+          readOnly={!canEdit}
           onClose={() => {
             setIsCreatingNew(false);
             setEditingProject(null);

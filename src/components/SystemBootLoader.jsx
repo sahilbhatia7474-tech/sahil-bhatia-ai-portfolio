@@ -22,36 +22,48 @@ const SystemBootLoader = ({ onComplete }) => {
       } else {
         clearInterval(interval);
       }
-    }, 280);
+    }, 40);
+
+    let completed = false;
+    const finish = () => {
+      if (completed) return;
+      completed = true;
+      if (onComplete) onComplete();
+    };
+
+    const safetyTimeout = setTimeout(finish, 280);
 
     const tl = gsap.timeline({
-      onComplete: () => {
-        if (onComplete) onComplete();
-      },
+      onComplete: finish,
     });
 
     tl.set(containerRef.current, { autoAlpha: 1 })
       .fromTo(
         contentRef.current,
-        { scale: 0.96, opacity: 0, filter: 'blur(6px)' },
-        { scale: 1, opacity: 1, filter: 'blur(0px)', duration: 0.6, ease: 'power3.out' }
+        { scale: 0.98, opacity: 0, filter: 'blur(2px)' },
+        { scale: 1, opacity: 1, filter: 'blur(0px)', duration: 0.1, ease: 'power3.out' }
       )
       .to(contentRef.current, {
         opacity: 0,
-        y: -10,
-        filter: 'blur(8px)',
-        duration: 0.35,
+        y: -4,
+        filter: 'blur(2px)',
+        duration: 0.08,
         ease: 'power2.in',
-        delay: 1.1,
+        delay: 0.06,
       })
       .to(containerRef.current, {
         opacity: 0,
-        duration: 0.4,
+        duration: 0.08,
         ease: 'power2.inOut',
       });
 
+    const handleKeyDown = () => finish();
+    window.addEventListener('keydown', handleKeyDown, { passive: true });
+
     return () => {
       clearInterval(interval);
+      clearTimeout(safetyTimeout);
+      window.removeEventListener('keydown', handleKeyDown);
       tl.kill();
     };
   }, [onComplete]);
@@ -59,7 +71,9 @@ const SystemBootLoader = ({ onComplete }) => {
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-[9999] bg-[#070708] flex flex-col items-center justify-center select-none overflow-hidden"
+      onClick={() => onComplete?.()}
+      title="Click or tap to skip boot animation"
+      className="fixed inset-0 z-[9999] bg-[#070708] flex flex-col items-center justify-center select-none overflow-hidden cursor-pointer"
     >
       <div ref={contentRef} className="flex flex-col items-center gap-6 px-6 max-w-md w-full text-center">
         {/* System telemetry radar ring */}

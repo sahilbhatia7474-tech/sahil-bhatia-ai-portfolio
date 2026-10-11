@@ -3,9 +3,13 @@ import {
   collection,
   doc,
   onSnapshot,
+  query,
+  where,
 } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { seedInitialDatabase } from '../lib/dbService';
+import { useAuth } from '../lib/authContext';
+import { handleFirestoreError, OperationType } from '../lib/firestoreErrorHandler';
 import {
   IDENTITY as DEFAULT_IDENTITY,
   DEFAULT_SOCIAL_LINKS,
@@ -59,6 +63,7 @@ const normalizeIdentity = (data) => {
 };
 
 export const PortfolioDataProvider = ({ children }) => {
+  const { isFounder } = useAuth() || {};
   const [identity, setIdentity] = useState(() => normalizeIdentity(DEFAULT_IDENTITY));
   const [featuredPortrait, setFeaturedPortrait] = useState({
     imageUrl: 'https://i.ibb.co/svvJ3Fnc/793090671-2240593123170371-3167005344409012686-n.jpg',
@@ -92,16 +97,16 @@ export const PortfolioDataProvider = ({ children }) => {
     maintenanceMode: false,
   });
 
-  const [projects, setProjects] = useState([]);
-  const [allProjects, setAllProjects] = useState([]); // Includes drafts for founder
+  const [projects, setProjects] = useState(() => DEFAULT_PROJECTS);
+  const [allProjects, setAllProjects] = useState(() => DEFAULT_PROJECTS); // Includes drafts for founder
   const [aiSystems] = useState(DEFAULT_AI_SYSTEMS);
-  const [journey, setJourney] = useState(DEFAULT_JOURNEY);
-  const [allJourney, setAllJourney] = useState([]);
+  const [journey, setJourney] = useState(() => DEFAULT_JOURNEY);
+  const [allJourney, setAllJourney] = useState(() => DEFAULT_JOURNEY);
   const [education, setEducation] = useState([]);
-  const [certificates, setCertificates] = useState(DEFAULT_CERTIFICATES);
-  const [proof, setProof] = useState(DEFAULT_PROOF);
-  const [apps, setApps] = useState(DEFAULT_APPS);
-  const [allApps, setAllApps] = useState([]);
+  const [certificates, setCertificates] = useState(() => DEFAULT_CERTIFICATES);
+  const [proof, setProof] = useState(() => DEFAULT_PROOF);
+  const [apps, setApps] = useState(() => DEFAULT_APPS);
+  const [allApps, setAllApps] = useState(() => DEFAULT_APPS);
   const [media, setMedia] = useState([]);
   const [navigation, setNavigation] = useState([]);
   const [activityLogs, setActivityLogs] = useState([]);
@@ -115,8 +120,10 @@ export const PortfolioDataProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    // Attempt automatic seed on first run
-    seedInitialDatabase().catch((e) => console.warn('Auto-seed check note:', e.message));
+    // Attempt automatic seed on first run only for verified founder session
+    if (isFounder) {
+      seedInitialDatabase().catch((e) => console.warn('Auto-seed check note:', e.message));
+    }
 
     const unsubs = [];
 
@@ -126,7 +133,7 @@ export const PortfolioDataProvider = ({ children }) => {
       unsubs.push(
         onSnapshot(idDoc, (snap) => {
           if (snap.exists()) setIdentity((prev) => normalizeIdentity({ ...prev, ...snap.data() }));
-        }, (err) => console.warn('Identity snap warning:', err.message))
+        }, (err) => handleFirestoreError(err, OperationType.GET, 'identity/primary'))
       );
 
       // Featured Portrait
@@ -141,7 +148,7 @@ export const PortfolioDataProvider = ({ children }) => {
             }
             setFeaturedPortrait((prev) => ({ ...prev, ...data, imageUrl: safeImageUrl }));
           }
-        }, (err) => console.warn('Portrait snap warning:', err.message))
+        }, (err) => handleFirestoreError(err, OperationType.GET, 'featuredPortrait/primary'))
       );
 
       // Site Settings
@@ -149,13 +156,16 @@ export const PortfolioDataProvider = ({ children }) => {
       unsubs.push(
         onSnapshot(settingsDoc, (snap) => {
           if (snap.exists()) setSiteSettings((prev) => ({ ...prev, ...snap.data() }));
-        }, (err) => console.warn('Settings snap warning:', err.message))
+        }, (err) => handleFirestoreError(err, OperationType.GET, 'siteSettings/primary'))
       );
 
-      // Projects
-      const projCol = collection(db, 'projects');
+      // Projects: Founder gets full collection; public gets filtered PUBLIC & PUBLISHED
+      const projQuery = isFounder
+        ? collection(db, 'projects')
+        : query(collection(db, 'projects'), where('visibility', '==', 'PUBLIC'), where('status', '==', 'PUBLISHED'));
+
       unsubs.push(
-        onSnapshot(projCol, (snap) => {
+        onSnapshot(projQuery, (snap) => {
           if (!snap.empty) {
             const list = snap.docs.map((d) => {
               const item = { id: d.id, ...d.data() };
@@ -179,16 +189,20 @@ export const PortfolioDataProvider = ({ children }) => {
             setProjects(DEFAULT_PROJECTS);
             setAllProjects(DEFAULT_PROJECTS);
           }
-        }, () => {
+        }, (err) => {
+          handleFirestoreError(err, OperationType.LIST, 'projects');
           setProjects(DEFAULT_PROJECTS);
           setAllProjects(DEFAULT_PROJECTS);
         })
       );
 
       // Journey
-      const journeyCol = collection(db, 'journey');
+      const journeyQuery = isFounder
+        ? collection(db, 'journey')
+        : query(collection(db, 'journey'), where('visibility', '==', 'PUBLIC'), where('status', '==', 'PUBLISHED'));
+
       unsubs.push(
-        onSnapshot(journeyCol, (snap) => {
+        onSnapshot(journeyQuery, (snap) => {
           if (!snap.empty) {
             const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
             list.sort((a, b) => (a.sortOrder || 99) - (b.sortOrder || 99));
@@ -198,40 +212,61 @@ export const PortfolioDataProvider = ({ children }) => {
             setJourney(DEFAULT_JOURNEY.filter((j) => j.verified));
             setAllJourney(DEFAULT_JOURNEY);
           }
-        }, () => {
+        }, (err) => {
+          handleFirestoreError(err, OperationType.LIST, 'journey');
           setJourney(DEFAULT_JOURNEY.filter((j) => j.verified));
           setAllJourney(DEFAULT_JOURNEY);
         })
       );
 
       // Certificates
-      const certCol = collection(db, 'certificates');
+      const certQuery = isFounder
+        ? collection(db, 'certificates')
+        : query(collection(db, 'certificates'), where('visibility', '==', 'PUBLIC'), where('status', '==', 'PUBLISHED'));
+
       unsubs.push(
-        onSnapshot(certCol, (snap) => {
+        onSnapshot(certQuery, (snap) => {
           if (!snap.empty) {
-            const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-            list.sort((a, b) => (a.sortOrder || 99) - (b.sortOrder || 99));
-            setCertificates(list);
+            const list = snap.docs
+              .map((d) => ({ id: d.id, ...d.data() }))
+              .filter((d) => d.id !== 'cert-1' && d.id !== 'cert-2'); // filter legacy template mock items
+            if (list.length > 0) {
+              list.sort((a, b) => (a.sortOrder || 99) - (b.sortOrder || 99));
+              setCertificates(list);
+            } else {
+              setCertificates(DEFAULT_CERTIFICATES);
+            }
+          } else {
+            setCertificates(DEFAULT_CERTIFICATES);
           }
-        }, () => {})
+        }, (err) => {
+          handleFirestoreError(err, OperationType.LIST, 'certificates');
+          setCertificates(DEFAULT_CERTIFICATES);
+        })
       );
 
       // Education
-      const eduCol = collection(db, 'education');
+      const eduQuery = isFounder
+        ? collection(db, 'education')
+        : query(collection(db, 'education'), where('visibility', '==', 'PUBLIC'), where('status', '==', 'PUBLISHED'));
+
       unsubs.push(
-        onSnapshot(eduCol, (snap) => {
+        onSnapshot(eduQuery, (snap) => {
           if (!snap.empty) {
             const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
             list.sort((a, b) => (a.sortOrder || 99) - (b.sortOrder || 99));
             setEducation(list);
           }
-        }, () => {})
+        }, (err) => handleFirestoreError(err, OperationType.LIST, 'education'))
       );
 
       // Proof
-      const proofCol = collection(db, 'proof');
+      const proofQuery = isFounder
+        ? collection(db, 'proof')
+        : query(collection(db, 'proof'), where('visibility', '==', 'PUBLIC'), where('status', '==', 'PUBLISHED'));
+
       unsubs.push(
-        onSnapshot(proofCol, (snap) => {
+        onSnapshot(proofQuery, (snap) => {
           if (!snap.empty) {
             const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
             list.sort((a, b) => (a.sortOrder || 99) - (b.sortOrder || 99));
@@ -239,13 +274,19 @@ export const PortfolioDataProvider = ({ children }) => {
           } else {
             setProof(DEFAULT_PROOF);
           }
-        }, () => setProof(DEFAULT_PROOF))
+        }, (err) => {
+          handleFirestoreError(err, OperationType.LIST, 'proof');
+          setProof(DEFAULT_PROOF);
+        })
       );
 
       // Apps
-      const appsCol = collection(db, 'apps');
+      const appsQuery = isFounder
+        ? collection(db, 'apps')
+        : query(collection(db, 'apps'), where('visibility', '==', 'PUBLIC'), where('status', '==', 'PUBLISHED'));
+
       unsubs.push(
-        onSnapshot(appsCol, (snap) => {
+        onSnapshot(appsQuery, (snap) => {
           if (!snap.empty) {
             const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
             list.sort((a, b) => (a.sortOrder || 99) - (b.sortOrder || 99));
@@ -255,21 +296,25 @@ export const PortfolioDataProvider = ({ children }) => {
             setApps(DEFAULT_APPS);
             setAllApps(DEFAULT_APPS);
           }
-        }, () => {
+        }, (err) => {
+          handleFirestoreError(err, OperationType.LIST, 'apps');
           setApps(DEFAULT_APPS);
           setAllApps(DEFAULT_APPS);
         })
       );
 
       // Media
-      const mediaCol = collection(db, 'media');
+      const mediaQuery = isFounder
+        ? collection(db, 'media')
+        : query(collection(db, 'media'), where('visibility', '==', 'PUBLIC'));
+
       unsubs.push(
-        onSnapshot(mediaCol, (snap) => {
+        onSnapshot(mediaQuery, (snap) => {
           if (!snap.empty) {
             const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
             setMedia(list);
           }
-        }, () => {})
+        }, (err) => handleFirestoreError(err, OperationType.LIST, 'media'))
       );
 
       // Navigation
@@ -281,24 +326,31 @@ export const PortfolioDataProvider = ({ children }) => {
             list.sort((a, b) => (a.order || a.sortOrder || 99) - (b.order || b.sortOrder || 99));
             setNavigation(list);
           }
-        }, () => {})
+        }, (err) => handleFirestoreError(err, OperationType.LIST, 'navigation'))
       );
 
-      // Activity Log
-      const actCol = collection(db, 'activityLog');
-      unsubs.push(
-        onSnapshot(actCol, (snap) => {
-          if (!snap.empty) {
-            const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-            list.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
-            setActivityLogs(list);
-          }
-          setLoading(false);
-        }, () => setLoading(false))
-      );
+      // Activity Log - Only subscribed when founder is logged in
+      if (isFounder) {
+        const actCol = collection(db, 'activityLog');
+        unsubs.push(
+          onSnapshot(actCol, (snap) => {
+            if (!snap.empty) {
+              const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+              list.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+              setActivityLogs(list);
+            }
+            setLoading(false);
+          }, (err) => {
+            handleFirestoreError(err, OperationType.LIST, 'activityLog');
+            setLoading(false);
+          })
+        );
+      } else {
+        setTimeout(() => setLoading(false), 0);
+      }
     } catch (err) {
-      console.warn('Portfolio data setup warning:', err);
-      setLoading(false);
+      handleFirestoreError(err, OperationType.GET, null);
+      setTimeout(() => setLoading(false), 0);
     }
 
     return () => {
@@ -306,7 +358,7 @@ export const PortfolioDataProvider = ({ children }) => {
         if (typeof unsub === 'function') unsub();
       });
     };
-  }, [syncKey]);
+  }, [syncKey, isFounder]);
 
   // Determine active displayed projects based on previewMode
   const displayedProjects = previewMode === 'DRAFT' ? allProjects : projects;

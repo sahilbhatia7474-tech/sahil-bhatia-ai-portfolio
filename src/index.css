@@ -15,18 +15,39 @@
 
   --animate-float: float 6s ease-in-out infinite;
   --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-bloom-pulse: subtleBloomPulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 
   @keyframes float {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-12px); }
   }
+
+  @keyframes subtleBloomPulse {
+    0%, 100% {
+      opacity: 0.65;
+      transform: scale(0.985);
+    }
+    50% {
+      opacity: 0.95;
+      transform: scale(1.02);
+    }
+  }
+}
+
+.animate-bloom-pulse {
+  animation: subtleBloomPulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
+  overscroll-behavior-y: auto;
+  touch-action: pan-y;
   font-family: var(--font-sans);
-  overflow-x: hidden;
-  max-width: 100vw;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-synthesis: none;
 }
 
 body {
@@ -35,21 +56,116 @@ body {
   background-color: #070708;
   color: #f3f4f6;
   font-family: var(--font-sans);
-  overflow-x: hidden;
-  max-width: 100vw;
+  overflow-x: clip;
+  max-width: 100%;
   position: relative;
+  -webkit-overflow-scrolling: touch;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
-/* Precision grid background */
+/* Ensure crisp typography and eliminate font blurriness */
+h1, h2, h3, h4, h5, h6, p, span, a, button, input, textarea, code, pre {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Precision grid background & 3D Spatial Grid */
 .bg-spatial-grid {
   background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
+
+.bg-spatial-grid-dense {
+  background-size: 20px 20px;
   background-image: 
     linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
 }
 
 .bg-radial-gradient {
-  background: radial-gradient(circle at 50% 0%, rgba(255, 42, 58, 0.07) 0%, rgba(7, 7, 8, 0) 70%);
+  background: radial-gradient(circle at 50% 0%, rgba(255, 42, 58, 0.1) 0%, rgba(7, 7, 8, 0) 70%);
+}
+
+/* 3D Perspective Plane for Infinite Floor Depth */
+.perspective-floor-grid {
+  transform: perspective(700px) rotateX(62deg);
+  transform-origin: 50% 100%;
+}
+
+/* =========================================================
+   CSS CONTAINMENT & DEPTH OCCLUSION LAYER ARCHITECTURE
+   ========================================================= */
+
+/* Section CSS Containment & Stacking Context Isolation */
+.section-spatial-containment {
+  contain: layout style;
+  isolation: isolate;
+  position: relative;
+}
+
+/* Strict paint containment for self-contained visual sandboxes */
+.section-strict-containment {
+  contain: layout style paint;
+  isolation: isolate;
+  position: relative;
+}
+
+/* Z-0: Background Grid Plane (Baseline Reference) */
+.spatial-grid-plane {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Z-5: Depth Occlusion Ambient Mask (Softly dissolves/hides grid behind dense clusters) */
+.depth-occlusion-mask-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: radial-gradient(ellipse 85% 65% at 50% 50%, rgba(7, 7, 9, 0.85) 30%, rgba(7, 7, 9, 0.45) 65%, transparent 100%);
+}
+
+/* Z-10: Physical Solid Occlusion Chassis (Naturally occludes underlying grid) */
+.depth-occlude-grid {
+  position: relative;
+  z-index: 10;
+  background-color: #0b0c13;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 12px 32px -4px rgba(0, 0, 0, 0.85),
+    0 24px 64px -12px rgba(0, 0, 0, 0.95);
+}
+
+/* Z-15: Selective Aperture Reveal (Frosted semi-translucent glass that reveals blurred grid) */
+.depth-reveal-aperture {
+  position: relative;
+  z-index: 15;
+  background-color: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Z-20: Elevated Foreground Occlusion (Cast shadows expand, completely obscuring underlying layers) */
+.depth-occlude-elevated {
+  position: relative;
+  z-index: 20;
+  background-color: #0e0f18;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 
+    0 0 0 1px rgba(255, 255, 255, 0.14),
+    0 20px 48px -6px rgba(0, 0, 0, 0.92),
+    0 36px 90px -16px rgba(0, 0, 0, 0.98);
 }
 
 /* Custom modern scrollbar */

@@ -30,6 +30,39 @@ export const LINK_TYPES = [
 ];
 
 /**
+ * Authoritative verified project link registry for verified portfolio projects
+ */
+export const VERIFIED_PROJECT_URLS = {
+  neutracap: 'https://neutracap-industrial-capacitor-cata.vercel.app/',
+  '01': 'https://neutracap-industrial-capacitor-cata.vercel.app/',
+  'dental-care': 'https://dental-care-modern-dentistry.ai.studio',
+  'dental care': 'https://dental-care-modern-dentistry.ai.studio',
+  'dental care modern dentistry': 'https://dental-care-modern-dentistry.ai.studio',
+  '04': 'https://dental-care-modern-dentistry.ai.studio',
+  linkbio: 'https://linkvault-henna.vercel.app/',
+  linkvault: 'https://linkvault-henna.vercel.app/',
+  '05': 'https://linkvault-henna.vercel.app/',
+  'showtime-cinema-booking': 'https://showtime-cinema-booking.ai.studio',
+  'showtime cinema booking': 'https://showtime-cinema-booking.ai.studio',
+  'showtime': 'https://showtime-cinema-booking.ai.studio',
+  '06': 'https://showtime-cinema-booking.ai.studio',
+};
+
+export function getVerifiedUrlForProject(project) {
+  if (!project) return null;
+  const slugKey = (project.slug || '').toLowerCase().trim();
+  const titleKey = (project.title || '').toLowerCase().trim();
+  const idKey = String(project.id || '').trim();
+
+  return (
+    VERIFIED_PROJECT_URLS[slugKey] ||
+    VERIFIED_PROJECT_URLS[titleKey] ||
+    VERIFIED_PROJECT_URLS[idKey] ||
+    null
+  );
+}
+
+/**
  * Derives a clean status badge when no external public links are configured.
  */
 export function deriveProjectBadge(project) {
@@ -112,6 +145,29 @@ export function getProjectPublicLinks(project) {
 
   // Sort links by sortOrder ascending
   candidateLinks.sort((a, b) => (a.sortOrder || 99) - (b.sortOrder || 99));
+
+  // 3. Guarantee verified project URL presence for the 4 core builds
+  const verifiedUrl = getVerifiedUrlForProject(project);
+  if (verifiedUrl) {
+    const existingIndex = candidateLinks.findIndex(
+      (l) => l.type === 'LIVE_WEBSITE' || l.url === verifiedUrl || l.url.includes('dental-care')
+    );
+    if (existingIndex >= 0) {
+      candidateLinks[existingIndex].url = verifiedUrl;
+      candidateLinks[existingIndex].isPrimary = true;
+    } else {
+      candidateLinks.unshift({
+        id: 'lnk-verified-live',
+        label: 'Visit Website',
+        actionLabel: 'VIEW LIVE PROJECT',
+        url: verifiedUrl,
+        type: 'LIVE_WEBSITE',
+        sortOrder: 1,
+        visibility: 'PUBLIC',
+        isPrimary: true,
+      });
+    }
+  }
 
   // Ensure at least one primary link if any exists, but prefer user-specified
   const hasUserPrimary = candidateLinks.some((l) => l.isPrimary);

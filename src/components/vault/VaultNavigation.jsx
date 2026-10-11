@@ -21,8 +21,9 @@ const DEFAULT_ITEMS = [
   { id: 'nav-4', label: 'AI Systems', target: '/ai-systems', visible: true, order: 4 },
   { id: 'nav-5', label: 'Journey', target: '/journey', visible: true, order: 5 },
   { id: 'nav-6', label: 'Proof', target: '/proof', visible: true, order: 6 },
-  { id: 'nav-7', label: 'Future Vault', target: '/future-vault', visible: true, order: 7 },
-  { id: 'nav-8', label: 'Apps', target: '/apps', visible: true, order: 8 },
+  { id: 'nav-6b', label: 'Certificates', target: '/certificates', visible: true, order: 7 },
+  { id: 'nav-7', label: 'Future Vault', target: '/future-vault', visible: true, order: 8 },
+  { id: 'nav-8', label: 'Apps', target: '/apps', visible: true, order: 9 },
 ];
 
 const VaultNavigation = () => {

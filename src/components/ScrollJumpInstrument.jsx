@@ -15,9 +15,16 @@ export default function ScrollJumpInstrument() {
   const [isPastThreshold, setIsPastThreshold] = useState(false);
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      // Threshold: 420px down triggers transition from JUMP to TOP
-      setIsPastThreshold(window.scrollY > 420);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const next = window.scrollY > 420;
+          setIsPastThreshold((prev) => (prev !== next ? next : prev));
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });

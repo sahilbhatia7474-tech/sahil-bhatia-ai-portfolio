@@ -2,46 +2,61 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Helper function to check if the user is the authenticated Founder (No backdoors or bypass tokens)
+    // Helper function to check if the user is the authenticated Founder (Sahil Bhatia)
     function isFounder() {
       return request.auth != null && 
+             request.auth.token.email != null &&
              (request.auth.token.email.lower() == 'sahilbhatia7474@gmail.com' ||
               request.auth.token.email.lower() == 'sahilbhatia1471@gmail.com');
     }
     
-    // Public collections: anyone can read PUBLISHED items, only Founder can write or read drafts
+    // 'vault' collection and subcollections:
+    // Explicitly allows public and anonymous visitors to perform 'read' operations;
+    // Explicitly denies all 'write', 'create', 'update', and 'delete' operations
+    // to any user who is not authenticated with the email 'sahilbhatia7474@gmail.com'.
+    match /vault/{document} {
+      allow read: if true;
+      allow create, update, delete: if isFounder();
+    }
+    match /vault/{document}/{subCollection=**} {
+      allow read: if true;
+      allow create, update, delete: if isFounder();
+    }
+
+    // Vault Data collections: Anonymous and public visitors have full read access;
+    // all create, update, and delete write operations are strictly restricted to Sahil Bhatia.
     match /projects/{document} {
-      allow read: if (resource == null || (resource.data.visibility == 'PUBLIC' && resource.data.status == 'PUBLISHED')) || isFounder();
+      allow read: if true;
       allow write: if isFounder();
     }
 
     match /aiSystems/{document} {
-      allow read: if (resource == null || (resource.data.visibility == 'PUBLIC' && resource.data.status == 'PUBLISHED')) || isFounder();
+      allow read: if true;
       allow write: if isFounder();
     }
 
     match /journey/{document} {
-      allow read: if (resource == null || (resource.data.visibility == 'PUBLIC' && resource.data.status == 'PUBLISHED')) || isFounder();
+      allow read: if true;
       allow write: if isFounder();
     }
 
     match /education/{document} {
-      allow read: if (resource == null || (resource.data.visibility == 'PUBLIC' && resource.data.status == 'PUBLISHED')) || isFounder();
+      allow read: if true;
       allow write: if isFounder();
     }
 
     match /certificates/{document} {
-      allow read: if (resource == null || (resource.data.visibility == 'PUBLIC' && resource.data.status == 'PUBLISHED')) || isFounder();
+      allow read: if true;
       allow write: if isFounder();
     }
 
     match /proof/{document} {
-      allow read: if (resource == null || (resource.data.visibility == 'PUBLIC' && resource.data.status == 'PUBLISHED')) || isFounder();
+      allow read: if true;
       allow write: if isFounder();
     }
 
     match /apps/{document} {
-      allow read: if (resource == null || (resource.data.visibility == 'PUBLIC' && resource.data.status == 'PUBLISHED')) || isFounder();
+      allow read: if true;
       allow write: if isFounder();
     }
 
@@ -70,27 +85,35 @@ service cloud.firestore {
       allow write: if isFounder();
     }
 
-    // Site settings: public settings readable, sensitive/vault settings protected
+    // Site settings: public/vault settings readable, modifications restricted to Founder
     match /siteSettings/{document} {
       allow read: if true;
       allow write: if isFounder();
     }
 
     match /media/{document} {
-      allow read: if (resource == null || resource.data.visibility == 'PUBLIC') || isFounder();
+      allow read: if true;
       allow write: if isFounder();
     }
 
-    // Activity log: private to Founder only
+    // Activity log: public/guest readable for transparency, write operations restricted to Founder
     match /activityLog/{document} {
-      allow read, write: if isFounder();
+      allow read: if true;
+      allow write: if isFounder();
     }
 
     // Consultation inquiries / messages: public can submit valid inquiries, only Founder can read/manage
     match /messages/{document} {
       allow create: if request.resource.data.name is string &&
+                       request.resource.data.name.size() >= 2 &&
+                       request.resource.data.name.size() <= 200 &&
                        request.resource.data.email is string &&
-                       request.resource.data.email.size() > 3;
+                       request.resource.data.email.size() > 3 &&
+                       request.resource.data.email.size() <= 254 &&
+                       request.resource.data.message is string &&
+                       request.resource.data.message.size() >= 5 &&
+                       request.resource.data.message.size() <= 5000 &&
+                       (!('status' in request.resource.data) || request.resource.data.status == 'UNREAD');
       allow read, update, delete: if isFounder();
     }
 

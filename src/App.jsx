@@ -5,20 +5,34 @@ import { PortfolioDataProvider, usePortfolioData } from './context/PortfolioData
 import { ThemeProvider } from './context/ThemeContext';
 import SystemBootLoader from './components/SystemBootLoader';
 import CustomCursor from './components/CustomCursor';
+import SpiderVerseBackgroundWall from './components/SpiderVerseBackgroundWall';
+import DynamicAmbientLightBackdrop from './components/DynamicAmbientLightBackdrop';
 import Navigation from './components/Navigation';
-import AIAssistant from './components/AIAssistant';
+// Lazy-load floating AI assistant to eliminate 44KB+ from critical initial render path
+const AIAssistant = lazy(() => import('./components/AIAssistant'));
 import Hero from './components/Hero';
 import CapabilityMap from './components/CapabilityMap';
 import Projects from './components/Projects';
 import AISystems from './components/AISystems';
-import Journey from './components/Journey';
+import AICaseStudyMetrics from './components/AICaseStudyMetrics';
 import Proof from './components/Proof';
+import Certificates from './components/Certificates';
 import FutureVault from './components/FutureVault';
 import AppsHub from './components/AppsHub';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ScrollJumpInstrument from './components/ScrollJumpInstrument';
-import { Eye, ShieldAlert, Lock, Cpu, RefreshCw } from 'lucide-react';
+import PortfolioTerminal from './components/PortfolioTerminal';
+import SpatialSectionDivider from './components/SpatialSectionDivider';
+import { ShieldAlert, Lock, RefreshCw } from 'lucide-react';
+
+// Lazy-load secondary pages to keep the initial landing bundle fast and lightweight
+const JourneyPage = lazy(() => import('./pages/JourneyPage'));
+const BusinessInfoPage = lazy(() => import('./pages/BusinessInfoPage'));
+const ServicesPage = lazy(() => import('./pages/ServicesPage'));
+const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
+const TermsPage = lazy(() => import('./pages/TermsPage'));
+const RefundPolicyPage = lazy(() => import('./pages/RefundPolicyPage'));
 
 // Lazy-load private Founder Vault CMS to isolate bundle size from public portfolio
 const VaultLayout = lazy(() => import('./components/vault/VaultLayout'));
@@ -43,8 +57,10 @@ function ScrollManager() {
     const routeSectionMap = {
       '/projects': 'projects',
       '/ai-systems': 'ai-systems',
-      '/journey': 'journey',
+      '/benchmarks': 'benchmarks',
+      '/case-studies': 'benchmarks',
       '/proof': 'proof',
+      '/certificates': 'certificates',
       '/future-vault': 'vault',
       '/apps': 'apps',
       '/contact': 'contact',
@@ -67,14 +83,26 @@ function ScrollManager() {
 // Public Experience Shell
 function PublicExperience() {
   const [booting, setBooting] = useState(() => {
-    // Only display full initialization sequence on initial visit
-    return !sessionStorage.getItem('sahil_os_booted');
+    try {
+      // Only display full initialization sequence on initial visit
+      return !sessionStorage.getItem('sahil_os_booted');
+    } catch {
+      return false;
+    }
   });
   const { siteSettings, previewMode, setPreviewMode } = usePortfolioData();
   const { isFounderSession } = useAuth();
 
+  useEffect(() => {
+    document.title = 'SAHIL BHATIA — AI Portfolio & Systems';
+  }, []);
+
   const handleBootComplete = () => {
-    sessionStorage.setItem('sahil_os_booted', 'true');
+    try {
+      sessionStorage.setItem('sahil_os_booted', 'true');
+    } catch {
+      // safe fallback
+    }
     setBooting(false);
   };
 
@@ -169,40 +197,72 @@ function PublicExperience() {
       {/* Precision Ambient Light Follower & Custom Cursor */}
       <CustomCursor />
 
+      {/* Spider-Man Web-Shooting & Geometric Spider-Net Cosmic Wall Layer */}
+      <SpiderVerseBackgroundWall />
+
+      {/* Dynamic Ambient Light Layer behind Main Content Containers (Color Temp & Intensity Responsive) */}
+      <DynamicAmbientLightBackdrop />
+
       {/* Fixed Sticky Header Navigation */}
       <Navigation />
 
       {/* Floating AI Portfolio Assistant & Navigation Engine */}
-      <AIAssistant />
+      <Suspense fallback={null}>
+        <AIAssistant />
+      </Suspense>
 
       {/* Floating Navigation Instrument (Jump to Mid / Back to Top) */}
       <ScrollJumpInstrument />
+
+      {/* Floating Interactive Command Terminal Component (Query the Portfolio) */}
+      <PortfolioTerminal />
 
       {/* Main Structural Portfolio Content */}
       <main className="relative z-10">
         {/* 1. IDENTITY & STATEMENT */}
         <Hero />
 
+        <SpatialSectionDivider index="01" label="CAPABILITIES MATRIX" accent="crimson" />
+
         {/* 2. CAPABILITY MAP / SKILLS */}
         <CapabilityMap />
+
+        <SpatialSectionDivider index="02" label="VERIFIED SYSTEMS" accent="ruby" />
 
         {/* 3. CURATED PROJECTS (7 Verified Projects) */}
         <Projects />
 
+        <SpatialSectionDivider index="03" label="AGENTIC ARCHITECTURE" accent="violet" />
+
         {/* 4. AI SYSTEMS ARCHITECTURE */}
         <AISystems />
 
-        {/* 5. PROFESSIONAL JOURNEY (Frontline Sales to AI Systems) */}
-        <Journey />
+        <SpatialSectionDivider index="04" label="EMPIRICAL BENCHMARKS & METRICS" accent="ruby" />
 
-        {/* 6. PROOF & EVIDENCE MATRIX */}
+        {/* 4.5 AI ENGINEERING CASE STUDIES & COMPARATIVE BENCHMARKS */}
+        <AICaseStudyMetrics />
+
+        <SpatialSectionDivider index="05" label="AUDIT & PROOF MATRIX" accent="emerald" />
+
+        {/* 5. PROOF & EVIDENCE MATRIX */}
         <Proof />
+
+        <SpatialSectionDivider index="06" label="CREDENTIALS & HONORS" accent="teal" />
+
+        {/* 6. CERTIFICATES & CREDENTIALS */}
+        <Certificates />
+
+        <SpatialSectionDivider index="07" label="ARCHIVAL VAULT" accent="amber" />
 
         {/* 7. FUTURE VAULT */}
         <FutureVault />
 
+        <SpatialSectionDivider index="08" label="DISTRIBUTION HUB" accent="cyan" />
+
         {/* 8. APPS DISTRIBUTION HUB */}
         <AppsHub />
+
+        <SpatialSectionDivider index="09" label="DIRECT INTERFACE" accent="crimson" />
 
         {/* 9. DIRECT CHANNEL & CONTACT */}
         <Contact />
@@ -249,11 +309,101 @@ function App() {
               <Route path="/" element={<PublicExperience />} />
               <Route path="/projects" element={<PublicExperience />} />
               <Route path="/ai-systems" element={<PublicExperience />} />
-              <Route path="/journey" element={<PublicExperience />} />
+              <Route
+                path="/journey"
+                element={
+                  <Suspense fallback={<div className="min-h-screen bg-[#070708] flex items-center justify-center font-mono text-xs text-neutral-400">Loading Professional Journey Timeline...</div>}>
+                    <JourneyPage />
+                  </Suspense>
+                }
+              />
               <Route path="/proof" element={<PublicExperience />} />
               <Route path="/future-vault" element={<PublicExperience />} />
               <Route path="/apps" element={<PublicExperience />} />
               <Route path="/contact" element={<PublicExperience />} />
+
+              {/* Real Working Legal & Business Routes */}
+              <Route
+                path="/business-info"
+                element={
+                  <Suspense fallback={<div className="min-h-screen bg-[#070708]" />}>
+                    <BusinessInfoPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/business"
+                element={
+                  <Suspense fallback={<div className="min-h-screen bg-[#070708]" />}>
+                    <BusinessInfoPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/services"
+                element={
+                  <Suspense fallback={<div className="min-h-screen bg-[#070708]" />}>
+                    <ServicesPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/privacy-policy"
+                element={
+                  <Suspense fallback={<div className="min-h-screen bg-[#070708]" />}>
+                    <PrivacyPolicyPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/privacy"
+                element={
+                  <Suspense fallback={<div className="min-h-screen bg-[#070708]" />}>
+                    <PrivacyPolicyPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/terms-and-conditions"
+                element={
+                  <Suspense fallback={<div className="min-h-screen bg-[#070708]" />}>
+                    <TermsPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/terms"
+                element={
+                  <Suspense fallback={<div className="min-h-screen bg-[#070708]" />}>
+                    <TermsPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/refund-policy"
+                element={
+                  <Suspense fallback={<div className="min-h-screen bg-[#070708]" />}>
+                    <RefundPolicyPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/refund-and-cancellation"
+                element={
+                  <Suspense fallback={<div className="min-h-screen bg-[#070708]" />}>
+                    <RefundPolicyPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/refund"
+                element={
+                  <Suspense fallback={<div className="min-h-screen bg-[#070708]" />}>
+                    <RefundPolicyPage />
+                  </Suspense>
+                }
+              />
+
               <Route path="*" element={<PublicExperience />} />
             </Routes>
           </PortfolioDataProvider>

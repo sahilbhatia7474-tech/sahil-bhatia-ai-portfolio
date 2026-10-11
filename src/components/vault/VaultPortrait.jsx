@@ -6,7 +6,7 @@ import { db } from '../../lib/firebase';
 import { useAuth } from '../../lib/authContext';
 import MediaUploadControl from './MediaUploadControl';
 import FeaturedBuilderCard3D from '../FeaturedBuilderCard3D';
-import { Save, Sparkles, Check, AlertCircle, RefreshCw, Crosshair, Eye, CheckCircle2, Type, Upload } from 'lucide-react';
+import { Save, Sparkles, Check, AlertCircle, RefreshCw, Crosshair, Eye, CheckCircle2, Type, Upload, Lock, ShieldCheck } from 'lucide-react';
 
 const OFFICIAL_PORTRAIT_URL = 'https://i.ibb.co/svvJ3Fnc/793090671-2240593123170371-3167005344409012686-n.jpg';
 
@@ -33,7 +33,7 @@ const PORTRAIT_PRESETS = [
 
 const VaultPortrait = () => {
   const { featuredPortrait, refreshAllData } = usePortfolioData();
-  const { isFounder } = useAuth();
+  const { isFounder, canEdit } = useAuth();
   const autoSyncedRef = useRef(false);
 
   // Core Visual & Positioning State
@@ -107,6 +107,14 @@ const VaultPortrait = () => {
   }, [featuredPortrait]);
 
   const handleSave = async (overrideUrl = null) => {
+    if (!canEdit) {
+      setMessage({
+        type: 'error',
+        text: 'ACCESS DENIED: Editing is restricted to Sahil Bhatia (sahilbhatia7474@gmail.com). You are viewing in Read-Only Specimen Mode.'
+      });
+      return;
+    }
+
     setSaving(true);
     setIsSaved(false);
     setMessage(null);
@@ -198,9 +206,9 @@ const VaultPortrait = () => {
     setSaving(false);
   };
 
-  // Auto-sync portrait if founder authenticated and still pointing to outdated default
+  // Auto-sync portrait ONLY if founder is authenticated with full write clearance
   useEffect(() => {
-    if (isFounder && featuredPortrait && !autoSyncedRef.current) {
+    if (canEdit && featuredPortrait && !autoSyncedRef.current) {
       const currentUrl = featuredPortrait.imageUrl?.trim();
       if (currentUrl !== OFFICIAL_PORTRAIT_URL && (!currentUrl || currentUrl === '/sahil-bhatia-portrait.svg' || currentUrl === '/assets/sahil-bhatia-portrait.svg' || currentUrl.includes('unsplash'))) {
         autoSyncedRef.current = true;
@@ -215,7 +223,7 @@ const VaultPortrait = () => {
         }).catch((err) => console.warn('Auto-sync note:', err.message));
       }
     }
-  }, [isFounder, featuredPortrait]);
+  }, [canEdit, featuredPortrait]);
 
   const currentPreviewData = {
     imageUrl,
@@ -244,13 +252,13 @@ const VaultPortrait = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-            <span className="text-[10px] font-mono uppercase tracking-widest text-red-400 font-semibold">
-              FOUNDER CONTROL // PORTFOLIO OS
+            <span className={`w-2 h-2 rounded-full ${canEdit ? 'bg-red-500 animate-pulse' : 'bg-cyan-400'}`} />
+            <span className={`text-[10px] font-mono uppercase tracking-widest font-semibold ${canEdit ? 'text-red-400' : 'text-cyan-400'}`}>
+              {canEdit ? 'FOUNDER CONTROL // PORTFOLIO OS' : 'PUBLIC SPECIMEN MODE // READ-ONLY'}
             </span>
           </div>
           <h2 className="text-xl font-bold font-display text-white uppercase tracking-wider flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-red-500" />
+            <Sparkles className={`w-5 h-5 ${canEdit ? 'text-red-500' : 'text-cyan-400'}`} />
             <span>FOUNDER CARD ARCHITECTURE</span>
           </h2>
           <p className="text-xs text-neutral-400 mt-1 font-sans">
@@ -258,30 +266,46 @@ const VaultPortrait = () => {
           </p>
         </div>
 
-        <button
-          id="btn-save-founder-card"
-          onClick={() => handleSave()}
-          disabled={saving}
-          className="min-h-[44px] px-6 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-        >
-          {saving ? (
-            <>
-              <RefreshCw className="w-4 h-4 animate-spin" />
-              <span>Verifying Firestore...</span>
-            </>
-          ) : isSaved ? (
-            <>
-              <CheckCircle2 className="w-4 h-4 text-emerald-300" />
-              <span>SAVED TO FOUNDER VAULT</span>
-            </>
-          ) : (
-            <>
-              <Save className="w-4 h-4" />
-              <span>Save Founder Card</span>
-            </>
-          )}
-        </button>
+        {canEdit ? (
+          <button
+            id="btn-save-founder-card"
+            onClick={() => handleSave()}
+            disabled={saving}
+            className="min-h-[44px] px-6 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+          >
+            {saving ? (
+              <>
+                <RefreshCw className="w-4 h-4 animate-spin" />
+                <span>Verifying Firestore...</span>
+              </>
+            ) : isSaved ? (
+              <>
+                <CheckCircle2 className="w-4 h-4 text-emerald-300" />
+                <span>SAVED TO FOUNDER VAULT</span>
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4" />
+                <span>Save Founder Card</span>
+              </>
+            )}
+          </button>
+        ) : (
+          <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-[#0b101d] border border-cyan-500/30 text-cyan-300 font-mono text-xs shadow-inner">
+            <Lock className="w-3.5 h-3.5 text-cyan-400" />
+            <span>READ-ONLY SPECIMEN</span>
+          </div>
+        )}
       </div>
+
+      {!canEdit && (
+        <div className="p-3.5 rounded-xl bg-gradient-to-r from-[#0c1527] via-[#09101d] to-[#080d17] border border-cyan-500/30 flex items-center gap-3 text-xs font-mono text-cyan-200">
+          <ShieldCheck className="w-4 h-4 text-cyan-400 shrink-0" />
+          <span>
+            <strong>Read-Only Clearance:</strong> You are exploring Sahil Bhatia&apos;s 3D founder architecture in specimen preview. Live card modifications are restricted strictly to Sahil Bhatia (<span className="text-white">sahilbhatia7474@gmail.com</span>).
+          </span>
+        </div>
+      )}
 
       {message && (
         <div

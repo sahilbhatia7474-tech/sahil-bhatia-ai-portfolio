@@ -16,6 +16,7 @@ import VaultNavigation from './VaultNavigation';
 import VaultSiteSettings from './VaultSiteSettings';
 import VaultActivityLog from './VaultActivityLog';
 import VaultDiagnostics from './VaultDiagnostics';
+import VaultInquiries from './VaultInquiries';
 
 import {
   LayoutDashboard,
@@ -37,11 +38,13 @@ import {
   X,
   Cpu,
   Wrench,
+  Mail,
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const TABS = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { id: 'inquiries', label: 'Client Inquiries', icon: Mail },
   { id: 'identity', label: 'Identity & Bio', icon: UserCheck },
   { id: 'portrait', label: '3D Card & Portrait', icon: Sparkles },
   { id: 'projects', label: 'Project Manager', icon: FolderKanban },
@@ -58,7 +61,7 @@ const TABS = [
 ];
 
 const VaultLayout = () => {
-  const { isFounder, logout, currentUser } = useAuth();
+  const { isFounder, canEdit, role, logout, currentUser } = useAuth();
   const { previewMode, setPreviewMode, siteSettings } = usePortfolioData();
   const location = useLocation();
   const navigate = useNavigate();
@@ -145,6 +148,7 @@ const VaultLayout = () => {
           <Link
             to="/"
             target="_blank"
+            rel="noopener noreferrer"
             className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-neutral-300 hover:text-white text-xs font-mono transition-colors"
           >
             <span>Public Site</span>
@@ -153,12 +157,27 @@ const VaultLayout = () => {
 
           {/* Founder Identity Badge & Logout */}
           <div className="flex items-center gap-2">
-            <div className="hidden xl:flex flex-col text-right font-mono text-[10px]">
-              <span className="text-emerald-400 font-bold">OPERATOR: FOUNDER</span>
-              <span className="text-neutral-400 truncate max-w-[160px]">
-                {currentUser?.email || FOUNDER_EMAIL}
-              </span>
-            </div>
+              {canEdit ? (
+                <div className="hidden xl:flex flex-col text-right font-mono text-[10px]">
+                  <span className="text-emerald-400 font-bold flex items-center justify-end gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    FOUNDER: SAHIL BHATIA
+                  </span>
+                  <span className="text-amber-400 font-bold">
+                    [SOLE AUTHORIZED EDITOR]
+                  </span>
+                </div>
+              ) : (
+                <div className="hidden xl:flex flex-col text-right font-mono text-[10px]">
+                  <span className="text-cyan-400 font-bold flex items-center justify-end gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                    PUBLIC GUEST VIEWER
+                  </span>
+                  <span className="text-neutral-400">
+                    [READ-ONLY SPECIMEN MODE]
+                  </span>
+                </div>
+              )}
 
             <button
               onClick={logout}
@@ -228,13 +247,44 @@ const VaultLayout = () => {
 
         {/* Main Content Workspace */}
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-6xl mx-auto space-y-6">
+            
+            {/* PUBLIC VISITOR NOTICE BANNER (Only Sahil Bhatia Can Edit) */}
+            {!canEdit && (
+              <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-[#181328] via-[#100e1e] to-[#0a0a14] border-2 border-cyan-400/40 shadow-[0_0_30px_rgba(6,182,212,0.15)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-cyan-950/60 border border-cyan-400/50 flex items-center justify-center shrink-0">
+                    <ShieldCheck className="w-5 h-5 text-cyan-400" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs font-black uppercase text-cyan-300 tracking-wider">
+                        VAULT GUEST SPECIMEN MODE &bull; READ-ONLY ACCESS
+                      </span>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold">
+                        LOCKED FOR EDITING
+                      </span>
+                    </div>
+                    <p className="text-xs text-neutral-300 font-sans mt-0.5">
+                      You are exploring the live Founder Vault. <strong className="text-white">Strict Security Notice:</strong> All content, projects, models, and systems can be edited and published exclusively by <span className="text-red-400 font-mono font-black">Sahil Bhatia</span> (Verified Founder).
+                    </p>
+                  </div>
+                </div>
+
+                <div className="shrink-0 text-right">
+                  <span className="text-[10px] font-mono text-neutral-400 block">AUTHORIZATION:</span>
+                  <span className="text-xs font-mono font-bold text-red-400">SAHIL BHATIA ONLY</span>
+                </div>
+              </div>
+            )}
+
             {activeTab === 'dashboard' && (
               <VaultDashboard
                 setActiveTab={handleSelectTab}
                 openNewModal={handleOpenNewModal}
               />
             )}
+            {activeTab === 'inquiries' && <VaultInquiries />}
             {activeTab === 'identity' && <VaultIdentity />}
             {activeTab === 'portrait' && <VaultPortrait />}
             {activeTab === 'projects' && (

@@ -54,9 +54,9 @@ const CustomCursor = () => {
       if (spotlight) gsap.to(spotlight, { opacity: 0, duration: 0.3 });
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseenter', handleMouseEnter);
-    document.addEventListener('mouseleave', handleMouseLeave);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    document.addEventListener('mouseenter', handleMouseEnter, { passive: true });
+    document.addEventListener('mouseleave', handleMouseLeave, { passive: true });
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
@@ -69,25 +69,28 @@ const CustomCursor = () => {
 
   return (
     <>
-      {/* Precision Ambient Light Follower */}
+      {/* Precision Ambient Light Follower (Background plane behind text & UI) */}
       <div
         ref={spotlightRef}
-        className="fixed top-0 left-0 w-[600px] h-[600px] rounded-full pointer-events-none z-[9998] opacity-0 blur-[90px] transition-opacity duration-300"
+        className="fixed top-0 left-0 w-[600px] h-[600px] rounded-full pointer-events-none z-[2] opacity-0 blur-[90px] transition-opacity duration-300 will-change-transform"
         style={{
           background: 'radial-gradient(circle, rgba(255,42,58,0.08) 0%, rgba(255,42,58,0.02) 40%, transparent 70%)',
+          willChange: 'transform',
         }}
       />
 
       {/* Center Target Dot */}
       <div
         ref={dotRef}
-        className="fixed top-0 left-0 z-[9999] pointer-events-none w-2 h-2 bg-[#ff2a3a] rounded-full shadow-[0_0_12px_#ff2a3a]"
+        className="fixed top-0 left-0 z-[9999] pointer-events-none w-2 h-2 bg-[#ff2a3a] rounded-full shadow-[0_0_12px_#ff2a3a] will-change-transform"
+        style={{ willChange: 'transform' }}
       />
 
       {/* Spatial Ring Follower */}
       <div
         ref={ringRef}
-        className="fixed top-0 left-0 z-[9999] pointer-events-none w-9 h-9 border border-[#ff2a3a]/40 rounded-full flex items-center justify-center transition-transform duration-75"
+        className="fixed top-0 left-0 z-[9999] pointer-events-none w-9 h-9 border border-[#ff2a3a]/40 rounded-full flex items-center justify-center will-change-transform"
+        style={{ willChange: 'transform' }}
       />
     </>
   );

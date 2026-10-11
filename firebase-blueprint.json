@@ -147,6 +147,33 @@
         "visibility": { "type": "string" },
         "featured": { "type": "boolean" }
       }
+    },
+    "messages": {
+      "title": "Messages & Inquiries",
+      "description": "Secure client inquiries and consultation submissions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "email": { "type": "string", "minLength": 4, "maxLength": 254 },
+        "message": { "type": "string", "minLength": 1, "maxLength": 5000 },
+        "subject": { "type": "string" },
+        "category": { "type": "string" },
+        "problem": { "type": "string" },
+        "timeline": { "type": "string" },
+        "budget": { "type": "string" },
+        "confidentialityRequested": { "type": "boolean" },
+        "status": { "type": "string", "enum": ["UNREAD", "READ", "CONTACTED", "ARCHIVED"] },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["name", "email", "message"]
+    }
+  },
+  "firestore": {
+    "/messages/{messageId}": {
+      "schema": "messages",
+      "description": "Stores encrypted public consultation inquiries with strict founder-only read access"
     }
   }
 }
