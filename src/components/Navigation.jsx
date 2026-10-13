@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Terminal, ArrowUpRight, Cpu, Lock, Search, Bot, Compass } from 'lucide-react';
 import { usePortfolioData } from '../context/PortfolioDataContext';
+import { useAuth } from '../lib/authContext';
 import GlobalSearch from './GlobalSearch';
 import ThemeToggle from './ThemeToggle';
 import VerticalJourneyTimeline from './VerticalJourneyTimeline';
@@ -22,9 +23,10 @@ const DEFAULT_NAV = [
 
 const Navigation = () => {
   const { identity, siteSettings, navigation } = usePortfolioData();
+  const { lockVault } = useAuth();
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const progressBarRef = useRef(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [isJourneyTimelineOpen, setIsJourneyTimelineOpen] = useState(false);
@@ -43,9 +45,11 @@ const Navigation = () => {
           const isScrolled = currentY > 20;
           setScrolled((prev) => (prev !== isScrolled ? isScrolled : prev));
 
-          const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-          const progress = docHeight > 0 ? Math.min(100, Math.max(0, (currentY / docHeight) * 100)) : 0;
-          setScrollProgress(progress);
+          if (progressBarRef.current) {
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = docHeight > 0 ? Math.min(100, Math.max(0, (currentY / docHeight) * 100)) : 0;
+            progressBarRef.current.style.width = `${progress}%`;
+          }
 
           ticking = false;
         });
@@ -183,8 +187,9 @@ const Navigation = () => {
 
         {/* Real-time Dynamic Laser Scroll Progress Horizon Beam */}
         <div
-          className="absolute bottom-0 left-0 h-[1.5px] bg-gradient-to-r from-red-500 via-rose-400 to-cyan-400 shadow-[0_0_12px_#ff2a3a] transition-all duration-100 pointer-events-none z-20"
-          style={{ width: `${scrollProgress}%` }}
+          ref={progressBarRef}
+          className="absolute bottom-0 left-0 h-[1.5px] bg-gradient-to-r from-red-500 via-rose-400 to-cyan-400 shadow-[0_0_12px_#ff2a3a] transition-all duration-75 pointer-events-none z-20"
+          style={{ width: '0%' }}
         />
 
         {/* Dynamic Interactive Volumetric Glare Layer */}
@@ -326,8 +331,9 @@ const Navigation = () => {
             {/* Persistent Crazy Glowing Founder Vault Access */}
             <Link
               to="/vault"
+              onClick={() => lockVault && lockVault()}
               className="relative group inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#2a0e1a] via-[#1a0b16] to-[#0c1222] border border-red-500/60 hover:border-cyan-400 text-white text-xs font-mono transition-all duration-300 shadow-[0_0_24px_rgba(255,42,58,0.35),0_8px_20px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,255,255,0.25)] hover:shadow-[0_0_32px_rgba(34,211,238,0.5),0_12px_28px_rgba(0,0,0,0.95)] hover:scale-105 active:scale-95 cursor-pointer touch-manipulation overflow-hidden"
-              title="Explore Live Founder Vault (Public Specimen Mode & Architecture)"
+              title="Founder Vault Security Gateway (Requires Passcode or Clearance to enter)"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-red-500/10 via-purple-500/10 to-cyan-500/10 opacity-75 group-hover:opacity-100 transition-opacity" />
               <div className="relative flex items-center gap-2">
@@ -338,8 +344,9 @@ const Navigation = () => {
                 <span className="font-bold tracking-wider text-white group-hover:text-cyan-200 transition-colors">
                   FOUNDER VAULT
                 </span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/20 text-red-300 border border-red-500/40 font-bold group-hover:bg-cyan-500/20 group-hover:text-cyan-300 group-hover:border-cyan-400/40 transition-colors">
-                  LIVE ⚡
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/20 text-red-300 border border-red-500/40 font-bold group-hover:bg-cyan-500/20 group-hover:text-cyan-300 group-hover:border-cyan-400/40 transition-colors flex items-center gap-1">
+                  <Lock className="w-2.5 h-2.5" />
+                  GATE
                 </span>
               </div>
             </Link>
@@ -518,7 +525,7 @@ const Navigation = () => {
         {mobileMenuOpen && (
           <div
             onClick={() => setMobileMenuOpen(false)}
-            className="fixed inset-0 top-[65px] bg-black/85 backdrop-blur-md z-40 cursor-pointer touch-manipulation animate-in fade-in duration-200"
+            className="fixed inset-0 top-[65px] bg-black/60 backdrop-blur-sm z-40 cursor-pointer touch-manipulation animate-in fade-in duration-200"
             aria-hidden="true"
           />
         )}
@@ -665,7 +672,10 @@ const Navigation = () => {
                 {/* Founder Vault with Specimen Clearance Guidance */}
                 <Link
                   to="/vault"
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    if (lockVault) lockVault();
+                  }}
                   className="flex items-center justify-between p-3.5 rounded-2xl text-xs font-mono text-red-300 bg-gradient-to-r from-[#201018] via-[#140b10] to-[#0d070b] border border-red-500/50 hover:border-cyan-400 shadow-[0_8px_24px_rgba(255,42,58,0.3),inset_0_1px_0_rgba(255,255,255,0.16)] active:scale-[0.99] transition-all cursor-pointer group"
                 >
                   <div className="flex items-center gap-2.5">
@@ -676,7 +686,7 @@ const Navigation = () => {
                       <div className="flex items-center gap-1.5">
                         <span className="font-black tracking-wider text-white block">FOUNDER VAULT</span>
                         <span className="text-[9px] px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-bold">
-                          OPEN ⚡
+                          GATE 🔒
                         </span>
                       </div>
                       <span className="text-[10px] text-neutral-300 block font-mono">

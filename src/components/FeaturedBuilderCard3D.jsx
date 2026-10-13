@@ -204,36 +204,41 @@ const FeaturedBuilderCard3D = ({ identity: propIdentity, featuredPortrait: propP
     animFrameRef.current = requestAnimationFrame(animateSpring);
   }, [rotX, rotY, magX, magY, normX, normY]);
 
+  const mouseAnimRef = useRef(null);
+
   const handleMouseMove = (e) => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const rect = cardRef.current?.getBoundingClientRect();
-    if (!rect) return;
+    if (mouseAnimRef.current) return;
 
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const clientX = e.clientX;
+    const clientY = e.clientY;
 
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
+    mouseAnimRef.current = requestAnimationFrame(() => {
+      mouseAnimRef.current = null;
+      const rect = cardRef.current?.getBoundingClientRect();
+      if (!rect) return;
 
-    const nX = Math.max(-1, Math.min(1, (x - centerX) / centerX));
-    const nY = Math.max(-1, Math.min(1, (y - centerY) / centerY));
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
 
-    const targetRotX = -nY * MAX_ROT_X;
-    const targetRotY = nX * MAX_ROT_Y;
-    const targetMagX = nX * MAX_MAG_X;
-    const targetMagY = nY * MAX_MAG_Y;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
 
-    setRotX(targetRotX);
-    setRotY(targetRotY);
-    setMagX(targetMagX);
-    setMagY(targetMagY);
-    setNormX(nX);
-    setNormY(nY);
-    setIsHovered(true);
+      const nX = Math.max(-1, Math.min(1, (x - centerX) / centerX));
+      const nY = Math.max(-1, Math.min(1, (y - centerY) / centerY));
 
-    const glareX = (x / rect.width) * 100;
-    const glareY = (y / rect.height) * 100;
-    setGlarePos({ x: glareX, y: glareY, opacity: 0.45 });
+      setRotX(-nY * MAX_ROT_X);
+      setRotY(nX * MAX_ROT_Y);
+      setMagX(nX * MAX_MAG_X);
+      setMagY(nY * MAX_MAG_Y);
+      setNormX(nX);
+      setNormY(nY);
+      setIsHovered(true);
+
+      const glareX = (x / rect.width) * 100;
+      const glareY = (y / rect.height) * 100;
+      setGlarePos({ x: glareX, y: glareY, opacity: 0.45 });
+    });
   };
 
   const handleMouseEnter = () => {

@@ -374,4 +374,249 @@ html.light ::-webkit-scrollbar-thumb:hover {
   }
 }
 
+/* =========================================================
+   3D TACTILE GLOWING & BLINKING HUD ANIMATIONS
+   ========================================================= */
+@keyframes tacticalBlinkFast {
+  0%, 100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 8px currentColor); }
+  50% { opacity: 0.25; transform: scale(0.85); filter: drop-shadow(0 0 2px currentColor); }
+}
+
+@keyframes tacticalBeaconPulse {
+  0% { transform: scale(0.8); opacity: 0.9; }
+  50% { transform: scale(1.8); opacity: 0.2; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
+@keyframes laserSweepHorizontal {
+  0% { transform: translateX(-100%); }
+  50%, 100% { transform: translateX(200%); }
+}
+
+@keyframes rotatingGyroRing {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes rotatingGyroRingReverse {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes neonAuraBreathe {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 0.95; transform: scale(1.03); }
+}
+
+.animate-tactical-blink {
+  animation: tacticalBlinkFast 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-tactical-blink-fast {
+  animation: tacticalBlinkFast 0.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-tactical-beacon {
+  animation: tacticalBeaconPulse 1.6s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+.animate-rotating-gyro {
+  animation: rotatingGyroRing 30s linear infinite;
+}
+
+.animate-rotating-gyro-reverse {
+  animation: rotatingGyroRingReverse 42s linear infinite;
+}
+
+.animate-neon-aura {
+  animation: neonAuraBreathe 3s ease-in-out infinite;
+}
+
+/* =========================================================
+   GLASSLOOMY & 3D INTERACTIVE CYBERNETIC UTILITIES
+   ========================================================= */
+
+.font-crisp {
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  text-rendering: optimizeLegibility !important;
+  transform: translateZ(0);
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.perspective-2000 {
+  perspective: 2000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+/* Glassloomy Chassis: Dark obsidian glass with rich specular rim & multi-layer ambient glow */
+.glassloomy-card {
+  background: radial-gradient(130% 100% at 50% 0%, rgba(20, 24, 40, 0.85) 0%, rgba(9, 11, 20, 0.92) 100%);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  box-shadow: 
+    0 16px 40px -8px rgba(0, 0, 0, 0.88),
+    0 0 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 0 24px rgba(0, 0, 0, 0.5);
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.glassloomy-card:hover {
+  box-shadow: 
+    0 24px 60px -10px rgba(0, 0, 0, 0.95),
+    0 0 0 1px rgba(255, 255, 255, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 0 28px rgba(0, 0, 0, 0.6);
+}
+
+/* Cybernetic Neon Glow Background Mesh with Living Atmospheric Drift */
+@keyframes cyberVaultDrift {
+  0% {
+    background-position: 
+      0% 0%,
+      100% 0%,
+      50% 50%,
+      100% 100%,
+      0% 100%;
+    background-size: 
+      130% 130%,
+      145% 145%,
+      120% 120%,
+      135% 135%,
+      125% 125%;
+  }
+  20% {
+    background-position: 
+      18% 28%,
+      82% 8%,
+      42% 62%,
+      92% 78%,
+      14% 84%;
+    background-size: 
+      142% 142%,
+      130% 130%,
+      132% 132%,
+      122% 122%,
+      138% 138%;
+  }
+  40% {
+    background-position: 
+      12% 52%,
+      94% 28%,
+      58% 38%,
+      74% 94%,
+      8% 58%;
+    background-size: 
+      128% 128%,
+      148% 148%,
+      122% 122%,
+      142% 142%,
+      128% 128%;
+  }
+  60% {
+    background-position: 
+      28% 16%,
+      72% 42%,
+      38% 54%,
+      86% 64%,
+      24% 88%;
+    background-size: 
+      138% 138%,
+      134% 134%,
+      140% 140%,
+      128% 128%,
+      144% 144%;
+  }
+  80% {
+    background-position: 
+      8% 34%,
+      86% 16%,
+      64% 44%,
+      68% 82%,
+      18% 72%;
+    background-size: 
+      145% 145%,
+      126% 126%,
+      128% 128%,
+      138% 138%,
+      132% 132%;
+  }
+  100% {
+    background-position: 
+      0% 0%,
+      100% 0%,
+      50% 50%,
+      100% 100%,
+      0% 100%;
+    background-size: 
+      130% 130%,
+      145% 145%,
+      120% 120%,
+      135% 135%,
+      125% 125%;
+  }
+}
+
+.cyber-vault-bg {
+  background-color: #040509;
+  background-image: 
+    radial-gradient(circle at center, rgba(255, 42, 58, 0.16) 0%, rgba(255, 42, 58, 0.03) 45%, transparent 68%),
+    radial-gradient(circle at center, rgba(99, 102, 241, 0.17) 0%, rgba(99, 102, 241, 0.04) 48%, transparent 70%),
+    radial-gradient(circle at center, rgba(6, 182, 212, 0.11) 0%, rgba(6, 182, 212, 0.02) 50%, transparent 72%),
+    radial-gradient(circle at center, rgba(245, 158, 11, 0.11) 0%, rgba(245, 158, 11, 0.03) 42%, transparent 68%),
+    radial-gradient(circle at center, rgba(220, 38, 38, 0.13) 0%, rgba(220, 38, 38, 0.03) 40%, transparent 66%);
+  background-repeat: no-repeat;
+  background-position: 
+    0% 0%,
+    100% 0%,
+    50% 50%,
+    100% 100%,
+    0% 100%;
+  background-size: 
+    130% 130%,
+    145% 145%,
+    120% 120%,
+    135% 135%,
+    125% 125%;
+  animation: cyberVaultDrift 30s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: background-position, background-size;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cyber-vault-bg {
+    animation: none !important;
+  }
+}
+
+.cyber-grid-pattern {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+}
+
+@keyframes holographicSweep {
+  0% { transform: translateY(-100%) rotate(25deg); opacity: 0; }
+  30% { opacity: 0.6; }
+  60% { opacity: 0.6; }
+  100% { transform: translateY(200%) rotate(25deg); opacity: 0; }
+}
+
+.animate-holographic-sweep {
+  animation: holographicSweep 7s ease-in-out infinite;
+}
+
+
 

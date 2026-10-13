@@ -115,8 +115,32 @@ export const AuthProvider = ({ children }) => {
     return false;
   });
 
+  const [isVaultUnlocked, setIsVaultUnlocked] = useState(false);
+
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState(null);
+
+  const lockVault = () => {
+    setIsVaultUnlocked(false);
+    try {
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('sahil_vault_unlocked');
+      }
+    } catch {
+      // safe fallback
+    }
+  };
+
+  const unlockVault = () => {
+    setIsVaultUnlocked(true);
+    try {
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('sahil_vault_unlocked', 'true');
+      }
+    } catch {
+      // safe fallback
+    }
+  };
 
   const getDomainErrorMessage = () => {
     const currentHost = typeof window !== 'undefined' ? window.location.hostname : 'current hostname';
@@ -262,13 +286,15 @@ export const AuthProvider = ({ children }) => {
           // safe fallback
         }
         setAuthError(null);
+        setIsVaultUnlocked(true);
         return { success: true, role: 'FOUNDER_OWNER' };
       } else {
         // Authenticated as public guest
         setUser(result.user);
-        setIsFounder(true);
+        setIsFounder(false);
         setCanEdit(false);
         setRole('PUBLIC_VIEWER');
+        setIsVaultUnlocked(true);
         try {
           sessionStorage.setItem('sahil_vault_role', 'PUBLIC_VIEWER');
           sessionStorage.removeItem('sahil_founder_authorized');
@@ -311,6 +337,7 @@ export const AuthProvider = ({ children }) => {
       setIsFounder(true);
       setCanEdit(true);
       setRole('FOUNDER_OWNER');
+      setIsVaultUnlocked(true);
       try {
         sessionStorage.setItem('sahil_founder_authorized', 'true');
         sessionStorage.setItem('sahil_vault_role', 'FOUNDER_OWNER');
@@ -341,6 +368,7 @@ export const AuthProvider = ({ children }) => {
         setIsFounder(true);
         setCanEdit(true);
         setRole('FOUNDER_OWNER');
+        setIsVaultUnlocked(true);
         try {
           sessionStorage.setItem('sahil_founder_authorized', 'true');
           sessionStorage.setItem('sahil_vault_role', 'FOUNDER_OWNER');
@@ -355,6 +383,7 @@ export const AuthProvider = ({ children }) => {
         setIsFounder(false);
         setCanEdit(false);
         setRole(null);
+        setIsVaultUnlocked(false);
         const errMsg = 'This account is authenticated but is not authorized for Founder Vault access.';
         setAuthError(errMsg);
         return { success: false, error: errMsg };
@@ -378,6 +407,7 @@ export const AuthProvider = ({ children }) => {
       setIsFounder(true);
       setCanEdit(true);
       setRole('FOUNDER_OWNER');
+      setIsVaultUnlocked(true);
       try {
         sessionStorage.setItem('sahil_founder_authorized', 'true');
         sessionStorage.setItem('sahil_vault_role', 'FOUNDER_OWNER');
@@ -414,9 +444,10 @@ export const AuthProvider = ({ children }) => {
       uid: firebaseAnonUser?.uid || 'guest-viewer-session',
     };
     setUser(guestUser);
-    setIsFounder(true); // Allows opening the vault
+    setIsFounder(false); // Guest is not the founder editor
     setCanEdit(false);   // Strictly READ-ONLY; editing, saving, deleting are blocked
     setRole('PUBLIC_VIEWER');
+    setIsVaultUnlocked(true); // Unlocks the vault view for guest
     try {
       sessionStorage.setItem('sahil_vault_role', 'PUBLIC_VIEWER');
       sessionStorage.removeItem('sahil_founder_authorized');
@@ -440,6 +471,7 @@ export const AuthProvider = ({ children }) => {
     try {
       sessionStorage.removeItem('sahil_founder_authorized');
       sessionStorage.removeItem('sahil_vault_role');
+      sessionStorage.removeItem('sahil_vault_unlocked');
     } catch {
       // safe fallback
     }
@@ -447,6 +479,7 @@ export const AuthProvider = ({ children }) => {
     setIsFounder(false);
     setCanEdit(false);
     setRole(null);
+    setIsVaultUnlocked(false);
     setAuthError(null);
   };
 
@@ -464,6 +497,9 @@ export const AuthProvider = ({ children }) => {
         role,
         loading,
         authError,
+        isVaultUnlocked,
+        lockVault,
+        unlockVault,
         loginWithGoogle,
         loginWithEmailPassword,
         unlockWithMasterPasscode,

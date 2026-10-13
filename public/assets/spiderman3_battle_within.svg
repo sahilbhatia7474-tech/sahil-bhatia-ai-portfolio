@@ -1,0 +1,212 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" width="100%" height="100%">
+  <defs>
+    <!-- Background Night Sky & Sunset Split -->
+    <linearGradient id="sunsetSky" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#1a0b0e" />
+      <stop offset="35%" stopColor="#451214" />
+      <stop offset="65%" stopColor="#83231a" />
+      <stop offset="85%" stopColor="#ea580c" />
+      <stop offset="100%" stopColor="#fbbf24" />
+    </linearGradient>
+
+    <linearGradient id="nightSky" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#05070e" />
+      <stop offset="40%" stopColor="#0a0f1d" />
+      <stop offset="75%" stopColor="#111827" />
+      <stop offset="100%" stopColor="#1e293b" />
+    </linearGradient>
+
+    <!-- Tobey Maguire Classic Red Suit Gradient -->
+    <linearGradient id="posterSpideyRed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#ff2a3a" />
+      <stop offset="45%" stopColor="#c81424" />
+      <stop offset="80%" stopColor="#7a0812" />
+      <stop offset="100%" stopColor="#3d0307" />
+    </linearGradient>
+
+    <!-- Tobey Maguire Classic Blue Suit Gradient -->
+    <linearGradient id="posterSpideyBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#2563eb" />
+      <stop offset="50%" stopColor="#1e3a8a" />
+      <stop offset="100%" stopColor="#0a1338" />
+    </linearGradient>
+
+    <!-- Tobey Maguire Black Symbiote Suit Gradient -->
+    <linearGradient id="posterBlackSuit" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#383d47" />
+      <stop offset="40%" stopColor="#1f232b" />
+      <stop offset="80%" stopColor="#0c0d12" />
+      <stop offset="100%" stopColor="#040507" />
+    </linearGradient>
+
+    <!-- Raised Silver Webbing Gradient -->
+    <linearGradient id="posterSilverWeb" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
+      <stop offset="50%" stopColor="#e2e8f0" stopOpacity="0.8" />
+      <stop offset="100%" stopColor="#94a3b8" stopOpacity="0.6" />
+    </linearGradient>
+
+    <!-- Chrome Eye Lens Gradient -->
+    <linearGradient id="posterChromeLens" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stopColor="#ffffff" />
+      <stop offset="65%" stopColor="#e2e8f0" />
+      <stop offset="100%" stopColor="#94a3b8" />
+    </linearGradient>
+
+    <!-- Chrome Title Text Gradient -->
+    <linearGradient id="chromeTitle" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stopColor="#ffffff" />
+      <stop offset="48%" stopColor="#d1d5db" />
+      <stop offset="52%" stopColor="#6b7280" />
+      <stop offset="100%" stopColor="#f3f4f6" />
+    </linearGradient>
+
+    <!-- Diagonal Split Mask -->
+    <clipPath id="leftRedSplit">
+      <polygon points="0,0 240,0 160,600 0,600" />
+    </clipPath>
+    <clipPath id="rightBlackSplit">
+      <polygon points="240,0 400,0 400,600 160,600" />
+    </clipPath>
+  </defs>
+
+  <!-- ========================================================= -->
+  <!-- 1. LEFT HALF: SUNSET RAIN SKY (CLASSIC SPIDER-MAN)       -->
+  <!-- ========================================================= -->
+  <g clip-path="url(#leftRedSplit)">
+    <rect width="400" height="600" fill="url(#sunsetSky)" />
+    <!-- Distant City Skyscrapers in Sunset Mist -->
+    <rect x="20" y="280" width="45" height="320" fill="#240c11" opacity="0.8" />
+    <rect x="75" y="240" width="55" height="360" fill="#1b080c" opacity="0.9" />
+    <rect x="140" y="310" width="50" height="290" fill="#150508" opacity="0.85" />
+    <!-- Diagonal Rain Streaks -->
+    <line x1="20" y1="40" x2="60" y2="160" stroke="#fed7aa" stroke-width="0.8" opacity="0.35" />
+    <line x1="90" y1="20" x2="130" y2="140" stroke="#fed7aa" stroke-width="0.8" opacity="0.35" />
+    <line x1="160" y1="50" x2="200" y2="170" stroke="#fed7aa" stroke-width="0.8" opacity="0.35" />
+  </g>
+
+  <!-- ========================================================= -->
+  <!-- 2. RIGHT HALF: MIDNIGHT RAIN SKY (BLACK SYMBIOTE SUIT)   -->
+  <!-- ========================================================= -->
+  <g clip-path="url(#rightBlackSplit)">
+    <rect width="400" height="600" fill="url(#nightSky)" />
+    <!-- Dark Gothic Skyscrapers with Office Windows -->
+    <rect x="240" y="220" width="60" height="380" fill="#0b1120" opacity="0.95" />
+    <rect x="310" y="180" width="70" height="420" fill="#070b15" opacity="0.98" />
+    <!-- Distant Windows -->
+    <g fill="#93c5fd" opacity="0.3">
+      <rect x="250" y="240" width="3" height="4" />
+      <rect x="260" y="240" width="3" height="4" />
+      <rect x="250" y="255" width="3" height="4" />
+      <rect x="270" y="280" width="3" height="4" />
+      <rect x="325" y="210" width="3" height="4" />
+      <rect x="340" y="210" width="3" height="4" />
+      <rect x="355" y="230" width="3" height="4" />
+      <rect x="325" y="260" width="3" height="4" />
+    </g>
+    <!-- Midnight Cold Rain Streaks -->
+    <line x1="220" y1="30" x2="260" y2="150" stroke="#93c5fd" stroke-width="0.8" opacity="0.4" />
+    <line x1="290" y1="60" x2="330" y2="180" stroke="#93c5fd" stroke-width="0.8" opacity="0.4" />
+    <line x1="340" y1="10" x2="380" y2="130" stroke="#93c5fd" stroke-width="0.8" opacity="0.4" />
+  </g>
+
+  <!-- Split Boundary Lightning Energy Seam -->
+  <line x1="240" y1="0" x2="160" y2="600" stroke="#ffffff" stroke-width="1.8" opacity="0.75" />
+  <line x1="240" y1="0" x2="160" y2="600" stroke="#38bdf8" stroke-width="4" opacity="0.25" />
+
+  <!-- Skyscraper Gargoyle Ledge Base -->
+  <polygon points="40,510 360,490 380,600 20,600" fill="#0f172a" stroke="#1e293b" stroke-width="2" />
+  <polygon points="120,495 280,485 290,540 110,545" fill="#1e293b" />
+
+  <!-- ========================================================= -->
+  <!-- 3. CROUCHING RED SPIDER-MAN (LEFT HALF)                   -->
+  <!-- ========================================================= -->
+  <g clip-path="url(#leftRedSplit)" transform="translate(10, 30)">
+    <!-- Back & Torso -->
+    <path d="M120 180 C140 160, 185 165, 195 210 C205 255, 175 320, 150 350 C130 370, 95 365, 80 340 C70 305, 85 230, 120 180 Z" fill="url(#posterSpideyRed)" stroke="#450a0a" stroke-width="2" />
+    <path d="M110 240 C100 270, 115 320, 135 340 C125 315, 115 280, 115 250 Z" fill="url(#posterSpideyBlue)" />
+    <!-- Crouched Left Leg -->
+    <path d="M150 350 C175 375, 195 420, 190 450 C185 455, 165 460, 150 440 C130 415, 115 375, 140 350 Z" fill="url(#posterSpideyBlue)" />
+    <!-- Left Hand Gripping Ledge -->
+    <path d="M140 435 L125 455 L135 462 L152 445 Z" fill="url(#posterSpideyRed)" />
+    <circle cx="130" cy="458" r="4" fill="url(#posterSpideyRed)" />
+    <!-- Crouched Right Leg -->
+    <path d="M80 340 C60 360, 45 400, 55 435 C65 440, 85 435, 95 410 C105 385, 100 355, 80 340 Z" fill="url(#posterSpideyBlue)" />
+    <path d="M55 435 L40 455 L55 460 L70 445 Z" fill="url(#posterSpideyRed)" />
+
+    <!-- Head & Mask Looking Forward -->
+    <path d="M105 130 C120 110, 155 110, 168 130 C180 150, 175 185, 155 198 C135 208, 110 200, 102 182 C95 165, 95 145, 105 130 Z" fill="url(#posterSpideyRed)" stroke="#450a0a" stroke-width="2" />
+    <!-- Sharp Silver-Rimmed Tobey Eye Lens -->
+    <path d="M125 142 C138 132, 154 135, 162 145 C158 160, 144 170, 130 166 C124 160, 122 150, 125 142 Z" fill="url(#posterChromeLens)" stroke="#0f172a" stroke-width="3.5" />
+    <path d="M125 142 C138 132, 154 135, 162 145 C158 160, 144 170, 130 166 C124 160, 122 150, 125 142 Z" fill="none" stroke="url(#posterSilverWeb)" stroke-width="1.5" />
+
+    <!-- Raised Silver Webbing Texture -->
+    <path d="M135 152 L132 120 M135 152 L155 118 M135 152 L168 138 M135 152 L168 162 M135 152 L152 185 M135 152 L128 190 M135 152 L110 175 M135 152 L105 150" stroke="url(#posterSilverWeb)" stroke-width="1.3" />
+    <path d="M122 130 Q138 124 154 130 M116 145 Q138 138 162 150 M116 165 Q138 172 156 175" stroke="url(#posterSilverWeb)" stroke-width="1.3" />
+
+    <!-- Body Webbing Grid -->
+    <path d="M120 200 Q150 190, 185 205 M105 235 Q145 220, 192 240 M95 270 Q140 255, 182 278 M90 305 Q135 290, 168 315" stroke="url(#posterSilverWeb)" stroke-width="1.3" />
+    <path d="M145 190 L145 320 M125 195 L118 310 M168 195 L172 310" stroke="url(#posterSilverWeb)" stroke-width="1.3" />
+  </g>
+
+  <!-- ========================================================= -->
+  <!-- 4. CROUCHING BLACK SUIT SPIDER-MAN (RIGHT HALF)          -->
+  <!-- ========================================================= -->
+  <g clip-path="url(#rightBlackSplit)" transform="translate(10, 30)">
+    <!-- Back & Torso (Deep Symbiote Obsidian) -->
+    <path d="M185 210 C195 165, 240 160, 260 180 C295 230, 310 305, 300 340 C285 365, 250 370, 230 350 C205 320, 175 255, 185 210 Z" fill="url(#posterBlackSuit)" stroke="#020305" stroke-width="2" />
+    <path d="M265 250 C265 280, 255 315, 245 340 C265 320, 280 270, 270 240 Z" fill="#11151f" />
+    <!-- Crouched Right Leg -->
+    <path d="M230 350 C245 375, 260 415, 240 440 C225 460, 205 455, 200 450 C195 420, 215 375, 240 350 Z" fill="url(#posterBlackSuit)" />
+    <!-- Crouched Left Leg -->
+    <path d="M300 340 C280 355, 275 385, 285 410 C295 435, 315 440, 325 435 C335 400, 320 360, 300 340 Z" fill="url(#posterBlackSuit)" />
+    <!-- Right Hand Clenched/Perched on Ledge -->
+    <path d="M238 435 L252 455 L242 462 L228 445 Z" fill="url(#posterBlackSuit)" />
+    <circle cx="250" cy="458" r="4" fill="#2d3340" />
+
+    <!-- Head & Mask Looking Back Over Shoulder -->
+    <path d="M215 130 C228 110, 262 110, 275 130 C285 145, 285 165, 278 182 C270 200, 245 208, 225 198 C205 185, 200 150, 215 130 Z" fill="url(#posterBlackSuit)" stroke="#020305" stroke-width="2" />
+    <!-- Tobey Maguire Black Suit Angular Chrome Lens -->
+    <path d="M218 145 C226 135, 242 132, 255 142 C258 150, 256 160, 250 166 C236 170, 222 160, 218 145 Z" fill="url(#posterChromeLens)" stroke="#05070d" stroke-width="3.5" />
+    <path d="M218 145 C226 135, 242 132, 255 142 C258 150, 256 160, 250 166 C236 170, 222 160, 218 145 Z" fill="none" stroke="url(#posterSilverWeb)" stroke-width="1.5" />
+
+    <!-- Raised Metallic Silver Webbing on Black Suit -->
+    <path d="M245 152 L275 150 M245 152 L270 175 M245 152 L252 190 M245 152 L228 185 M245 152 L212 162 M245 152 L212 138 M245 152 L225 118 M245 152 L248 120" stroke="url(#posterSilverWeb)" stroke-width="1.3" />
+    <path d="M226 130 Q242 124 258 130 M218 150 Q242 138 264 145 M224 175 Q242 172 264 165" stroke="url(#posterSilverWeb)" stroke-width="1.3" />
+
+    <!-- Body Webbing Grid on Black Suit -->
+    <path d="M195 205 Q230 190, 260 200 M188 240 Q235 220, 275 235 M198 278 Q240 255, 285 270 M212 315 Q245 290, 290 305" stroke="url(#posterSilverWeb)" stroke-width="1.3" />
+    <path d="M235 190 L235 320 M212 195 L208 310 M255 195 L262 310" stroke="url(#posterSilverWeb)" stroke-width="1.3" />
+  </g>
+
+  <!-- ========================================================= -->
+  <!-- 5. MOVIE POSTER BILLING & TYPOGRAPHY                      -->
+  <!-- ========================================================= -->
+  <!-- Top Tagline -->
+  <text x="200" y="42" font-family="'Cinzel', 'Trajan Pro', 'Georgia', serif" font-size="12" font-weight="bold" letter-spacing="6" fill="#e2e8f0" text-anchor="middle" opacity="0.9" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.9))">
+    THE BATTLE WITHIN
+  </text>
+
+  <!-- Iconic Title Logo: SPIDER-MAN 3 -->
+  <g transform="translate(200, 525)">
+    <!-- Drop Shadow -->
+    <text x="0" y="2" font-family="'Impact', 'Arial Black', sans-serif" font-size="28" font-style="italic" font-weight="900" letter-spacing="4" fill="#000000" text-anchor="middle">
+      SPIDER-MAN 3
+    </text>
+    <!-- Chrome Bevel Core -->
+    <text x="0" y="0" font-family="'Impact', 'Arial Black', sans-serif" font-size="28" font-style="italic" font-weight="900" letter-spacing="4" fill="url(#chromeTitle)" text-anchor="middle" stroke="#000000" stroke-width="1">
+      SPIDER-MAN 3
+    </text>
+  </g>
+
+  <!-- Credits Billing Block -->
+  <g fill="#94a3b8" font-family="'Arial', sans-serif" font-size="6" text-anchor="middle" opacity="0.85" letter-spacing="1.5">
+    <text x="200" y="550">COLUMBIA PICTURES PRESENTS A MARVEL ENTERTAINMENT / LAURA ZISKIN PRODUCTION</text>
+    <text x="200" y="560">TOBEY MAGUIRE  KIRSTEN DUNST  JAMES FRANCO  THOMAS HADEN CHURCH  TOPHER GRACE</text>
+    <text x="200" y="570">MUSIC BY CHRISTOPHER YOUNG  SCREENPLAY BY SAM RAIMI &amp; IVAN RAIMI</text>
+    <text x="200" y="580">DIRECTED BY SAM RAIMI</text>
+  </g>
+
+  <!-- Outer Film Poster Border -->
+  <rect x="2" y="2" width="396" height="596" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-opacity="0.3" rx="4" />
+</svg>

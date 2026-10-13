@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useMemo } from 'react';
 import { usePortfolioData } from '../context/PortfolioDataContext';
+import { useAuth } from '../lib/authContext';
 import { FUTURE_VAULT } from '../data/portfolioData';
 import {
   Archive,
@@ -321,6 +322,7 @@ function RazorVaultCard({
 
 const FutureVault = () => {
   const { allProjects } = usePortfolioData();
+  const { lockVault } = useAuth();
   const [activeStream, setActiveStream] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [auditStatus, setAuditStatus] = useState(null);
@@ -686,6 +688,7 @@ const FutureVault = () => {
               Manage, publish, and sync new research signals dynamically via{' '}
               <Link
                 to="/vault"
+                onClick={() => lockVault && lockVault()}
                 className="text-red-400 hover:text-red-300 font-black underline decoration-red-500/60 hover:decoration-red-400 transition-colors"
               >
                 Founder Vault Console &rarr;

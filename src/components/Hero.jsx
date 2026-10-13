@@ -9,23 +9,16 @@ import FeaturedBuilderCard3D from './FeaturedBuilderCard3D';
 const Hero = () => {
   const navigate = useNavigate();
   const { identity, siteSettings } = usePortfolioData();
-  const { isFounder, unlockAsPublicViewer } = useAuth();
+  const { isFounder, lockVault } = useAuth();
   const [showIntroModal, setShowIntroModal] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isEnteringVault, setIsEnteringVault] = useState(false);
   const videoRef = useRef(null);
 
-  const handleEnterVaultSpecimen = async (e) => {
+  const handleEnterVaultSpecimen = (e) => {
     if (e && e.preventDefault) e.preventDefault();
-    setIsEnteringVault(true);
-    if (!isFounder && unlockAsPublicViewer) {
-      try {
-        await unlockAsPublicViewer();
-      } catch (err) {
-        console.warn('Specimen unlock notice:', err);
-      }
-    }
+    if (lockVault) lockVault();
     navigate('/vault');
   };
 

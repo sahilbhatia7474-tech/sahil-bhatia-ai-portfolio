@@ -8,21 +8,24 @@ import CustomCursor from './components/CustomCursor';
 import SpiderVerseBackgroundWall from './components/SpiderVerseBackgroundWall';
 import DynamicAmbientLightBackdrop from './components/DynamicAmbientLightBackdrop';
 import Navigation from './components/Navigation';
-// Lazy-load floating AI assistant to eliminate 44KB+ from critical initial render path
+// Lazy-load floating AI assistant
 const AIAssistant = lazy(() => import('./components/AIAssistant'));
 import Hero from './components/Hero';
 import CapabilityMap from './components/CapabilityMap';
 import Projects from './components/Projects';
-import AISystems from './components/AISystems';
-import AICaseStudyMetrics from './components/AICaseStudyMetrics';
-import Proof from './components/Proof';
-import Certificates from './components/Certificates';
-import FutureVault from './components/FutureVault';
-import AppsHub from './components/AppsHub';
-import Contact from './components/Contact';
-import Footer from './components/Footer';
+
+// Lazy-load below-the-fold sections to cut initial bundle by over 60%
+const AISystems = lazy(() => import('./components/AISystems'));
+const AICaseStudyMetrics = lazy(() => import('./components/AICaseStudyMetrics'));
+const Proof = lazy(() => import('./components/Proof'));
+const Certificates = lazy(() => import('./components/Certificates'));
+const FutureVault = lazy(() => import('./components/FutureVault'));
+const AppsHub = lazy(() => import('./components/AppsHub'));
+const Contact = lazy(() => import('./components/Contact'));
+const Footer = lazy(() => import('./components/Footer'));
+const PortfolioTerminal = lazy(() => import('./components/PortfolioTerminal'));
+
 import ScrollJumpInstrument from './components/ScrollJumpInstrument';
-import PortfolioTerminal from './components/PortfolioTerminal';
 import SpatialSectionDivider from './components/SpatialSectionDivider';
 import { ShieldAlert, Lock, RefreshCw } from 'lucide-react';
 
@@ -82,20 +85,17 @@ function ScrollManager() {
 
 // Public Experience Shell
 function PublicExperience() {
-  const [booting, setBooting] = useState(() => {
-    try {
-      // Only display full initialization sequence on initial visit
-      return !sessionStorage.getItem('sahil_os_booted');
-    } catch {
-      return false;
-    }
-  });
+  const [booting, setBooting] = useState(false);
   const { siteSettings, previewMode, setPreviewMode } = usePortfolioData();
-  const { isFounderSession } = useAuth();
+  const { isFounderSession, lockVault } = useAuth();
 
   useEffect(() => {
     document.title = 'SAHIL BHATIA — AI Portfolio & Systems';
-  }, []);
+    // Ensure vault is locked when viewing the public experience so that clicking Founder Vault opens the lock page first
+    if (lockVault) {
+      lockVault();
+    }
+  }, [lockVault]);
 
   const handleBootComplete = () => {
     try {
@@ -215,7 +215,9 @@ function PublicExperience() {
       <ScrollJumpInstrument />
 
       {/* Floating Interactive Command Terminal Component (Query the Portfolio) */}
-      <PortfolioTerminal />
+      <Suspense fallback={null}>
+        <PortfolioTerminal />
+      </Suspense>
 
       {/* Main Structural Portfolio Content */}
       <main className="relative z-10">
@@ -232,44 +234,49 @@ function PublicExperience() {
         {/* 3. CURATED PROJECTS (7 Verified Projects) */}
         <Projects />
 
-        <SpatialSectionDivider index="03" label="AGENTIC ARCHITECTURE" accent="violet" />
+        {/* Below-the-fold dynamic modules in Suspense for instant initial load */}
+        <Suspense fallback={null}>
+          <SpatialSectionDivider index="03" label="AGENTIC ARCHITECTURE" accent="violet" />
 
-        {/* 4. AI SYSTEMS ARCHITECTURE */}
-        <AISystems />
+          {/* 4. AI SYSTEMS ARCHITECTURE */}
+          <AISystems />
 
-        <SpatialSectionDivider index="04" label="EMPIRICAL BENCHMARKS & METRICS" accent="ruby" />
+          <SpatialSectionDivider index="04" label="EMPIRICAL BENCHMARKS & METRICS" accent="ruby" />
 
-        {/* 4.5 AI ENGINEERING CASE STUDIES & COMPARATIVE BENCHMARKS */}
-        <AICaseStudyMetrics />
+          {/* 4.5 AI ENGINEERING CASE STUDIES & COMPARATIVE BENCHMARKS */}
+          <AICaseStudyMetrics />
 
-        <SpatialSectionDivider index="05" label="AUDIT & PROOF MATRIX" accent="emerald" />
+          <SpatialSectionDivider index="05" label="AUDIT & PROOF MATRIX" accent="emerald" />
 
-        {/* 5. PROOF & EVIDENCE MATRIX */}
-        <Proof />
+          {/* 5. PROOF & EVIDENCE MATRIX */}
+          <Proof />
 
-        <SpatialSectionDivider index="06" label="CREDENTIALS & HONORS" accent="teal" />
+          <SpatialSectionDivider index="06" label="CREDENTIALS & HONORS" accent="teal" />
 
-        {/* 6. CERTIFICATES & CREDENTIALS */}
-        <Certificates />
+          {/* 6. CERTIFICATES & CREDENTIALS */}
+          <Certificates />
 
-        <SpatialSectionDivider index="07" label="ARCHIVAL VAULT" accent="amber" />
+          <SpatialSectionDivider index="07" label="ARCHIVAL VAULT" accent="amber" />
 
-        {/* 7. FUTURE VAULT */}
-        <FutureVault />
+          {/* 7. FUTURE VAULT */}
+          <FutureVault />
 
-        <SpatialSectionDivider index="08" label="DISTRIBUTION HUB" accent="cyan" />
+          <SpatialSectionDivider index="08" label="DISTRIBUTION HUB" accent="cyan" />
 
-        {/* 8. APPS DISTRIBUTION HUB */}
-        <AppsHub />
+          {/* 8. APPS DISTRIBUTION HUB */}
+          <AppsHub />
 
-        <SpatialSectionDivider index="09" label="DIRECT INTERFACE" accent="crimson" />
+          <SpatialSectionDivider index="09" label="DIRECT INTERFACE" accent="crimson" />
 
-        {/* 9. DIRECT CHANNEL & CONTACT */}
-        <Contact />
+          {/* 9. DIRECT CHANNEL & CONTACT */}
+          <Contact />
+        </Suspense>
       </main>
 
       {/* Editorial Footer */}
-      <Footer />
+      <Suspense fallback={null}>
+        <Footer />
+      </Suspense>
     </div>
   );
 }

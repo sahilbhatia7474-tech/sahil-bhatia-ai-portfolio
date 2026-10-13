@@ -310,9 +310,15 @@ export default function AIAssistant() {
           <div
             id="ai-assistant-backdrop"
             onClick={() => setIsOpen(false)}
-            className="fixed inset-0 bg-gradient-to-b from-black/85 via-black/80 to-[#070914]/90 backdrop-blur-md z-[90] animate-in fade-in duration-200 cursor-pointer touch-manipulation"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[90] animate-in fade-in duration-200 cursor-pointer touch-manipulation"
             aria-hidden="true"
-          />
+          >
+            {/* Ambient Wall Light & Stars Glow */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
+              <div className="absolute top-1/3 left-1/4 w-80 h-80 rounded-full bg-cyan-600/10 blur-3xl" />
+              <div className="absolute bottom-1/3 right-1/4 w-96 h-96 rounded-full bg-indigo-600/10 blur-3xl animate-pulse" />
+            </div>
+          </div>
 
           {/* AI Assistant Spatial Window Panel */}
           <div

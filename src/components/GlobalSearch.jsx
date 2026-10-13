@@ -15,6 +15,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { usePortfolioData } from '../context/PortfolioDataContext';
+import { useAuth } from '../lib/authContext';
 import { buildKnowledgeIndex, searchKnowledgeIndex } from '../lib/knowledgeModel';
 import { useBodyScrollLock, forceUnlockBodyScroll } from '../lib/scrollLock';
 
@@ -32,6 +33,7 @@ const CATEGORY_FILTERS = [
 
 export default function GlobalSearch({ isOpen, onClose }) {
   const portfolioData = usePortfolioData();
+  const { lockVault } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const inputRef = useRef(null);
@@ -130,6 +132,9 @@ export default function GlobalSearch({ isOpen, onClose }) {
     // Check if external route (/vault, /business-info, /privacy-policy, /services, etc.)
     const dedicatedRoutes = ['/vault', '/business-info', '/privacy-policy', '/services', '/terms', '/refund-policy'];
     if (dedicatedRoutes.includes(item.destination) || (item.destination?.startsWith('/') && !item.destination.startsWith('/#') && !['/projects', '/ai-systems', '/benchmarks', '/proof', '/certificates', '/apps', '/contact', '/future-vault'].includes(item.destination))) {
+      if (item.destination === '/vault' && lockVault) {
+        lockVault();
+      }
       navigate(item.destination);
       return;
     }
@@ -270,7 +275,7 @@ export default function GlobalSearch({ isOpen, onClose }) {
   return (
     <div
       id="global-search-overlay"
-      className="fixed inset-0 z-[120] flex items-start justify-center pt-8 sm:pt-16 md:pt-20 px-3 sm:px-4 bg-black/85 backdrop-blur-xl animate-in fade-in duration-150 cursor-pointer touch-manipulation overflow-y-auto"
+      className="fixed inset-0 z-[120] flex items-start justify-center pt-8 sm:pt-16 md:pt-20 px-3 sm:px-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-150 cursor-pointer touch-manipulation overflow-y-auto"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           handleClose();
@@ -285,6 +290,13 @@ export default function GlobalSearch({ isOpen, onClose }) {
       aria-modal="true"
       aria-label="Global Portfolio Search"
     >
+      {/* Background Wall Ambient Glow & Avengers Constellation Overlay */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
+        <div className="absolute top-1/4 left-1/3 w-96 h-96 rounded-full bg-indigo-600/10 blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full bg-cyan-500/10 blur-3xl" />
+        <div className="absolute top-1/3 right-1/3 w-72 h-72 rounded-full bg-red-600/10 blur-3xl" />
+      </div>
+
       {/* Search Modal Panel — 3D Floating Command Chassis */}
       <div
         onClick={(e) => e.stopPropagation()}

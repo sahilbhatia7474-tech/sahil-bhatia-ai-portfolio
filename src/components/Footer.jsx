@@ -19,7 +19,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 const Footer = () => {
   const { identity } = usePortfolioData();
-  const { isFounder } = useAuth();
+  const { isFounder, lockVault } = useAuth();
   const navigate = useNavigate();
   const footerRef = useRef(null);
 
@@ -133,6 +133,47 @@ const Footer = () => {
             WebkitMaskImage: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 80%)',
           }}
         />
+
+        {/* ========================================================= */}
+        {/* CAPTAIN AMERICA VIBRANIUM SHIELD - COSMIC BACKGROUND INTEGRATION */}
+        {/* ========================================================= */}
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[540px] sm:w-[680px] md:w-[800px] lg:w-[920px] aspect-square flex items-center justify-center pointer-events-none select-none z-0"
+          aria-hidden="true"
+        >
+          {/* Multi-octave atmospheric backlighting: crimson red & cosmic vibranium blue */}
+          <div className="absolute inset-4 rounded-full bg-gradient-to-tr from-red-600/[0.14] via-rose-950/[0.08] to-blue-600/[0.12] blur-[100px] transform scale-90" />
+          <div className="absolute w-[55%] h-[55%] rounded-full bg-cyan-500/[0.06] blur-[75px]" />
+          <div className="absolute w-[40%] h-[40%] rounded-full bg-red-500/[0.1] blur-[60px]" />
+
+          {/* Shield Artwork with Soft Feathered Radial Mask & Vignette */}
+          <div
+            className="relative w-full h-full flex items-center justify-center overflow-hidden"
+            style={{
+              maskImage: 'radial-gradient(circle at 50% 38%, black 15%, rgba(0,0,0,0.85) 35%, rgba(0,0,0,0.2) 55%, transparent 68%)',
+              WebkitMaskImage: 'radial-gradient(circle at 50% 38%, black 15%, rgba(0,0,0,0.85) 35%, rgba(0,0,0,0.2) 55%, transparent 68%)',
+            }}
+          >
+            <img
+              src="/assets/cap_shield_red_hulk.jpg"
+              alt=""
+              aria-hidden="true"
+              className="w-full h-full object-cover object-[center_34%] opacity-[0.25] sm:opacity-[0.28] mix-blend-screen filter contrast-125 brightness-95 saturate-110"
+              style={{
+                transform: `perspective(1000px) rotateX(${pointer.tiltY * 0.35}deg) rotateY(${pointer.tiltX * 0.35}deg)`,
+                transition: 'transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)',
+              }}
+            />
+
+            {/* Deep Cosmic Vignettes completely eliminating all text, logos, and watermarks */}
+            <div className="absolute inset-0 bg-gradient-to-b from-[#06060a]/40 via-transparent to-[#06060a]/90 pointer-events-none" />
+            <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-[#06060a] via-[#06060a]/80 to-transparent pointer-events-none" />
+          </div>
+
+          {/* Vibranium Star Specular Glint & Atmospheric Flare */}
+          <div className="absolute w-36 h-36 rounded-full bg-blue-400/[0.08] blur-xl pointer-events-none" />
+          <div className="absolute -top-6 w-60 h-28 bg-red-600/[0.12] blur-3xl pointer-events-none" />
+        </div>
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
@@ -303,6 +344,7 @@ const Footer = () => {
                 <li className="pt-2 border-t border-white/[0.08]">
                   <Link
                     to="/vault"
+                    onClick={() => lockVault && lockVault()}
                     className="py-1.5 px-2.5 rounded-lg bg-red-950/30 border border-red-500/20 text-red-400 hover:text-red-300 hover:bg-red-900/40 flex items-center gap-2 transition-all text-[11px] font-medium"
                   >
                     <Lock className="w-3 h-3 text-red-400" />
@@ -407,7 +449,7 @@ const Footer = () => {
         {/* ========================================================= */}
         {/* BOTTOM COPYRIGHT & METADATA BAR                          */}
         {/* ========================================================= */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-mono text-neutral-500">
+        <div className="pt-8 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-mono text-neutral-500">
           <div className="flex items-center gap-2">
             <span>&copy; {new Date().getFullYear()} {name}.</span>
             <span className="hidden sm:inline text-neutral-600">&bull;</span>
