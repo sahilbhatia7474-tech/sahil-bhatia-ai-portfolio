@@ -39,17 +39,18 @@ export const ProtectedRoute = ({ children }) => {
     if (prevUnlockedRef.current !== isVaultUnlocked) {
       const direction = isVaultUnlocked ? 'unlock' : 'lock';
       setTransitionDirection(direction);
+      prevUnlockedRef.current = isVaultUnlocked;
       setIsOverlayOpen(true);
 
       // Midpoint: Swap the underlying view while the overlay is 100% opaque and covering the viewport
       const midTimer = setTimeout(() => {
         setDisplayedUnlocked(isVaultUnlocked);
+        window.scrollTo({ top: 0, behavior: 'instant' });
       }, 340);
 
       // End: Reveal the newly mounted view smoothly
       const endTimer = setTimeout(() => {
         setIsOverlayOpen(false);
-        prevUnlockedRef.current = isVaultUnlocked;
       }, 760);
 
       return () => {

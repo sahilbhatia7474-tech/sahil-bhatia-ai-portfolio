@@ -49,10 +49,10 @@ function TimelineMilestoneNode({
   return (
     <motion.div
       id={nodeId}
-      initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 40 }}
-      whileInView={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.6, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+      initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '80px' }}
+      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
       className="relative pl-8 sm:pl-14 pb-12 group/node"
     >
       {/* Node Anchor Beacon on the Vertical Spine */}

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Lock,
@@ -53,6 +54,7 @@ function playTransitionSound(type = 'unlock') {
  * 
  * Provides an iconic, hardware-accelerated transition between the Lock Page and
  * Dashboard using the app's established 'cyber-vault-bg' dark obsidian & glowing neon aesthetic.
+ * Strictly portalled to document.body with fixed full-viewport centering to eliminate clipping or split views.
  */
 export const VaultPageTransitionOverlay = ({
   isOpen = false,
@@ -70,7 +72,18 @@ export const VaultPageTransitionOverlay = ({
     }
   }, [isOpen, direction]);
 
-  return (
+  // Lock body scroll and prevent viewport shifts during full-screen transition
+  useEffect(() => {
+    if (isOpen && typeof document !== 'undefined') {
+      const prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prevOverflow;
+      };
+    }
+  }, [isOpen]);
+
+  const overlayContent = (
     <AnimatePresence>
       {isOpen && (
         <motion.div
@@ -78,9 +91,20 @@ export const VaultPageTransitionOverlay = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-          className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden select-none font-crisp cyber-vault-bg"
+          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+          className="fixed inset-0 z-[999999] flex flex-col items-center justify-center p-4 sm:p-6 overflow-y-auto overflow-x-hidden select-none font-crisp bg-[#040509]"
           style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100%',
+            height: '100%',
+            zIndex: 999999,
+            margin: 0,
+            padding: 0,
+            backgroundColor: '#040509',
             WebkitFontSmoothing: 'antialiased',
             MozOsxFontSmoothing: 'grayscale',
             textRendering: 'optimizeLegibility',
@@ -200,35 +224,35 @@ export const VaultPageTransitionOverlay = ({
                   : 'bg-gradient-to-r from-transparent via-red-500 to-transparent text-red-500'
               }`}
             />
-
-            {/* Top & Bottom Precision Laser Horizon Status Rails */}
-            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-red-500 to-transparent shadow-[0_0_12px_#ff2a3a]" />
-            <div className="absolute top-3 inset-x-0 flex justify-between items-center px-6 text-[10px] font-mono tracking-widest text-slate-300">
-              <span className="flex items-center gap-2">
-                <span className={`w-2 h-2 rounded-full animate-ping ${isUnlock ? 'bg-cyan-400 shadow-[0_0_8px_#06b6d4]' : 'bg-red-500 shadow-[0_0_8px_#ff2a3a]'}`} />
-                <span className="font-bold text-white">[ TRANSITION PROTOCOL // {isUnlock ? 'VAULT_UNLOCK' : 'VAULT_LOCK'} ]</span>
-              </span>
-              <span className="hidden sm:inline text-neutral-400 font-bold">[ ENCRYPTION: AES-256-GCM &bull; ZERO_TRUST ]</span>
-              <span className="font-bold text-cyan-300">[ STATUS: EXECUTING ]</span>
-            </div>
-
-            <div className="absolute bottom-3 inset-x-0 flex justify-between items-center px-6 text-[10px] font-mono tracking-widest text-slate-300">
-              <span className="text-neutral-400 font-bold">[ LATENCY: 0.8MS ]</span>
-              <span className="hidden sm:inline font-bold text-white">[ ARCHITECT: SAHIL BHATIA &bull; ROOT CONSOLE ]</span>
-              <span className="font-bold text-emerald-400">[ FIRESTORE: SYNC ]</span>
-            </div>
-            <div className="absolute bottom-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_12px_#06b6d4]" />
           </div>
 
+          {/* Top & Bottom Precision Laser Horizon Status Rails (Fixed to screen edges) */}
+          <div className="fixed top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-red-500 to-transparent shadow-[0_0_12px_#ff2a3a] pointer-events-none z-30" />
+          <div className="fixed top-3 inset-x-0 flex justify-between items-center px-4 sm:px-6 text-[10px] font-mono tracking-widest text-slate-300 pointer-events-none z-30">
+            <span className="flex items-center gap-2">
+              <span className={`w-2 h-2 rounded-full animate-ping ${isUnlock ? 'bg-cyan-400 shadow-[0_0_8px_#06b6d4]' : 'bg-red-500 shadow-[0_0_8px_#ff2a3a]'}`} />
+              <span className="font-bold text-white">[ TRANSITION PROTOCOL // {isUnlock ? 'VAULT_UNLOCK' : 'VAULT_LOCK'} ]</span>
+            </span>
+            <span className="hidden sm:inline text-neutral-400 font-bold">[ ENCRYPTION: AES-256-GCM &bull; ZERO_TRUST ]</span>
+            <span className="font-bold text-cyan-300">[ STATUS: EXECUTING ]</span>
+          </div>
+
+          <div className="fixed bottom-3 inset-x-0 flex justify-between items-center px-4 sm:px-6 text-[10px] font-mono tracking-widest text-slate-300 pointer-events-none z-30">
+            <span className="text-neutral-400 font-bold">[ LATENCY: 0.8MS ]</span>
+            <span className="hidden sm:inline font-bold text-white">[ ARCHITECT: SAHIL BHATIA &bull; ROOT CONSOLE ]</span>
+            <span className="font-bold text-emerald-400">[ FIRESTORE: SYNC ]</span>
+          </div>
+          <div className="fixed bottom-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_12px_#06b6d4] pointer-events-none z-30" />
+
           {/* ========================================================================= */}
-          {/* CENTRAL HOLOGRAPHIC COMMAND POD                                           */}
+          {/* CENTRAL HOLOGRAPHIC COMMAND POD (Centered in viewport with zero layout jitter) */}
           {/* ========================================================================= */}
           <motion.div
-            initial={{ scale: 0.88, opacity: 0, y: isUnlock ? 24 : -24 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 1.04, opacity: 0, y: isUnlock ? -16 : 16 }}
-            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="relative z-20 w-full max-w-md mx-4 p-6 sm:p-8 rounded-3xl bg-[#070914]/95 border-2 border-white/20 backdrop-blur-2xl shadow-[0_25px_70px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.3)] text-center overflow-hidden"
+            initial={{ scale: 0.96, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 1.02, opacity: 0 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            className="relative z-20 w-full max-w-md mx-auto my-auto p-5 sm:p-7 rounded-3xl bg-[#070914] border-2 border-white/20 backdrop-blur-2xl shadow-[0_25px_70px_rgba(0,0,0,0.98),inset_0_1px_0_rgba(255,255,255,0.3)] text-center overflow-hidden"
           >
             {/* Top Specular Edge Laser Accent */}
             <div
@@ -361,6 +385,12 @@ export const VaultPageTransitionOverlay = ({
       )}
     </AnimatePresence>
   );
+
+  if (typeof document === 'undefined') {
+    return overlayContent;
+  }
+
+  return createPortal(overlayContent, document.body);
 };
 
 export default VaultPageTransitionOverlay;

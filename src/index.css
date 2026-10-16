@@ -39,7 +39,6 @@
 }
 
 html {
-  scroll-behavior: auto;
   overscroll-behavior-y: auto;
   touch-action: pan-y;
   font-family: var(--font-sans);
@@ -113,6 +112,18 @@ h1, h2, h3, h4, h5, h6, p, span, a, button, input, textarea, code, pre {
   contain: layout style paint;
   isolation: isolate;
   position: relative;
+}
+
+/* Section Rendering & Compositing Isolation */
+.perf-section-optimize {
+  contain: style;
+}
+
+/* Dedicated compositor layer isolation for high-performance scrolling */
+.gpu-layer-isolate {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
 }
 
 /* Z-0: Background Grid Plane (Baseline Reference) */
@@ -432,6 +443,10 @@ html.light ::-webkit-scrollbar-thumb:hover {
   animation: neonAuraBreathe 3s ease-in-out infinite;
 }
 
+.animate-spin-slow {
+  animation: spin 16s linear infinite;
+}
+
 /* =========================================================
    GLASSLOOMY & 3D INTERACTIVE CYBERNETIC UTILITIES
    ========================================================= */
@@ -569,7 +584,26 @@ html.light ::-webkit-scrollbar-thumb:hover {
   }
 }
 
+@keyframes cyberVaultLensFlarePulse {
+  0% {
+    opacity: 0.35;
+    transform: scale(0.96) translate3d(0, 0, 0);
+    filter: brightness(0.95) contrast(1.05);
+  }
+  50% {
+    opacity: 0.65;
+    transform: scale(1.03) translate3d(8px, -4px, 0);
+    filter: brightness(1.2) contrast(1.15);
+  }
+  100% {
+    opacity: 0.35;
+    transform: scale(0.96) translate3d(0, 0, 0);
+    filter: brightness(0.95) contrast(1.05);
+  }
+}
+
 .cyber-vault-bg {
+  position: relative;
   background-color: #040509;
   background-image: 
     radial-gradient(circle at center, rgba(255, 42, 58, 0.16) 0%, rgba(255, 42, 58, 0.03) 45%, transparent 68%),
@@ -594,9 +628,49 @@ html.light ::-webkit-scrollbar-thumb:hover {
   will-change: background-position, background-size;
 }
 
+.cyber-vault-bg.fixed,
+.fixed.cyber-vault-bg {
+  position: fixed !important;
+}
+
+/* Semi-transparent cinematic lens flare overlay with subtle pulsating animation */
+.cyber-vault-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    /* Layer 1: Razor-sharp Anamorphic Horizontal Flare Core Streak */
+    radial-gradient(ellipse 140% 1.8px at 28% 22%, rgba(255, 255, 255, 0.95), rgba(56, 189, 248, 0.75) 18%, rgba(239, 68, 68, 0.35) 45%, transparent 70%),
+    /* Layer 2: Soft Diffused Anamorphic Glow Streak */
+    radial-gradient(ellipse 85% 7px at 28% 22%, rgba(56, 189, 248, 0.45), rgba(129, 140, 248, 0.2) 35%, transparent 65%),
+    /* Layer 3: Intense Primary Optical Glare Burst */
+    radial-gradient(circle 120px at 28% 22%, rgba(255, 255, 255, 0.8) 0%, rgba(56, 189, 248, 0.35) 25%, rgba(244, 63, 94, 0.18) 50%, transparent 70%),
+    /* Layer 4: Diffused Ethereal Corona */
+    radial-gradient(circle 380px at 28% 22%, rgba(56, 189, 248, 0.1) 0%, rgba(99, 102, 241, 0.05) 45%, transparent 70%),
+    /* Layer 5: Chromatic Aberration Halo Ring */
+    radial-gradient(circle 260px at 28% 22%, transparent 58%, rgba(56, 189, 248, 0.14) 62%, rgba(245, 158, 11, 0.1) 66%, transparent 70%),
+    /* Layer 6: Diagonal Specular Ghost Orbs (Cinematic Panavision Flare Ghosting) */
+    radial-gradient(circle 35px at 38% 30%, rgba(129, 140, 248, 0.22) 0%, transparent 70%),
+    radial-gradient(circle 60px at 48% 38%, transparent 40%, rgba(239, 68, 68, 0.15) 58%, transparent 72%),
+    radial-gradient(circle 80px at 58% 46%, rgba(6, 182, 212, 0.16) 0%, transparent 70%),
+    radial-gradient(circle 45px at 70% 56%, rgba(245, 158, 11, 0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 1px at 80% 64%, rgba(255, 255, 255, 0.55), rgba(56, 189, 248, 0.25) 40%, transparent 70%);
+  background-repeat: no-repeat;
+  mix-blend-mode: screen;
+  opacity: 0.52;
+  animation: cyberVaultLensFlarePulse 7s ease-in-out infinite alternate;
+  will-change: opacity, transform, filter;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cyber-vault-bg {
     animation: none !important;
+  }
+  .cyber-vault-bg::before {
+    animation: none !important;
+    opacity: 0.42;
   }
 }
 
@@ -617,6 +691,112 @@ html.light ::-webkit-scrollbar-thumb:hover {
 .animate-holographic-sweep {
   animation: holographicSweep 7s ease-in-out infinite;
 }
+
+/* ========================================================= */
+/* CINEMATIC CRT MONITOR SCANLINE OVERLAY SYSTEM            */
+/* ========================================================= */
+
+@keyframes crtScanlineSweep {
+  0% {
+    transform: translate3d(0, -120px, 0);
+  }
+  100% {
+    transform: translate3d(0, 100vh, 0);
+  }
+}
+
+.crt-overlay-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  user-select: none;
+  z-index: 45;
+  overflow: hidden;
+  contain: strict;
+  transform: translateZ(0);
+}
+
+/* Micro-raster horizontal scanlines pattern */
+.crt-scanlines-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.012) 0px,
+    rgba(255, 255, 255, 0.012) 1px,
+    transparent 1px,
+    transparent 3px,
+    rgba(0, 0, 0, 0.18) 3px,
+    rgba(0, 0, 0, 0.18) 4px
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+  opacity: 0.28;
+  transform: translateZ(0);
+}
+
+/* Rolling horizontal electron sweep beam */
+.crt-beam-sweep {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 140px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(56, 189, 248, 0.012) 20%,
+    rgba(255, 255, 255, 0.03) 50%,
+    rgba(56, 189, 248, 0.015) 75%,
+    transparent 100%
+  );
+  animation: crtScanlineSweep 14s linear infinite;
+  will-change: transform;
+  pointer-events: none;
+  transform: translateZ(0);
+}
+
+.crt-beam-lead-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1.5px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(56, 189, 248, 0.12) 15%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(56, 189, 248, 0.12) 85%,
+    transparent 100%
+  );
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
+  opacity: 0.55;
+}
+
+/* Subtle spherical CRT monitor curvature & corner vignette */
+.crt-screen-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at center,
+    transparent 68%,
+    rgba(4, 5, 9, 0.12) 86%,
+    rgba(4, 5, 9, 0.32) 100%
+  );
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crt-beam-sweep {
+    animation: none !important;
+    display: none;
+  }
+  .crt-scanlines-pattern {
+    opacity: 0.2;
+  }
+}
+
 
 
 

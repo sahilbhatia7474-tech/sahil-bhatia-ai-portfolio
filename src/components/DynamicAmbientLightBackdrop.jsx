@@ -90,9 +90,15 @@ export default function DynamicAmbientLightBackdrop() {
 
     window.addEventListener('resize', handleResize, { passive: true });
 
+    let scrollThrottleTimer = null;
     const handleScroll = () => {
       scrollY = window.scrollY;
-      requestTick();
+      if (!scrollThrottleTimer) {
+        scrollThrottleTimer = setTimeout(() => {
+          scrollThrottleTimer = null;
+          requestTick();
+        }, 80);
+      }
     };
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });

@@ -1,28 +1,57 @@
 import { useEffect, useRef, useState } from 'react';
-import { Maximize2, X, Zap, Shield, Sparkles } from 'lucide-react';
+import { Maximize2, X } from 'lucide-react';
 
 /**
  * SpiderVerseBackgroundWall
  * 
- * Cinematic Dark-Themed Tobey Maguire Spider-Man 3 "The Battle Within" Wall
- * with Center Interstellar Cosmos, Dynamic Thunder/Lightning, and Avengers Allies.
+ * Cinematic Dark-Themed Tobey Maguire Spider-Man 3 Symbiote Poster Wall
+ * with Center Interstellar Cosmos, Dynamic Thunder/Lightning, and 3D Interactive Lightbox.
  * 
  * Strictly mounted on the background wall behind all page content (fixed z-[1] pointer-events-none).
  */
 
-const STAR_COUNT_DESKTOP = 220;
-const STAR_COUNT_MOBILE = 110;
-const PARTICLE_COUNT = 36;
-const MAX_WEB_DIST = 115;
+const STAR_COUNT_DESKTOP = 120;
+const STAR_COUNT_MOBILE = 60;
+const PARTICLE_COUNT = 18;
+const MAX_WEB_DIST = 110;
 const MAX_WEB_DIST_SQ = MAX_WEB_DIST * MAX_WEB_DIST;
 
 export default function SpiderVerseBackgroundWall() {
   const canvasRef = useRef(null);
   const posterRef = useRef(null);
-  const ironManRef = useRef(null);
   const shieldRef = useRef(null);
   const [isPosterExpanded, setIsPosterExpanded] = useState(false);
   const [isShieldExpanded, setIsShieldExpanded] = useState(false);
+  const [cardTilt, setCardTilt] = useState({ rotX: 0, rotY: 0, glareX: 50, glareY: 50, active: false });
+
+  // Escape key listener to close poster lightbox modals
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setIsPosterExpanded(false);
+        setIsShieldExpanded(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const handleCardMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotX = Number((((y - centerY) / centerY) * -16).toFixed(2));
+    const rotY = Number((((x - centerX) / centerX) * 16).toFixed(2));
+    const glareX = Number(((x / rect.width) * 100).toFixed(1));
+    const glareY = Number(((y / rect.height) * 100).toFixed(1));
+    setCardTilt({ rotX, rotY, glareX, glareY, active: true });
+  };
+
+  const handleCardMouseLeave = () => {
+    setCardTilt({ rotX: 0, rotY: 0, glareX: 50, glareY: 50, active: false });
+  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -169,14 +198,12 @@ export default function SpiderVerseBackgroundWall() {
 
     const handleResize = () => {
       if (!canvas) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       width = window.innerWidth;
       height = window.innerHeight;
-      canvas.width = width * dpr;
-      canvas.height = height * dpr;
+      canvas.width = width;
+      canvas.height = height;
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
-      ctx.scale(dpr, dpr);
 
       cornerWebs[1].x = width;
       cornerWebs[2].y = height;
@@ -187,19 +214,68 @@ export default function SpiderVerseBackgroundWall() {
         if (s.x > width) s.x = Math.random() * width;
         if (s.y > height) s.y = Math.random() * height;
       });
+
+      // Pre-render static geometric spider-webs to an offscreen buffer (Zero frame recalculation overhead)
+      cornerWebsCanvas = document.createElement('canvas');
+      cornerWebsCanvas.width = width;
+      cornerWebsCanvas.height = height;
+      const webCtx = cornerWebsCanvas.getContext('2d');
+      if (webCtx) {
+        for (let c = 0; c < cornerWebs.length; c++) {
+          const web = cornerWebs[c];
+          const spokeStep = (Math.PI * 0.5) / (web.spokes - 1);
+          const startAngle = c === 0 ? 0 : c === 1 ? Math.PI * 0.5 : c === 2 ? Math.PI * 1.5 : Math.PI;
+
+          webCtx.strokeStyle = 'rgba(240, 246, 255, 0.3)';
+          webCtx.lineWidth = 0.9;
+
+          const spokePoints = [];
+          for (let s = 0; s < web.spokes; s++) {
+            const angle = startAngle + s * spokeStep;
+            const endX = web.x + Math.cos(angle) * web.radius;
+            const endY = web.y + Math.sin(angle) * web.radius;
+
+            webCtx.beginPath();
+            webCtx.moveTo(web.x, web.y);
+            webCtx.lineTo(endX, endY);
+            webCtx.stroke();
+
+            spokePoints.push({ angle });
+          }
+
+          for (let r = 1; r <= web.rings; r++) {
+            const ringRadius = (web.radius / web.rings) * r;
+            const isOuter = r === web.rings;
+            webCtx.strokeStyle = isOuter ? 'rgba(255, 60, 75, 0.4)' : 'rgba(226, 232, 240, 0.25)';
+            webCtx.lineWidth = isOuter ? 1.1 : 0.75;
+
+            webCtx.beginPath();
+            for (let s = 0; s < spokePoints.length; s++) {
+              const pt = spokePoints[s];
+              const px = web.x + Math.cos(pt.angle) * ringRadius;
+              const py = web.y + Math.sin(pt.angle) * ringRadius;
+              if (s === 0) webCtx.moveTo(px, py);
+              else webCtx.lineTo(px, py);
+            }
+            webCtx.stroke();
+          }
+        }
+      }
+
+      // Pre-compute center galaxy radial gradient on resize (Zero garbage collector allocations in loop)
+      const cX = width * 0.5;
+      const cY = height * 0.5;
+      galaxyGrad = ctx.createRadialGradient(cX, cY, 0, cX, cY, Math.min(width, height) * 0.38);
+      galaxyGrad.addColorStop(0, 'rgba(99, 102, 241, 0.08)');
+      galaxyGrad.addColorStop(0.35, 'rgba(56, 189, 248, 0.05)');
+      galaxyGrad.addColorStop(0.7, 'rgba(239, 68, 68, 0.02)');
+      galaxyGrad.addColorStop(1, 'transparent');
     };
+
+    let cornerWebsCanvas = null;
+    let galaxyGrad = null;
 
     handleResize();
-
-    let isScrolling = false;
-    let scrollTimeout = null;
-    const handleScroll = () => {
-      isScrolling = true;
-      if (scrollTimeout) clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => {
-        isScrolling = false;
-      }, 100);
-    };
 
     const handleMouseMove = (e) => {
       mouse.targetX = e.clientX;
@@ -221,21 +297,19 @@ export default function SpiderVerseBackgroundWall() {
     document.addEventListener('visibilitychange', handleVisibility);
     window.addEventListener('resize', handleResize, { passive: true });
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    window.addEventListener('scroll', handleScroll, { passive: true });
     document.addEventListener('mouseleave', handleMouseLeave, { passive: true });
 
     let galaxyAngle = 0;
     let lastRenderTime = 0;
 
-    // Main Render Loop with Adaptive Frame Rate Governor
+    // Main Render Loop with Adaptive Frame Rate Governor (Silky 60fps at all times, no scroll freeze)
     const render = (currentTime = 0) => {
       if (!prefersReducedMotion && isVisible) {
         animationFrameId = requestAnimationFrame(render);
       }
 
-      // Cap at 60fps on desktop, 30fps while scrolling to preserve 120Hz native scroll physics
-      const targetInterval = isScrolling ? 32 : 16.6;
-      if (currentTime - lastRenderTime < targetInterval) {
+      // Frame throttle to standard display refresh (~60fps)
+      if (currentTime - lastRenderTime < 16.6) {
         return;
       }
       lastRenderTime = currentTime;
@@ -244,15 +318,16 @@ export default function SpiderVerseBackgroundWall() {
 
       // Direct DOM update for poster & companion parallax (Zero React state overhead)
       if (mouse.active) {
-        const px = ((mouse.x - width / 2) / width) * 16;
-        const py = ((mouse.y - height / 2) / height) * 10;
+        const normX = (mouse.x - width / 2) / (width / 2);
+        const normY = (mouse.y - height / 2) / (height / 2);
         if (posterRef.current) {
-          posterRef.current.style.transform = `translate3d(${-px}px, ${-py}px, 0)`;
-        }
-        if (ironManRef.current) {
-          ironManRef.current.style.transform = `translate3d(${px * 0.7}px, ${-py * 0.7}px, 0)`;
+          const transX = -normX * 18;
+          const transY = -normY * 12;
+          posterRef.current.style.transform = `translate3d(${transX}px, ${transY}px, 0)`;
         }
         if (shieldRef.current) {
+          const px = ((mouse.x - width / 2) / width) * 16;
+          const py = ((mouse.y - height / 2) / height) * 10;
           shieldRef.current.style.transform = `translate3d(${px * 0.6}px, ${py * 0.6}px, 0)`;
         }
       }
@@ -273,24 +348,13 @@ export default function SpiderVerseBackgroundWall() {
         galaxyAngle += 0.0012;
       }
 
-      // Celestial Galaxy Glow in Center
-      const galaxyGrad = ctx.createRadialGradient(
-        centerX,
-        centerY,
-        0,
-        centerX,
-        centerY,
-        Math.min(width, height) * 0.38
-      );
-      galaxyGrad.addColorStop(0, 'rgba(99, 102, 241, 0.08)'); // Indigo galactic core
-      galaxyGrad.addColorStop(0.35, 'rgba(56, 189, 248, 0.05)'); // Cyan celestial arms
-      galaxyGrad.addColorStop(0.7, 'rgba(239, 68, 68, 0.02)'); // Crimson fringe
-      galaxyGrad.addColorStop(1, 'transparent');
-
-      ctx.fillStyle = galaxyGrad;
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, Math.min(width, height) * 0.38, 0, Math.PI * 2);
-      ctx.fill();
+      // Pre-cached Celestial Galaxy Glow
+      if (galaxyGrad) {
+        ctx.fillStyle = galaxyGrad;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, Math.min(width, height) * 0.38, 0, Math.PI * 2);
+        ctx.fill();
+      }
 
       // Warp Interstellar Star Lines streaming from Center
       for (let i = 0; i < warpLines.length; i++) {
@@ -393,46 +457,10 @@ export default function SpiderVerseBackgroundWall() {
       }
 
       // -------------------------------------------------------------
-      // LAYER 4: CLEAN GEOMETRIC SPIDER-NETS (NO U-SHAPES)
+      // LAYER 4: CLEAN GEOMETRIC SPIDER-NETS (PRE-RENDERED HARDWARE BUFFER)
       // -------------------------------------------------------------
-      for (let c = 0; c < cornerWebs.length; c++) {
-        const web = cornerWebs[c];
-        const spokeStep = (Math.PI * 0.5) / (web.spokes - 1);
-        const startAngle = c === 0 ? 0 : c === 1 ? Math.PI * 0.5 : c === 2 ? Math.PI * 1.5 : Math.PI;
-
-        ctx.strokeStyle = 'rgba(240, 246, 255, 0.3)';
-        ctx.lineWidth = 0.9;
-
-        const spokePoints = [];
-        for (let s = 0; s < web.spokes; s++) {
-          const angle = startAngle + s * spokeStep;
-          const endX = web.x + Math.cos(angle) * web.radius;
-          const endY = web.y + Math.sin(angle) * web.radius;
-
-          ctx.beginPath();
-          ctx.moveTo(web.x, web.y);
-          ctx.lineTo(endX, endY);
-          ctx.stroke();
-
-          spokePoints.push({ angle });
-        }
-
-        for (let r = 1; r <= web.rings; r++) {
-          const ringRadius = (web.radius / web.rings) * r;
-          const isOuter = r === web.rings;
-          ctx.strokeStyle = isOuter ? 'rgba(255, 60, 75, 0.4)' : 'rgba(226, 232, 240, 0.25)';
-          ctx.lineWidth = isOuter ? 1.1 : 0.75;
-
-          ctx.beginPath();
-          for (let s = 0; s < spokePoints.length; s++) {
-            const pt = spokePoints[s];
-            const px = web.x + Math.cos(pt.angle) * ringRadius;
-            const py = web.y + Math.sin(pt.angle) * ringRadius;
-            if (s === 0) ctx.moveTo(px, py);
-            else ctx.lineTo(px, py);
-          }
-          ctx.stroke();
-        }
+      if (cornerWebsCanvas) {
+        ctx.drawImage(cornerWebsCanvas, 0, 0);
       }
 
       // -------------------------------------------------------------
@@ -523,9 +551,7 @@ export default function SpiderVerseBackgroundWall() {
       document.removeEventListener('visibilitychange', handleVisibility);
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('scroll', handleScroll);
       document.removeEventListener('mouseleave', handleMouseLeave);
-      if (scrollTimeout) clearTimeout(scrollTimeout);
     };
   }, []);
 
@@ -546,68 +572,71 @@ export default function SpiderVerseBackgroundWall() {
         />
 
         {/* ========================================================= */}
-        {/* SPIDER-MAN 3 "THE BATTLE WITHIN" MINI POSTER ("chota sa") */}
+        {/* SPIDER-MAN 3 SYMBIOTE BLACK SUIT 3D INTERACTIVE POSTER    */}
         {/* ========================================================= */}
         <div
           ref={posterRef}
-          className="absolute top-20 sm:top-24 right-3 sm:right-6 md:right-10 lg:right-14 xl:right-20 pointer-events-auto transition-transform duration-100 ease-out z-10 select-none will-change-transform"
+          className="absolute top-20 sm:top-24 right-3 sm:right-6 md:right-10 lg:right-14 xl:right-20 pointer-events-auto z-10 select-none will-change-transform"
         >
-          {/* Subtle Ambient Red/Blue Dual Glow */}
-          <div className="absolute -inset-4 bg-gradient-to-r from-red-600/20 via-transparent to-blue-600/20 rounded-2xl blur-xl pointer-events-none" />
+          {/* Subtle Ambient Symbiote Silver & Indigo Glow */}
+          <div className="absolute -inset-5 bg-gradient-to-r from-blue-600/25 via-indigo-900/30 to-cyan-500/25 rounded-2xl blur-2xl pointer-events-none transition-opacity duration-300 opacity-70 group-hover:opacity-100" />
 
-          {/* Compact Mini Poster Frame */}
+          {/* 3D Interactive Mini Poster Frame */}
           <div
             onClick={() => setIsPosterExpanded(true)}
-            className="relative group w-28 sm:w-36 md:w-44 aspect-[2/3] rounded-xl overflow-hidden border border-white/25 hover:border-red-500/80 bg-black shadow-[0_16px_40px_rgba(0,0,0,0.95),0_0_24px_rgba(255,42,58,0.25)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.98),0_0_36px_rgba(255,42,58,0.45)] transition-all duration-300 cursor-pointer active:scale-95"
-            title="Click to view full Spider-Man 3 The Battle Within poster"
+            onMouseMove={handleCardMouseMove}
+            onMouseLeave={handleCardMouseLeave}
+            className="relative group w-32 sm:w-40 md:w-48 aspect-[2/3] rounded-2xl overflow-hidden border border-white/30 hover:border-cyan-400/90 bg-neutral-950 shadow-[0_20px_50px_rgba(0,0,0,0.98),0_0_30px_rgba(56,189,248,0.3)] hover:shadow-[0_28px_70px_rgba(0,0,0,0.99),0_0_45px_rgba(56,189,248,0.55)] cursor-pointer select-none transition-all duration-300"
+            style={{
+              transform: cardTilt.active
+                ? `perspective(800px) rotateX(${cardTilt.rotX}deg) rotateY(${cardTilt.rotY}deg) scale3d(1.06, 1.06, 1.06)`
+                : 'perspective(800px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)',
+              transition: cardTilt.active ? 'transform 0.08s ease-out' : 'transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1)',
+              transformStyle: 'preserve-3d',
+            }}
+            title="Click to view full 4K Spider-Man 3 Black Suit poster"
           >
-            {/* The Authentic Split Poster Artwork */}
+            {/* The Authentic Black Suit Theatrical Poster Artwork */}
             <img
-              src="/assets/spiderman3_battle_within.svg"
-              alt="Spider-Man 3 - The Battle Within"
+              src="/assets/spiderman3_black_suit_poster.jpg"
+              alt="Spider-Man 3 - Tobey Maguire in the Symbiote Black Suit"
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
               referrerPolicy="no-referrer"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
 
-            {/* Specular Glint Shimmer on Hover */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+            {/* Dynamic Interactive Specular Holographic Glare */}
+            <div
+              className="absolute inset-0 pointer-events-none transition-opacity duration-300"
+              style={{
+                background: cardTilt.active
+                  ? `radial-gradient(circle 140px at ${cardTilt.glareX}% ${cardTilt.glareY}%, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.12) 40%, transparent 80%)`
+                  : 'none',
+                opacity: cardTilt.active ? 1 : 0,
+              }}
+            />
+
+            {/* Linear Shimmer Sweep on Hover */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
 
             {/* Expand Hover Hint */}
-            <div className="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-              <span className="p-1 rounded-md bg-black/80 backdrop-blur-md border border-white/20 text-white flex items-center justify-center">
+            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <span className="px-1.5 py-1 rounded-lg bg-black/85 backdrop-blur-md border border-cyan-400/40 text-cyan-200 flex items-center gap-1 text-[9px] font-mono shadow-lg">
                 <Maximize2 className="w-3 h-3 text-cyan-400" />
+                <span>4K</span>
               </span>
             </div>
 
-            {/* Bottom Tag */}
-            <div className="absolute inset-x-0 bottom-0 p-1.5 bg-gradient-to-t from-black via-black/80 to-transparent flex items-center justify-between text-[8px] font-mono text-neutral-300">
-              <span className="text-red-400 font-bold">SPIDER-MAN 3</span>
-              <span className="text-[7px] text-neutral-400">2007</span>
+            {/* Bottom Metallic Lore Tag */}
+            <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black via-black/90 to-transparent flex items-center justify-between text-[8px] font-mono text-neutral-300 border-t border-white/10">
+              <div className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_6px_#38bdf8]" />
+                <span className="text-white font-bold tracking-wider">SPIDER-MAN 3</span>
+              </div>
+              <span className="text-[7.5px] text-cyan-300/80 uppercase font-semibold">BLACK SUIT</span>
             </div>
-          </div>
-        </div>
-
-        {/* ========================================================= */}
-        {/* AVENGERS COMPANION: IRON MAN MARK 85 (UPPER-LEFT FLIGHT)  */}
-        {/* ========================================================= */}
-        <div
-          ref={ironManRef}
-          className="absolute top-24 sm:top-28 left-4 sm:left-8 md:left-14 w-28 h-28 sm:w-36 sm:h-36 pointer-events-none transition-transform duration-300 ease-out z-10 will-change-transform"
-        >
-          <div className="absolute inset-0 rounded-full bg-cyan-400/15 blur-xl pointer-events-none animate-pulse" />
-          <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-[0_0_16px_rgba(56,189,248,0.4)]" fill="none">
-            {/* Helm & Faceplate */}
-            <path d="M80 60 C85 45, 115 45, 120 60 C128 72, 125 92, 118 98 C112 102, 88 102, 82 98 C75 92, 72 72, 80 60 Z" fill="#9f1239" stroke="#4c0519" strokeWidth="1.5" />
-            <path d="M85 68 C90 58, 110 58, 115 68 C118 76, 116 88, 112 92 C108 95, 92 95, 88 92 C84 88, 82 76, 85 68 Z" fill="#facc15" />
-            {/* Glowing Eyes */}
-            <rect x="88" y="74" width="7" height="2.5" rx="0.5" fill="#ffffff" filter="drop-shadow(0 0 4px #38bdf8)" />
-            <rect x="105" y="74" width="7" height="2.5" rx="0.5" fill="#ffffff" filter="drop-shadow(0 0 4px #38bdf8)" />
-            {/* Arc Reactor Unibeam */}
-            <circle cx="100" cy="130" r="11" fill="#0369a1" stroke="#38bdf8" strokeWidth="1.5" />
-            <circle cx="100" cy="130" r="7" fill="#ffffff" filter="drop-shadow(0 0 8px #38bdf8)" />
-          </svg>
-          <div className="absolute -bottom-1 left-2 px-2 py-0.5 rounded-full bg-black/80 border border-cyan-400/40 text-[8px] font-mono text-cyan-200">
-            IRON MAN
           </div>
         </div>
 
@@ -631,7 +660,9 @@ export default function SpiderVerseBackgroundWall() {
             {/* The Authentic Red Hulk Gripped Shield Poster Artwork */}
             <img
               src="/assets/cap_shield_red_hulk.jpg"
-              alt="Captain America: Brave New World - Red Hulk Gripping Vibranium Shield"
+              alt="Captain America Vibranium Shield with Red Hulk Grip"
+              loading="eager"
+              decoding="async"
               referrerPolicy="no-referrer"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
@@ -648,34 +679,34 @@ export default function SpiderVerseBackgroundWall() {
 
             {/* Bottom Tag */}
             <div className="absolute inset-x-0 bottom-0 p-1.5 bg-gradient-to-t from-black via-black/85 to-transparent flex items-center justify-between text-[8px] font-mono text-neutral-300">
-              <span className="text-red-400 font-bold truncate">BRAVE NEW WORLD</span>
-              <span className="text-[7px] text-neutral-400 shrink-0 ml-1">2.14.25</span>
+              <span className="text-red-400 font-bold truncate">VIBRANIUM SHIELD</span>
+              <span className="text-[7px] text-neutral-400 shrink-0 ml-1">TACTICAL</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* ========================================================= */}
-      {/* 4K FULL POSTER MODAL VIEWER: SPIDER-MAN 3                 */}
+      {/* 4K FULL POSTER MODAL VIEWER: SPIDER-MAN 3 BLACK SUIT      */}
       {/* ========================================================= */}
       {isPosterExpanded && (
         <div
           role="dialog"
           aria-modal="true"
-          aria-label="Spider-Man 3 The Battle Within Poster"
-          className="fixed inset-0 z-[130] flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-2xl animate-in fade-in duration-200"
+          aria-label="Spider-Man 3 Symbiote Black Suit Poster"
+          className="fixed inset-0 z-[130] flex items-center justify-center p-3 sm:p-6 bg-black/92 backdrop-blur-2xl animate-in fade-in duration-200"
           onClick={() => setIsPosterExpanded(false)}
         >
           <div
-            className="relative max-w-lg w-full rounded-2xl overflow-hidden border border-white/25 bg-gradient-to-b from-[#141624] to-[#07080e] shadow-[0_30px_90px_rgba(0,0,0,0.98),0_0_60px_rgba(255,42,58,0.3)] animate-in zoom-in-95 duration-200"
+            className="relative max-w-lg w-full rounded-2xl overflow-hidden border border-white/25 bg-gradient-to-b from-[#141624] via-[#090b14] to-[#040508] shadow-[0_30px_90px_rgba(0,0,0,0.98),0_0_60px_rgba(56,189,248,0.25)] animate-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-white/15 bg-black/60">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-white/15 bg-black/75">
               <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
+                <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_#38bdf8]" />
                 <span className="font-display font-black text-sm tracking-wider text-white uppercase">
-                  SPIDER-MAN 3 &bull; THE BATTLE WITHIN
+                  SPIDER-MAN 3 &bull; THE SYMBIOTE BLACK SUIT
                 </span>
               </div>
               <button
@@ -689,21 +720,21 @@ export default function SpiderVerseBackgroundWall() {
             </div>
 
             {/* Poster Image */}
-            <div className="p-4 flex items-center justify-center bg-black/60">
-              <div className="max-h-[70vh] rounded-xl overflow-hidden border border-white/20 shadow-2xl">
+            <div className="p-4 flex items-center justify-center bg-black/80">
+              <div className="max-h-[70vh] rounded-xl overflow-hidden border border-white/25 shadow-2xl bg-neutral-950">
                 <img
-                  src="/assets/spiderman3_battle_within.svg"
-                  alt="Spider-Man 3 The Battle Within Theatrical Poster"
+                  src="/assets/spiderman3_black_suit_poster.jpg"
+                  alt="Spider-Man 3 Symbiote Black Suit Official Theatrical Poster"
                   referrerPolicy="no-referrer"
-                  className="max-h-[70vh] w-auto object-contain"
+                  className="max-h-[70vh] w-auto object-contain hover:scale-102 transition-transform duration-300"
                 />
               </div>
             </div>
 
             {/* Footer */}
-            <div className="px-4 py-2.5 border-t border-white/10 bg-black/70 flex items-center justify-between font-mono text-xs text-neutral-400">
-              <span>Sam Raimi &bull; Tobey Maguire</span>
-              <span className="text-red-400 font-bold">2007 Theatrical Release</span>
+            <div className="px-4 py-2.5 border-t border-white/10 bg-black/80 flex items-center justify-between font-mono text-xs text-neutral-300">
+              <span className="text-neutral-400">Columbia Pictures &bull; Sam Raimi &bull; Tobey Maguire</span>
+              <span className="text-cyan-400 font-bold">2007 Theatrical Release</span>
             </div>
           </div>
         </div>

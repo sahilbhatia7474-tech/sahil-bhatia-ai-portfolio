@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Cpu, ArrowLeft, ArrowUpRight, ShieldCheck, FileText, Briefcase, Info, RefreshCw, Mail } from 'lucide-react';
 import Footer from './Footer';
-import ThemeToggle from './ThemeToggle';
 import { usePortfolioData } from '../context/PortfolioDataContext';
 
 const LEGAL_NAV = [
@@ -49,8 +48,6 @@ export default function LegalPageLayout({
 
           {/* Right Header Controls */}
           <div className="flex items-center gap-3">
-            <ThemeToggle />
-
             <Link
               to="/"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white/5 hover:bg-white/10 border border-white/10 text-neutral-300 hover:text-white text-xs font-mono transition-colors"

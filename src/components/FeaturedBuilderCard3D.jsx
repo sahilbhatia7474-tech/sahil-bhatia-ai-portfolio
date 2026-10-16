@@ -59,17 +59,14 @@ const FeaturedBuilderCard3D = ({ identity: propIdentity, featuredPortrait: propP
   const featuredPortrait = propPortrait || contextData.featuredPortrait;
   const cardRef = useRef(null);
   const containerRef = useRef(null);
+  const glareRef = useRef(null);
+  const telemetryRef = useRef(null);
+  const groundShadowRef = useRef(null);
+  const tiltRef = useRef({ rx: 0, ry: 0, mx: 0, my: 0, gx: 50, gy: 50, gOp: 0.15 });
 
-  const [rotX, setRotX] = useState(0);
-  const [rotY, setRotY] = useState(0);
-  const [magX, setMagX] = useState(0);
-  const [magY, setMagY] = useState(0);
-  const [normX, setNormX] = useState(0);
-  const [normY, setNormY] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [isInteracting, setIsInteracting] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
-  const [glarePos, setGlarePos] = useState({ x: 50, y: 50, opacity: 0.15 });
   const [imgLoadFailed, setImgLoadFailed] = useState(false);
   const [activeTab, setActiveTab] = useState('OVERVIEW'); // 'OVERVIEW' | 'VECTORS' | 'TELEMETRY'
   const [isCopiedHash, setIsCopiedHash] = useState(false);
@@ -79,11 +76,41 @@ const FeaturedBuilderCard3D = ({ identity: propIdentity, featuredPortrait: propP
   const isHoveredRef = useRef(false);
   const isInteractingRef = useRef(false);
 
-  // Responsive tilt and magnetic limits (controlled angles prevent texture blur while preserving 3D presence)
+  // Responsive tilt and magnetic limits
   const MAX_ROT_X = 10;
   const MAX_ROT_Y = 12;
   const MAX_MAG_X = 14;
   const MAX_MAG_Y = 10;
+
+  // Ultra-performant direct DOM transformation (ZERO React re-renders during 3D physics & ambient loops)
+  const applyTiltDirect = useCallback((rx, ry, mx, my, gx, gy, gOp) => {
+    tiltRef.current = { rx, ry, mx, my, gx, gy, gOp };
+    if (cardRef.current) {
+      cardRef.current.style.transform = `translate3d(${mx.toFixed(1)}px, ${my.toFixed(1)}px, 0)`;
+      const dynamicShadowX = (-ry * 2.2 - mx * 1.2).toFixed(1);
+      const dynamicShadowY = (rx * 2.0 + my * 0.8 + 28).toFixed(1);
+      const dynamicShadowBlur = (55 + Math.abs(rx) * 1.5 + Math.abs(ry) * 1.5).toFixed(1);
+      const dynamicGlowX = (-ry * 1.1 - mx).toFixed(1);
+      const dynamicGlowY = (rx * 1.1 + my * 0.5).toFixed(1);
+      cardRef.current.style.boxShadow = `
+        ${dynamicShadowX}px ${dynamicShadowY}px ${dynamicShadowBlur}px -15px rgba(0, 0, 0, 0.98),
+        0 25px 45px -10px rgba(0, 0, 0, 0.9),
+        ${dynamicGlowX}px ${dynamicGlowY}px 65px -6px rgba(255, 42, 58, 0.3),
+        inset 0 1.5px 2px rgba(255, 255, 255, 0.28),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.9)
+      `;
+    }
+    if (glareRef.current) {
+      glareRef.current.style.background = `radial-gradient(circle 420px at ${gx.toFixed(1)}% ${gy.toFixed(1)}%, rgba(255, 255, 255, 0.28) 0%, rgba(255, 42, 58, 0.16) 35%, rgba(99, 102, 241, 0.08) 65%, transparent 85%)`;
+      glareRef.current.style.opacity = gOp.toFixed(2);
+    }
+    if (telemetryRef.current) {
+      telemetryRef.current.textContent = `X:${rx.toFixed(1)}° Y:${ry.toFixed(1)}°`;
+    }
+    if (groundShadowRef.current) {
+      groundShadowRef.current.style.transform = `translateX(${(-ry * 2.2 - mx * 1.2).toFixed(1)}px) translateY(${(-my * 0.5).toFixed(1)}px)`;
+    }
+  }, []);
 
   // Keep refs in sync for the ambient animation loop
   useEffect(() => {
@@ -94,7 +121,7 @@ const FeaturedBuilderCard3D = ({ identity: propIdentity, featuredPortrait: propP
     isInteractingRef.current = isInteracting;
   }, [isInteracting]);
 
-  // Ambient gentle floating animation when idle (gives persistent living depth)
+  // Ambient gentle floating animation when idle (gives persistent living depth with 0% React re-render overhead)
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
@@ -125,7 +152,7 @@ const FeaturedBuilderCard3D = ({ identity: propIdentity, featuredPortrait: propP
       }
 
       if (!isHoveredRef.current && !isInteractingRef.current) {
-        if (time - lastRenderTime >= 46) {
+        if (time - lastRenderTime >= 32) {
           lastRenderTime = time;
           const elapsed = (time - startTime) * 0.001;
           const floatRotX = Math.sin(elapsed * 1.05) * 2.5;
@@ -135,13 +162,7 @@ const FeaturedBuilderCard3D = ({ identity: propIdentity, featuredPortrait: propP
           const glareX = 50 + Math.cos(elapsed * 0.85) * 24;
           const glareY = 45 + Math.sin(elapsed * 1.05) * 24;
 
-          setRotX(floatRotX);
-          setRotY(floatRotY);
-          setMagX(floatMagX);
-          setMagY(floatMagY);
-          setNormX(floatMagX / MAX_MAG_X);
-          setNormY(floatMagY / MAX_MAG_Y);
-          setGlarePos({ x: glareX, y: glareY, opacity: 0.2 });
+          applyTiltDirect(floatRotX, floatRotY, floatMagX, floatMagY, glareX, glareY, 0.2);
         }
       }
       ambientFrameId = requestAnimationFrame(runAmbientLoop);
@@ -153,7 +174,7 @@ const FeaturedBuilderCard3D = ({ identity: propIdentity, featuredPortrait: propP
       observer.disconnect();
       if (ambientFrameId) cancelAnimationFrame(ambientFrameId);
     };
-  }, []);
+  }, [applyTiltDirect]);
 
   // Spring back to rest smoothly when leaving interaction
   const springBack = useCallback(() => {
@@ -162,20 +183,13 @@ const FeaturedBuilderCard3D = ({ identity: propIdentity, featuredPortrait: propP
     isHoveredRef.current = false;
     isInteractingRef.current = false;
 
-    let currentRotX = rotX;
-    let currentRotY = rotY;
-    let currentMagX = magX;
-    let currentMagY = magY;
-    let currentNormX = normX;
-    let currentNormY = normY;
+    let { rx: currentRotX, ry: currentRotY, mx: currentMagX, my: currentMagY } = tiltRef.current;
 
     const animateSpring = () => {
       currentRotX *= 0.84;
       currentRotY *= 0.84;
       currentMagX *= 0.84;
       currentMagY *= 0.84;
-      currentNormX *= 0.84;
-      currentNormY *= 0.84;
 
       if (
         Math.abs(currentRotX) < 0.05 &&
@@ -183,26 +197,16 @@ const FeaturedBuilderCard3D = ({ identity: propIdentity, featuredPortrait: propP
         Math.abs(currentMagX) < 0.05 &&
         Math.abs(currentMagY) < 0.05
       ) {
-        setRotX(0);
-        setRotY(0);
-        setMagX(0);
-        setMagY(0);
-        setNormX(0);
-        setNormY(0);
+        applyTiltDirect(0, 0, 0, 0, 50, 50, 0.15);
         cancelAnimationFrame(animFrameRef.current);
       } else {
-        setRotX(currentRotX);
-        setRotY(currentRotY);
-        setMagX(currentMagX);
-        setMagY(currentMagY);
-        setNormX(currentNormX);
-        setNormY(currentNormY);
+        applyTiltDirect(currentRotX, currentRotY, currentMagX, currentMagY, 50, 50, 0.2);
         animFrameRef.current = requestAnimationFrame(animateSpring);
       }
     };
     cancelAnimationFrame(animFrameRef.current);
     animFrameRef.current = requestAnimationFrame(animateSpring);
-  }, [rotX, rotY, magX, magY, normX, normY]);
+  }, [applyTiltDirect]);
 
   const mouseAnimRef = useRef(null);
 
@@ -227,17 +231,15 @@ const FeaturedBuilderCard3D = ({ identity: propIdentity, featuredPortrait: propP
       const nX = Math.max(-1, Math.min(1, (x - centerX) / centerX));
       const nY = Math.max(-1, Math.min(1, (y - centerY) / centerY));
 
-      setRotX(-nY * MAX_ROT_X);
-      setRotY(nX * MAX_ROT_Y);
-      setMagX(nX * MAX_MAG_X);
-      setMagY(nY * MAX_MAG_Y);
-      setNormX(nX);
-      setNormY(nY);
-      setIsHovered(true);
+      const targetRotX = -nY * MAX_ROT_X;
+      const targetRotY = nX * MAX_ROT_Y;
+      const targetMagX = nX * MAX_MAG_X;
+      const targetMagY = nY * MAX_MAG_Y;
 
       const glareX = (x / rect.width) * 100;
       const glareY = (y / rect.height) * 100;
-      setGlarePos({ x: glareX, y: glareY, opacity: 0.45 });
+
+      applyTiltDirect(targetRotX, targetRotY, targetMagX, targetMagY, glareX, glareY, 0.45);
     });
   };
 
@@ -259,21 +261,15 @@ const FeaturedBuilderCard3D = ({ identity: propIdentity, featuredPortrait: propP
     touchStartRef.current = {
       x: touch.clientX,
       y: touch.clientY,
-      initialRotX: rotX,
-      initialRotY: rotY,
-      initialMagX: magX,
-      initialMagY: magY,
+      initialRotX: tiltRef.current.rx,
+      initialRotY: tiltRef.current.ry,
+      initialMagX: tiltRef.current.mx,
+      initialMagY: tiltRef.current.my,
     };
     setIsInteracting(true);
     isInteractingRef.current = true;
 
-    setRotX(-3);
-    setRotY(4);
-    setMagX(3);
-    setMagY(2);
-    setNormX(0.2);
-    setNormY(0.15);
-    setGlarePos({ x: 45, y: 35, opacity: 0.35 });
+    applyTiltDirect(-3, 4, 3, 2, 45, 35, 0.35);
   };
 
   const handleTouchMove = (e) => {
@@ -294,19 +290,13 @@ const FeaturedBuilderCard3D = ({ identity: propIdentity, featuredPortrait: propP
     const targetMagX = Math.min(Math.max(deltaX * 0.06, -MAX_MAG_X), MAX_MAG_X);
     const targetMagY = Math.min(Math.max(deltaY * 0.05, -MAX_MAG_Y), MAX_MAG_Y);
 
-    setRotX(targetX);
-    setRotY(targetY);
-    setMagX(targetMagX);
-    setMagY(targetMagY);
-    setNormX(targetMagX / MAX_MAG_X);
-    setNormY(targetMagY / MAX_MAG_Y);
-
     const rect = cardRef.current?.getBoundingClientRect();
+    let glareX = 50, glareY = 50;
     if (rect) {
-      const gX = ((touch.clientX - rect.left) / rect.width) * 100;
-      const gY = ((touch.clientY - rect.top) / rect.height) * 100;
-      setGlarePos({ x: Math.max(0, Math.min(100, gX)), y: Math.max(0, Math.min(100, gY)), opacity: 0.45 });
+      glareX = ((touch.clientX - rect.left) / rect.width) * 100;
+      glareY = ((touch.clientY - rect.top) / rect.height) * 100;
     }
+    applyTiltDirect(targetX, targetY, targetMagX, targetMagY, glareX, glareY, 0.45);
   };
 
   const handleTouchEnd = () => {
@@ -367,13 +357,6 @@ const FeaturedBuilderCard3D = ({ identity: propIdentity, featuredPortrait: propP
     setActiveTab(t);
   };
 
-  // Real-time Dynamic Cast Shadows
-  const dynamicShadowX = -rotY * 2.2 - magX * 1.2;
-  const dynamicShadowY = rotX * 2.0 + magY * 0.8 + 28;
-  const dynamicShadowBlur = 55 + Math.abs(rotX) * 1.5 + Math.abs(rotY) * 1.5;
-  const dynamicGlowX = -rotY * 1.1 - magX;
-  const dynamicGlowY = rotX * 1.1 + magY * 0.5;
-
   return (
     <div
       ref={containerRef}
@@ -386,44 +369,30 @@ const FeaturedBuilderCard3D = ({ identity: propIdentity, featuredPortrait: propP
     >
       {/* 1. 3D GROUND AMBIENT OCCLUSION SHADOW (Child 1) */}
       <div
-        className="absolute -bottom-10 sm:-bottom-16 left-1/2 -translate-x-1/2 w-[90%] sm:w-[96%] h-16 sm:h-24 bg-black/98 blur-3xl rounded-[100%] pointer-events-none transition-all duration-300"
-        style={{
-          transform: `translateX(${(-rotY * 2.2 - magX * 1.2).toFixed(1)}px) translateY(${(-magY * 0.5).toFixed(1)}px) scale(${
-            isPressed ? 0.94 : isHovered || isInteracting ? 1.08 : 1
-          })`,
-          opacity: isPressed ? 0.99 : isHovered ? 0.95 : 0.8,
-        }}
+        ref={groundShadowRef}
+        className="absolute -bottom-10 sm:-bottom-16 left-1/2 -translate-x-1/2 w-[90%] sm:w-[96%] h-16 sm:h-24 bg-black/98 blur-3xl rounded-[100%] pointer-events-none transition-transform duration-150 will-change-transform opacity-90"
       />
 
       {/* 2. Laser Red & Ember Backlight Corona (Child 2) */}
       <div
-        className="absolute -bottom-6 sm:-bottom-10 left-1/2 -translate-x-1/2 w-[78%] h-12 sm:h-16 bg-gradient-to-r from-red-600/35 via-rose-500/25 to-red-600/35 blur-2xl rounded-[100%] pointer-events-none transition-all duration-300"
-        style={{
-          transform: `translateX(${(-rotY * 1.8 - magX * 1.0).toFixed(1)}px)`,
-          opacity: isHovered || isInteracting ? 0.75 : 0.4,
-        }}
+        className="absolute -bottom-6 sm:-bottom-10 left-1/2 -translate-x-1/2 w-[78%] h-12 sm:h-16 bg-gradient-to-r from-red-600/35 via-rose-500/25 to-red-600/35 blur-2xl rounded-[100%] pointer-events-none transition-opacity duration-300 opacity-60"
       />
 
       {/* 3. Mid-Depth Ambient Aura behind card (Child 3) */}
       <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] h-[85%] bg-red-600/10 blur-[90px] rounded-full pointer-events-none transition-opacity duration-500"
-        style={{
-          transform: `translate(${dynamicGlowX.toFixed(1)}px, ${dynamicGlowY.toFixed(1)}px)`,
-          opacity: isHovered || isInteracting ? 0.8 : 0.45,
-        }}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] h-[85%] bg-red-600/10 blur-[90px] rounded-full pointer-events-none transition-opacity duration-500 opacity-60"
       />
 
       {/* 4. FLOATING 3D SPATIAL TELEMETRY HUD CHIP (Child 4) */}
       <div
         className="mb-2.5 flex items-center justify-between w-full max-w-[295px] xs:max-w-[330px] sm:max-w-[380px] xl:max-w-[570px] px-1 pointer-events-none transition-transform duration-150"
-        style={{ transform: `translate(${(magX * 0.35).toFixed(1)}px, ${(magY * 0.35).toFixed(1)}px)` }}
       >
         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/75 border border-white/15 backdrop-blur-md text-[9px] sm:text-[10px] font-mono text-neutral-200 shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
           <Compass className="w-3.5 h-3.5 text-[#ff2a3a] animate-spin" style={{ animationDuration: '8s' }} />
           <span className="text-white font-bold">MAGNETIC 3D CHASSIS</span>
           <span className="text-neutral-500">//</span>
-          <span className="text-red-400 font-bold">
-            X:{rotX.toFixed(1)}° Y:{rotY.toFixed(1)}°
+          <span ref={telemetryRef} className="text-red-400 font-bold">
+            X:0.0° Y:0.0°
           </span>
           <span className="hidden xs:inline text-neutral-500">|</span>
           <span className="hidden xs:inline text-emerald-400 font-mono text-[9px] font-semibold">
@@ -458,17 +427,12 @@ const FeaturedBuilderCard3D = ({ identity: propIdentity, featuredPortrait: propP
           inVault
             ? 'max-w-[380px] h-[600px]'
             : 'max-w-[295px] xs:max-w-[330px] sm:max-w-[380px] md:max-w-[380px] lg:max-w-[380px] xl:w-[570px] xl:max-w-[570px] 2xl:w-[580px] 2xl:max-w-[580px] h-[540px] sm:h-[620px] md:h-[620px] lg:h-[620px] xl:h-[915px] 2xl:h-[930px]'
-        } rounded-3xl bg-[#08090e] border border-red-500/40 cursor-grab active:cursor-grabbing transition-all duration-200 select-none`}
+        } rounded-3xl bg-[#08090e] border border-red-500/40 cursor-grab active:cursor-grabbing transition-transform duration-100 select-none will-change-transform`}
         style={{
-          transform: `translate(${magX.toFixed(2)}px, ${magY.toFixed(2)}px) ${
-            isPressed ? 'scale(1.02)' : isHovered || isInteracting ? 'scale(1.015)' : 'scale(1)'
-          }`,
           boxShadow: `
-            ${dynamicShadowX}px ${dynamicShadowY}px ${dynamicShadowBlur}px -15px rgba(0, 0, 0, 0.98),
+            0 28px 55px -15px rgba(0, 0, 0, 0.98),
             0 25px 45px -10px rgba(0, 0, 0, 0.9),
-            ${dynamicGlowX}px ${dynamicGlowY}px 65px -6px rgba(255, 42, 58, ${
-            isHovered || isInteracting ? 0.38 : 0.2
-          }),
+            0 0 65px -6px rgba(255, 42, 58, 0.25),
             inset 0 1.5px 2px rgba(255, 255, 255, 0.28),
             inset 0 -2px 4px rgba(0, 0, 0, 0.9)
           `,
@@ -494,10 +458,10 @@ const FeaturedBuilderCard3D = ({ identity: propIdentity, featuredPortrait: propP
 
         {/* Child 6 of cardRef: SPECULAR METALLIC OVERLAY */}
         <div
-          className="absolute inset-0 rounded-3xl pointer-events-none transition-opacity duration-150 mix-blend-screen"
+          ref={glareRef}
+          className="absolute inset-0 rounded-3xl pointer-events-none transition-opacity duration-150 mix-blend-screen opacity-20"
           style={{
-            background: `radial-gradient(circle 420px at ${glarePos.x}% ${glarePos.y}%, rgba(255, 255, 255, 0.28) 0%, rgba(255, 42, 58, 0.16) 35%, rgba(99, 102, 241, 0.08) 65%, transparent 85%)`,
-            opacity: glarePos.opacity,
+            background: 'radial-gradient(circle 420px at 50% 50%, rgba(255, 255, 255, 0.28) 0%, rgba(255, 42, 58, 0.16) 35%, rgba(99, 102, 241, 0.08) 65%, transparent 85%)',
           }}
         />
 
@@ -622,10 +586,6 @@ const FeaturedBuilderCard3D = ({ identity: propIdentity, featuredPortrait: propP
             className={`absolute inset-x-0 ${
               inVault ? 'top-28 bottom-40' : 'top-28 lg:top-32 xl:top-40 bottom-40 lg:bottom-48 xl:bottom-64'
             } z-10 overflow-hidden rounded-2xl pointer-events-none`}
-            style={{
-              transform: `translate(${(-normX * 10).toFixed(1)}px, ${(-normY * 8).toFixed(1)}px)`,
-              transition: isInteracting ? 'none' : 'transform 0.22s ease-out',
-            }}
           >
             {/* Deep canvas backdrop */}
             <div className="absolute inset-0 bg-[#06070a]" />
@@ -706,10 +666,6 @@ const FeaturedBuilderCard3D = ({ identity: propIdentity, featuredPortrait: propP
                 ? 'space-y-2.5 pt-3'
                 : 'space-y-2.5 sm:space-y-3 lg:space-y-3.5 xl:space-y-4 pt-3 xl:pt-4'
             } bg-gradient-to-t from-[#08090e] via-[#08090e]/98 to-transparent -mx-1 px-3 pb-2 rounded-b-2xl`}
-            style={{
-              transform: `translate(${(normX * 8).toFixed(1)}px, ${(normY * 6).toFixed(1)}px)`,
-              transition: isInteracting ? 'none' : 'transform 0.2s ease-out',
-            }}
           >
             {/* TAB CONTENT: 1. OVERVIEW */}
             {activeTab === 'OVERVIEW' && (

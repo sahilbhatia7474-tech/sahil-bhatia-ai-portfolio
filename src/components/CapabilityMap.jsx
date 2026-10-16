@@ -99,7 +99,7 @@ const SpatialClusterConsole = ({ cluster, clusterIndex, totalClusters, isFiltere
         };
       case 1:
         return {
-          themeName: 'THOR THUNDER',
+          themeName: 'KINETIC THUNDER',
           glow: 'rgba(245, 158, 11, 0.5)',
           glowSubtle: 'rgba(245, 158, 11, 0.2)',
           borderHover: 'hover:border-amber-400',
@@ -498,7 +498,7 @@ const CapabilityMap = () => {
         
         {/* Corner alignment crosshairs */}
         <span className="absolute top-4 left-6 text-xs font-mono font-bold text-red-500/60 select-none">[ +02.CAP_MATRIX ]</span>
-        <span className="absolute top-4 right-6 text-xs font-mono font-bold text-cyan-400/60 select-none">[ STARK_SYS.ONLINE ]</span>
+        <span className="absolute top-4 right-6 text-xs font-mono font-bold text-cyan-400/60 select-none">[ TACTICAL_SYS.ONLINE ]</span>
         <span className="absolute bottom-4 left-6 text-[10px] font-mono text-neutral-400 select-none">LAT: 28.6139° N // LON: 77.2090° E</span>
         <span className="absolute bottom-4 right-6 text-[10px] font-mono text-neutral-400 select-none">VERIFIED FRONT-LINE CAPABILITY</span>
       </div>

@@ -11,11 +11,15 @@ import {
   Globe,
   ChevronRight,
   ArrowUpRight,
-  Activity
+  Activity,
+  Mail,
+  Copy,
+  Check
 } from 'lucide-react';
 import { usePortfolioData } from '../context/PortfolioDataContext';
 import { useAuth } from '../lib/authContext';
 import { Link, useNavigate } from 'react-router-dom';
+import FooterCinematicParticles from './FooterCinematicParticles';
 
 const Footer = () => {
   const { identity } = usePortfolioData();
@@ -73,6 +77,17 @@ const Footer = () => {
     }
   };
 
+  const [copiedEmail, setCopiedEmail] = useState(false);
+
+  const handleCopyEmail = (e) => {
+    e.preventDefault();
+    if (contactEmail) {
+      navigator.clipboard?.writeText(contactEmail);
+      setCopiedEmail(true);
+      setTimeout(() => setCopiedEmail(false), 2400);
+    }
+  };
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -102,7 +117,7 @@ const Footer = () => {
       {/* ========================================================= */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
         {/* Recessed Ambient Void Depth Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#06060a]/30 to-transparent" />
+        <div className="absolute inset-0 bg-transparent" />
 
         {/* Spatial Horizon Line with Micro Center Specular Glint */}
         <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.18] to-transparent" />
@@ -146,34 +161,35 @@ const Footer = () => {
           <div className="absolute w-[55%] h-[55%] rounded-full bg-cyan-500/[0.06] blur-[75px]" />
           <div className="absolute w-[40%] h-[40%] rounded-full bg-red-500/[0.1] blur-[60px]" />
 
-          {/* Shield Artwork with Soft Feathered Radial Mask & Vignette */}
+          {/* Shield Artwork with Soft Feathering so Shield and Web Graphics are Fully Visible */}
           <div
             className="relative w-full h-full flex items-center justify-center overflow-hidden"
             style={{
-              maskImage: 'radial-gradient(circle at 50% 38%, black 15%, rgba(0,0,0,0.85) 35%, rgba(0,0,0,0.2) 55%, transparent 68%)',
-              WebkitMaskImage: 'radial-gradient(circle at 50% 38%, black 15%, rgba(0,0,0,0.85) 35%, rgba(0,0,0,0.2) 55%, transparent 68%)',
+              maskImage: 'radial-gradient(circle at 50% 44%, black 48%, rgba(0,0,0,0.75) 72%, transparent 94%)',
+              WebkitMaskImage: 'radial-gradient(circle at 50% 44%, black 48%, rgba(0,0,0,0.75) 72%, transparent 94%)',
             }}
           >
             <img
               src="/assets/cap_shield_red_hulk.jpg"
-              alt=""
+              alt="Captain America Vibranium Shield"
+              loading="lazy"
+              decoding="async"
               aria-hidden="true"
-              className="w-full h-full object-cover object-[center_34%] opacity-[0.25] sm:opacity-[0.28] mix-blend-screen filter contrast-125 brightness-95 saturate-110"
+              className="w-full h-full object-cover object-[center_34%] opacity-[0.6] sm:opacity-[0.72] filter contrast-120 brightness-105 saturate-110 pointer-events-none select-none"
               style={{
                 transform: `perspective(1000px) rotateX(${pointer.tiltY * 0.35}deg) rotateY(${pointer.tiltX * 0.35}deg)`,
                 transition: 'transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)',
               }}
             />
-
-            {/* Deep Cosmic Vignettes completely eliminating all text, logos, and watermarks */}
-            <div className="absolute inset-0 bg-gradient-to-b from-[#06060a]/40 via-transparent to-[#06060a]/90 pointer-events-none" />
-            <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-[#06060a] via-[#06060a]/80 to-transparent pointer-events-none" />
           </div>
 
           {/* Vibranium Star Specular Glint & Atmospheric Flare */}
-          <div className="absolute w-36 h-36 rounded-full bg-blue-400/[0.08] blur-xl pointer-events-none" />
-          <div className="absolute -top-6 w-60 h-28 bg-red-600/[0.12] blur-3xl pointer-events-none" />
+          <div className="absolute w-40 h-40 rounded-full bg-blue-400/[0.12] blur-xl pointer-events-none" />
+          <div className="absolute -top-6 w-64 h-32 bg-red-600/[0.15] blur-3xl pointer-events-none" />
         </div>
+
+        {/* High-Tech Cinematic Particle Animation Overlay */}
+        <FooterCinematicParticles pointer={pointer} />
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
@@ -217,7 +233,7 @@ const Footer = () => {
           {/* ------------------------------------------------------- */}
           {/* COLUMN 1 (FOCAL POINT): BRAND & ARCHITECT CARD          */}
           {/* ------------------------------------------------------- */}
-          <div className="sm:col-span-12 lg:col-span-4 rounded-2xl bg-gradient-to-b from-[#11131e]/95 via-[#0b0c12]/95 to-[#07080b]/98 border border-white/[0.12] p-6 lg:p-7 shadow-[0_20px_45px_-12px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.15)] hover:border-red-500/50 hover:shadow-[0_24px_50px_-10px_rgba(0,0,0,0.9),0_0_35px_rgba(255,42,58,0.25)] transition-all duration-300 relative group overflow-hidden">
+          <div className="sm:col-span-12 lg:col-span-4 rounded-2xl bg-gradient-to-b from-[#11131e]/70 via-[#0b0c12]/65 to-[#07080b]/75 border border-white/[0.12] p-6 lg:p-7 shadow-[0_20px_45px_-12px_rgba(0,0,0,0.65),inset_0_1px_0_rgba(255,255,255,0.15)] hover:border-red-500/50 hover:shadow-[0_24px_50px_-10px_rgba(0,0,0,0.8),0_0_35px_rgba(255,42,58,0.25)] transition-all duration-300 relative group overflow-hidden">
             {/* Specular Edge Horizon Reflection */}
             <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.25] to-transparent pointer-events-none" />
 
@@ -447,26 +463,76 @@ const Footer = () => {
         </div>
 
         {/* ========================================================= */}
-        {/* BOTTOM COPYRIGHT & METADATA BAR                          */}
+        {/* BOTTOM COPYRIGHT & METADATA BAR — 3D CINEMATIC HUD        */}
         {/* ========================================================= */}
-        <div className="pt-8 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-mono text-neutral-500">
-          <div className="flex items-center gap-2">
-            <span>&copy; {new Date().getFullYear()} {name}.</span>
-            <span className="hidden sm:inline text-neutral-600">&bull;</span>
-            <span className="text-neutral-400">All systems operational.</span>
+        <div
+          className="relative mt-8 p-4 sm:p-5 rounded-2xl bg-transparent border border-white/[0.12] hover:border-red-500/40 group/hud transition-all duration-300 flex flex-col md:flex-row items-center justify-between gap-4 overflow-hidden shadow-none"
+          style={{
+            transform: pointer.active
+              ? `perspective(900px) rotateX(${pointer.tiltY * 0.25}deg) rotateY(${pointer.tiltX * 0.25}deg) translateZ(3px)`
+              : 'perspective(900px) rotateX(0deg) rotateY(0deg) translateZ(0)',
+            transition: pointer.active ? 'transform 0.12s ease-out' : 'transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1)',
+            transformStyle: 'preserve-3d',
+          }}
+        >
+          {/* Top Laser Horizon Specular Rim Line */}
+          <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-cyan-400/60 via-red-500/50 to-transparent pointer-events-none" />
+
+          {/* Interactive Specular Glint Tracking Pointer */}
+          <div
+            className="absolute inset-0 pointer-events-none opacity-0 group-hover/hud:opacity-100 transition-opacity duration-500 rounded-2xl"
+            style={{
+              background: `radial-gradient(400px circle at ${pointer.x}% ${pointer.y}%, rgba(255,42,58,0.08), rgba(56,189,248,0.04) 40%, transparent 75%)`,
+            }}
+          />
+
+          {/* Left: Iconic Cinematic Monogram & Operational Telemetry */}
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 relative z-10">
+            {/* Live Operational Beacon */}
+            <div className="relative flex items-center justify-center w-2.5 h-2.5">
+              <span className="absolute w-3.5 h-3.5 rounded-full bg-emerald-400/40 animate-ping" />
+              <span className="relative w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_10px_#34d399]" />
+            </div>
+
+            {/* Cinematic Identity String */}
+            <div className="font-mono text-[11px] sm:text-xs tracking-wider text-neutral-400 flex items-center gap-2">
+              <span className="text-neutral-500 uppercase tracking-widest text-[10px]">OPERATIONAL //</span>
+              <span className="font-display font-black text-white tracking-[0.16em] uppercase drop-shadow-[0_0_12px_rgba(255,255,255,0.35)]">
+                {name}
+              </span>
+              <span className="text-neutral-600 hidden sm:inline">&bull;</span>
+              <span className="hidden sm:inline text-neutral-400 uppercase tracking-widest text-[10px] font-medium">
+                &copy; {new Date().getFullYear()} ALL RIGHTS RESERVED
+              </span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <a
-              href={`mailto:${contactEmail}`}
-              className="text-neutral-400 hover:text-white transition-colors duration-200 px-2.5 py-1 rounded-md hover:bg-white/[0.04]"
+          {/* Right: 3D Interactive Telemetry Controls (Email & Domain) */}
+          <div className="flex flex-wrap items-center justify-center gap-2.5 relative z-10">
+            {/* 3D Interactive Tactical Email Badge with Instant Copy Feedback */}
+            <button
+              type="button"
+              onClick={handleCopyEmail}
+              title="Click to copy email address"
+              className="relative group/email px-3.5 py-1.5 rounded-xl bg-white/[0.04] hover:bg-red-500/15 border border-white/[0.12] hover:border-red-500/60 text-[11px] font-mono tracking-wider text-neutral-200 hover:text-white flex items-center gap-2 transition-all duration-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] hover:shadow-[0_0_22px_rgba(255,42,58,0.35)] hover:-translate-y-0.5 active:scale-95 cursor-pointer"
             >
-              {contactEmail}
-            </a>
-            <span className="text-neutral-600">&bull;</span>
-            <span className="text-neutral-300 font-medium px-2.5 py-1 rounded-md bg-white/[0.02] border border-white/[0.06] shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
-              {displayDomain}
-            </span>
+              <Mail className="w-3.5 h-3.5 text-red-400 transition-transform group-hover/email:scale-110" />
+              <span className="font-medium tracking-wide">{contactEmail}</span>
+              {copiedEmail ? (
+                <span className="inline-flex items-center gap-1 text-[10px] text-emerald-400 font-bold tracking-widest uppercase animate-in zoom-in-75 duration-200">
+                  <Check className="w-3 h-3 text-emerald-400" />
+                  <span>COPIED</span>
+                </span>
+              ) : (
+                <Copy className="w-3 h-3 text-neutral-500 group-hover/email:text-neutral-300 transition-colors" />
+              )}
+            </button>
+
+            {/* High-Precision Live Domain Telemetry Pill */}
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/[0.09] text-[11px] font-mono tracking-wider text-neutral-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] hover:border-cyan-400/40 transition-colors">
+              <Globe className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+              <span className="font-semibold text-neutral-200 tracking-wide">{displayDomain}</span>
+            </div>
           </div>
         </div>
       </div>

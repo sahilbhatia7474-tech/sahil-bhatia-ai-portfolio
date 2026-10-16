@@ -4,7 +4,6 @@ import { Menu, X, Terminal, ArrowUpRight, Cpu, Lock, Search, Bot, Compass } from
 import { usePortfolioData } from '../context/PortfolioDataContext';
 import { useAuth } from '../lib/authContext';
 import GlobalSearch from './GlobalSearch';
-import ThemeToggle from './ThemeToggle';
 import VerticalJourneyTimeline from './VerticalJourneyTimeline';
 import GitHubContributionHeatmap from './GitHubContributionHeatmap';
 import { useBodyScrollLock } from '../lib/scrollLock';
@@ -38,6 +37,12 @@ const Navigation = () => {
 
   useEffect(() => {
     let ticking = false;
+    let cachedDocHeight = typeof document !== 'undefined' ? Math.max(1, document.documentElement.scrollHeight - window.innerHeight) : 4000;
+
+    const handleResize = () => {
+      cachedDocHeight = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    };
+
     const handleScroll = () => {
       if (!ticking) {
         requestAnimationFrame(() => {
@@ -46,8 +51,7 @@ const Navigation = () => {
           setScrolled((prev) => (prev !== isScrolled ? isScrolled : prev));
 
           if (progressBarRef.current) {
-            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const progress = docHeight > 0 ? Math.min(100, Math.max(0, (currentY / docHeight) * 100)) : 0;
+            const progress = cachedDocHeight > 0 ? Math.min(100, Math.max(0, (currentY / cachedDocHeight) * 100)) : 0;
             progressBarRef.current.style.width = `${progress}%`;
           }
 
@@ -57,9 +61,13 @@ const Navigation = () => {
       }
     };
 
+    window.addEventListener('resize', handleResize, { passive: true });
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   // Global Keyboard Shortcut: Cmd+K / Ctrl+K & Event Listeners
@@ -362,9 +370,6 @@ const Navigation = () => {
               <span className="hidden xl:inline tracking-wider font-bold">AI ASSISTANT</span>
             </button>
 
-            {/* Theme Toggle Button */}
-            <ThemeToggle />
-
             {/* Interactive Terminal Trigger Badge */}
             <button
               type="button"
@@ -456,9 +461,8 @@ const Navigation = () => {
             </Link>
           </div>
 
-          {/* Mobile Right Controls: Search + Theme + Hamburger Toggle with 44px Touch Targets */}
+          {/* Mobile Right Controls: Search + Hamburger Toggle with 44px Touch Targets */}
           <div className="flex sm:hidden items-center gap-2">
-            <ThemeToggle />
             <button
               type="button"
               onClick={() => {

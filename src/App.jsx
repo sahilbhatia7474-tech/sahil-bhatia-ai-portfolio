@@ -8,21 +8,22 @@ import CustomCursor from './components/CustomCursor';
 import SpiderVerseBackgroundWall from './components/SpiderVerseBackgroundWall';
 import DynamicAmbientLightBackdrop from './components/DynamicAmbientLightBackdrop';
 import Navigation from './components/Navigation';
+import CRTScanlineOverlay from './components/CRTScanlineOverlay';
 // Lazy-load floating AI assistant
 const AIAssistant = lazy(() => import('./components/AIAssistant'));
 import Hero from './components/Hero';
 import CapabilityMap from './components/CapabilityMap';
 import Projects from './components/Projects';
 
-// Lazy-load below-the-fold sections to cut initial bundle by over 60%
-const AISystems = lazy(() => import('./components/AISystems'));
-const AICaseStudyMetrics = lazy(() => import('./components/AICaseStudyMetrics'));
-const Proof = lazy(() => import('./components/Proof'));
-const Certificates = lazy(() => import('./components/Certificates'));
-const FutureVault = lazy(() => import('./components/FutureVault'));
-const AppsHub = lazy(() => import('./components/AppsHub'));
-const Contact = lazy(() => import('./components/Contact'));
-const Footer = lazy(() => import('./components/Footer'));
+// Eagerly imported portfolio sections to eliminate scrolling rendering lag and late appearances
+import AISystems from './components/AISystems';
+import AICaseStudyMetrics from './components/AICaseStudyMetrics';
+import Proof from './components/Proof';
+import Certificates from './components/Certificates';
+import FutureVault from './components/FutureVault';
+import AppsHub from './components/AppsHub';
+import Contact from './components/Contact';
+import Footer from './components/Footer';
 const PortfolioTerminal = lazy(() => import('./components/PortfolioTerminal'));
 
 import ScrollJumpInstrument from './components/ScrollJumpInstrument';
@@ -234,49 +235,37 @@ function PublicExperience() {
         {/* 3. CURATED PROJECTS (7 Verified Projects) */}
         <Projects />
 
-        {/* Below-the-fold dynamic modules in Suspense for instant initial load */}
-        <Suspense fallback={null}>
-          <SpatialSectionDivider index="03" label="AGENTIC ARCHITECTURE" accent="violet" />
+        <SpatialSectionDivider index="03" label="AGENTIC ARCHITECTURE" accent="violet" />
+        {/* 4. AI SYSTEMS ARCHITECTURE */}
+        <AISystems />
 
-          {/* 4. AI SYSTEMS ARCHITECTURE */}
-          <AISystems />
+        <SpatialSectionDivider index="04" label="EMPIRICAL BENCHMARKS & METRICS" accent="ruby" />
+        {/* 4.5 AI ENGINEERING CASE STUDIES & COMPARATIVE BENCHMARKS */}
+        <AICaseStudyMetrics />
 
-          <SpatialSectionDivider index="04" label="EMPIRICAL BENCHMARKS & METRICS" accent="ruby" />
+        <SpatialSectionDivider index="05" label="AUDIT & PROOF MATRIX" accent="emerald" />
+        {/* 5. PROOF & EVIDENCE MATRIX */}
+        <Proof />
 
-          {/* 4.5 AI ENGINEERING CASE STUDIES & COMPARATIVE BENCHMARKS */}
-          <AICaseStudyMetrics />
+        <SpatialSectionDivider index="06" label="CREDENTIALS & HONORS" accent="teal" />
+        {/* 6. CERTIFICATES & CREDENTIALS */}
+        <Certificates />
 
-          <SpatialSectionDivider index="05" label="AUDIT & PROOF MATRIX" accent="emerald" />
+        <SpatialSectionDivider index="07" label="ARCHIVAL VAULT" accent="amber" />
+        {/* 7. FUTURE VAULT */}
+        <FutureVault />
 
-          {/* 5. PROOF & EVIDENCE MATRIX */}
-          <Proof />
+        <SpatialSectionDivider index="08" label="DISTRIBUTION HUB" accent="cyan" />
+        {/* 8. APPS DISTRIBUTION HUB */}
+        <AppsHub />
 
-          <SpatialSectionDivider index="06" label="CREDENTIALS & HONORS" accent="teal" />
-
-          {/* 6. CERTIFICATES & CREDENTIALS */}
-          <Certificates />
-
-          <SpatialSectionDivider index="07" label="ARCHIVAL VAULT" accent="amber" />
-
-          {/* 7. FUTURE VAULT */}
-          <FutureVault />
-
-          <SpatialSectionDivider index="08" label="DISTRIBUTION HUB" accent="cyan" />
-
-          {/* 8. APPS DISTRIBUTION HUB */}
-          <AppsHub />
-
-          <SpatialSectionDivider index="09" label="DIRECT INTERFACE" accent="crimson" />
-
-          {/* 9. DIRECT CHANNEL & CONTACT */}
-          <Contact />
-        </Suspense>
+        <SpatialSectionDivider index="09" label="DIRECT INTERFACE" accent="crimson" />
+        {/* 9. DIRECT CHANNEL & CONTACT */}
+        <Contact />
       </main>
 
       {/* Editorial Footer */}
-      <Suspense fallback={null}>
-        <Footer />
-      </Suspense>
+      <Footer />
     </div>
   );
 }
@@ -285,6 +274,9 @@ function PublicExperience() {
 function App() {
   return (
     <BrowserRouter>
+      {/* Cinematic CRT Monitor Horizontal Scanline Overlay */}
+      <CRTScanlineOverlay />
+
       <ThemeProvider>
         <AuthProvider>
           <PortfolioDataProvider>
