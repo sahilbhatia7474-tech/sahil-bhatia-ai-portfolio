@@ -339,6 +339,14 @@ const Navigation = () => {
             {/* Persistent Crazy Glowing Founder Vault Access */}
             <Link
               to="/vault"
+              onMouseEnter={() => {
+                import('./vault/VaultLogin').catch(() => null);
+                import('./vault/VaultLayout').catch(() => null);
+              }}
+              onTouchStart={() => {
+                import('./vault/VaultLogin').catch(() => null);
+                import('./vault/VaultLayout').catch(() => null);
+              }}
               onClick={() => lockVault && lockVault()}
               className="relative group inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#2a0e1a] via-[#1a0b16] to-[#0c1222] border border-red-500/60 hover:border-cyan-400 text-white text-xs font-mono transition-all duration-300 shadow-[0_0_24px_rgba(255,42,58,0.35),0_8px_20px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,255,255,0.25)] hover:shadow-[0_0_32px_rgba(34,211,238,0.5),0_12px_28px_rgba(0,0,0,0.95)] hover:scale-105 active:scale-95 cursor-pointer touch-manipulation overflow-hidden"
               title="Founder Vault Security Gateway (Requires Passcode or Clearance to enter)"
@@ -538,111 +546,169 @@ const Navigation = () => {
         {mobileMenuOpen && (
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-gradient-to-b from-[#0c0e18]/99 via-[#070811]/99 to-[#030408]/99 border-b border-white/20 px-4 sm:px-6 lg:px-8 py-6 shadow-[0_35px_90px_rgba(0,0,0,0.98),0_0_50px_rgba(255,42,58,0.18),inset_0_1px_0_rgba(255,255,255,0.22),inset_0_-1px_0_rgba(0,0,0,0.8)] backdrop-blur-3xl animate-in fade-in slide-in-from-top-4 duration-200 relative max-h-[calc(100vh-80px)] overflow-y-auto z-50 select-none"
+            className="bg-gradient-to-b from-[#0e1122]/98 via-[#090b16]/98 to-[#04050a]/99 border-b border-white/25 px-4 sm:px-6 lg:px-8 py-6 sm:py-8 shadow-[0_35px_90px_rgba(0,0,0,0.98),0_0_50px_rgba(255,42,58,0.2),inset_0_1px_0_rgba(255,255,255,0.25),inset_0_-1px_0_rgba(0,0,0,0.85)] relative max-h-[calc(100vh-80px)] overflow-y-auto z-50 text-neutral-100"
+            style={{
+              WebkitFontSmoothing: 'antialiased',
+              MozOsxFontSmoothing: 'grayscale',
+              textRendering: 'optimizeLegibility',
+            }}
           >
             {/* Specular hairline top divider with glowing pulse */}
             <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-red-500 to-transparent shadow-[0_0_14px_rgba(255,42,58,0.8)] pointer-events-none" />
             
             {/* Subtle cybernetic micro grid backdrop */}
-            <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.04)_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none opacity-40" />
+            <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:18px_18px] pointer-events-none opacity-30" />
 
-            <div className="max-w-7xl mx-auto flex flex-col gap-5 relative z-10">
+            {/* Main Drawer Container with Rich 3D Architectural Depth (CSS Selector 2) */}
+            <div
+              className="max-w-7xl mx-auto flex flex-col gap-6 relative z-10 p-4 sm:p-6 rounded-3xl bg-gradient-to-b from-[#121526]/95 via-[#0b0d18]/95 to-[#06070e]/98 border border-white/20 shadow-[0_30px_90px_rgba(0,0,0,0.95),0_0_40px_rgba(255,42,58,0.12),inset_0_1.5px_0_rgba(255,255,255,0.25),inset_0_-2px_0_rgba(0,0,0,0.85)]"
+              style={{
+                WebkitFontSmoothing: 'antialiased',
+                MozOsxFontSmoothing: 'grayscale',
+                textRendering: 'optimizeLegibility',
+              }}
+            >
               
               {/* Drawer Header with Title & Direct Close Button */}
-              <div className="flex items-center justify-between pb-3 border-b border-white/10">
+              <div className="flex items-center justify-between pb-3.5 border-b border-white/15">
                 <div className="flex items-center gap-2.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_8px_#ff2a3a] animate-pulse" />
-                  <span className="font-display font-black text-sm sm:text-base tracking-wider text-white uppercase">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_10px_#ff2a3a] animate-pulse" />
+                  <span className="font-sans font-extrabold text-sm sm:text-base tracking-wide text-white uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
                     SYSTEM CONTROL & ACTIVITY MATRIX
                   </span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/30 font-bold hidden sm:inline">
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-red-500/25 text-red-200 border border-red-500/40 font-bold hidden sm:inline shadow-inner">
                     ENGINEERING HUB
                   </span>
                 </div>
+
+                {/* Direct Close Button — 3D Tactile Control Pod (CSS Selector 4) */}
                 <button
                   type="button"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 border border-white/15 text-xs font-mono text-neutral-300 hover:text-white flex items-center gap-1.5 transition-all cursor-pointer"
+                  className="group relative px-4 py-2 rounded-xl bg-gradient-to-b from-[#252942] via-[#161828] to-[#0c0d17] border border-white/30 hover:border-red-500 text-white font-mono text-xs font-bold tracking-wider flex items-center gap-2 shadow-[0_8px_22px_rgba(0,0,0,0.85),inset_0_1.5px_0_rgba(255,255,255,0.35),inset_0_-1.5px_0_rgba(0,0,0,0.75)] hover:shadow-[0_12px_28px_rgba(255,42,58,0.4),0_0_20px_rgba(255,42,58,0.3)] hover:-translate-y-0.5 active:translate-y-0.5 active:scale-95 transition-all duration-200 cursor-pointer overflow-hidden touch-manipulation"
+                  style={{
+                    WebkitFontSmoothing: 'antialiased',
+                    textRendering: 'optimizeLegibility',
+                  }}
+                  title="Close System Menu (ESC)"
+                  aria-label="Close navigation menu"
                 >
-                  <X className="w-3.5 h-3.5 text-red-400" />
-                  <span>CLOSE (ESC)</span>
+                  {/* Specular Diagonal Sweep on Hover */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-600 pointer-events-none" />
+
+                  <span className="w-5 h-5 rounded-lg bg-red-950/80 border border-red-500/60 flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_8px_rgba(255,42,58,0.7)] shrink-0">
+                    <X className="w-3.5 h-3.5 text-red-300" />
+                  </span>
+                  <span className="text-white group-hover:text-red-200 font-mono font-bold tracking-wider text-xs">
+                    CLOSE (ESC)
+                  </span>
                 </button>
               </div>
 
               {/* ------------------------------------------------------------- */}
-              {/* D3.JS GITHUB CONTRIBUTION ACTIVITY HEAT-MAP (USER REQUEST)     */}
+              {/* D3.JS GITHUB CONTRIBUTION ACTIVITY HEAT-MAP                    */}
               {/* ------------------------------------------------------------- */}
               <div className="w-full">
                 <GitHubContributionHeatmap />
               </div>
 
               {/* Quick Actions Tier: Search & Journey */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {/* Search Knowledge Model */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                {/* Search Knowledge Model — 3D Tactile Workstation Module (CSS Selector 3) */}
                 <button
                   type="button"
                   onClick={() => {
                     setMobileMenuOpen(false);
                     setSearchOpen(true);
                   }}
-                  className="w-full flex items-center justify-between py-3.5 px-4 rounded-2xl bg-gradient-to-r from-[#161828]/95 via-[#111322]/95 to-[#0b0c16]/95 border border-white/20 hover:border-red-500/70 text-neutral-200 hover:text-white text-xs font-mono shadow-[0_10px_28px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-1px_0_rgba(0,0,0,0.6)] active:scale-[0.98] transition-all touch-manipulation cursor-pointer group"
+                  className="w-full flex items-center justify-between p-4 sm:p-4.5 rounded-2xl bg-gradient-to-b from-[#1b2035] via-[#121424] to-[#0a0b14] border-2 border-white/25 hover:border-cyan-400 text-white shadow-[0_16px_36px_rgba(0,0,0,0.9),0_0_20px_rgba(34,211,238,0.12),inset_0_1.5px_0_rgba(255,255,255,0.32),inset_0_-2px_0_rgba(0,0,0,0.8)] hover:shadow-[0_22px_48px_rgba(0,0,0,0.98),0_0_32px_rgba(34,211,238,0.35),inset_0_1.5px_0_rgba(255,255,255,0.45)] hover:-translate-y-1 active:translate-y-0.5 active:scale-[0.99] transition-all duration-200 touch-manipulation cursor-pointer group relative overflow-hidden text-left"
+                  style={{
+                    WebkitFontSmoothing: 'antialiased',
+                    textRendering: 'optimizeLegibility',
+                  }}
+                  title="Search Knowledge Model (⌘K)"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-xl bg-red-950/60 border border-red-500/40 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform">
-                      <Search className="w-4 h-4 text-red-400 drop-shadow-[0_0_8px_rgba(255,42,58,0.7)]" />
+                  {/* Ambient 3D Glint Sweep on Hover */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+
+                  <div className="flex items-center gap-3.5 relative z-10 min-w-0">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-b from-[#242c4b] to-[#101322] border border-cyan-400/60 flex items-center justify-center shadow-[0_0_16px_rgba(34,211,238,0.4),inset_0_1px_0_rgba(255,255,255,0.4)] group-hover:scale-110 group-hover:border-cyan-300 transition-all duration-300 shrink-0">
+                      <Search className="w-5 h-5 text-cyan-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.9)]" />
                     </div>
-                    <div className="text-left">
-                      <span className="font-semibold text-white block">Search Knowledge Model...</span>
-                      <span className="text-[10px] text-neutral-400 block font-mono">Projects, verified proofs & systems</span>
+                    <div className="text-left min-w-0">
+                      <span className="font-sans font-bold text-sm sm:text-base text-white tracking-tight block group-hover:text-cyan-200 transition-colors">
+                        Search Knowledge Model...
+                      </span>
+                      <span className="font-mono text-xs text-neutral-200 block font-medium mt-0.5 tracking-normal">
+                        Projects, verified proofs & systems
+                      </span>
                     </div>
                   </div>
-                  <span className="px-2.5 py-1 rounded-lg bg-white/10 border border-white/20 text-[10px] text-white font-mono font-bold shadow-inner">
+
+                  <span className="relative z-10 px-3 py-1.5 rounded-xl bg-gradient-to-b from-[#222842] to-[#121524] border border-white/35 text-xs text-cyan-200 font-mono font-black shadow-[inset_0_1.5px_0_rgba(255,255,255,0.4),0_4px_8px_rgba(0,0,0,0.8)] group-hover:border-cyan-400 group-hover:text-white transition-all shrink-0">
                     ⌘K
                   </span>
                 </button>
 
-                {/* Professional Journey Timeline */}
+                {/* Professional Journey Timeline — 3D Tactile Station */}
                 <button
                   type="button"
                   onClick={() => {
                     setMobileMenuOpen(false);
                     setIsJourneyTimelineOpen(true);
                   }}
-                  className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-[#221018] via-[#160c14] to-[#0c0810] border border-red-500/50 hover:border-red-400 text-left transition-all duration-200 shadow-[0_10px_28px_rgba(255,42,58,0.22),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-[0.98] cursor-pointer group"
+                  className="w-full flex items-center justify-between p-4 sm:p-4.5 rounded-2xl bg-gradient-to-b from-[#29141f] via-[#1a0e16] to-[#0e070c] border-2 border-red-500/50 hover:border-red-400 text-left transition-all duration-200 shadow-[0_16px_36px_rgba(0,0,0,0.9),0_0_24px_rgba(255,42,58,0.22),inset_0_1.5px_0_rgba(255,255,255,0.3),inset_0_-2px_0_rgba(0,0,0,0.8)] hover:shadow-[0_22px_48px_rgba(0,0,0,0.98),0_0_35px_rgba(255,42,58,0.4),inset_0_1.5px_0_rgba(255,255,255,0.4)] hover:-translate-y-1 active:translate-y-0.5 active:scale-[0.99] cursor-pointer group relative overflow-hidden"
+                  style={{
+                    WebkitFontSmoothing: 'antialiased',
+                    textRendering: 'optimizeLegibility',
+                  }}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-red-950/80 border border-red-500/60 flex items-center justify-center shadow-[0_0_14px_rgba(255,42,58,0.5)] group-hover:scale-110 transition-transform">
-                      <Compass className="w-4 h-4 text-red-400 drop-shadow-[0_0_8px_rgba(255,42,58,0.8)]" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-red-500/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+
+                  <div className="flex items-center gap-3.5 relative z-10 min-w-0">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-b from-[#421625] to-[#1c0810] border border-red-500/70 flex items-center justify-center shadow-[0_0_16px_rgba(255,42,58,0.6),inset_0_1px_0_rgba(255,255,255,0.35)] group-hover:scale-110 transition-transform shrink-0">
+                      <Compass className="w-5 h-5 text-red-300 drop-shadow-[0_0_8px_rgba(255,42,58,0.9)]" />
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-white tracking-wide text-sm">Professional Journey</span>
-                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-red-500/20 text-red-300 border border-red-500/30">
-                          VERTICAL TIMELINE
+                        <span className="font-sans font-bold text-sm sm:text-base text-white tracking-tight">
+                          Professional Journey
+                        </span>
+                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-red-500/25 text-red-200 border border-red-500/40 shrink-0">
+                          TIMELINE
                         </span>
                       </div>
-                      <span className="text-[11px] text-neutral-300 block font-sans">
+                      <span className="text-xs text-neutral-200 block font-mono font-medium mt-0.5">
                         Paytm &rarr; Airtel &rarr; AI Systems Architect
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs text-red-400 font-mono font-bold group-hover:translate-x-0.5 transition-transform">
+                  <div className="relative z-10 flex items-center gap-1.5 text-xs text-red-300 font-mono font-bold group-hover:text-white group-hover:translate-x-1 transition-all shrink-0">
                     <span>EXPLORE &rarr;</span>
                   </div>
                 </button>
               </div>
 
-              {/* Navigation Links Grid */}
+              {/* Navigation Links Grid Section */}
               <div>
-                <div className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest mb-2 px-1 flex justify-between items-center font-bold">
-                  <span className="flex items-center gap-1.5 text-neutral-300">
-                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee]" />
+                <div className="text-xs font-mono text-neutral-200 uppercase tracking-widest mb-3 px-1 flex justify-between items-center font-bold">
+                  <span className="flex items-center gap-2 text-white">
+                    <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee] animate-pulse" />
                     PORTFOLIO SECTIONS
                   </span>
-                  <span className="text-neutral-500 font-mono text-[9px]">TAP ANY REGION TO NAVIGATE</span>
+                  <span className="text-neutral-300 font-mono text-[10px] font-semibold tracking-wider">
+                    TAP ANY CARD TO NAVIGATE
+                  </span>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+                {/* 3D Interactive Navigation Switchboard (CSS Selector 1) */}
+                <div
+                  className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 p-3.5 sm:p-4 rounded-2xl bg-gradient-to-b from-[#0f111e]/98 via-[#090b14]/98 to-[#05060b]/99 border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.92),inset_0_1.5px_0_rgba(255,255,255,0.18),inset_0_-2px_0_rgba(0,0,0,0.85)] relative overflow-hidden"
+                  style={{
+                    WebkitFontSmoothing: 'antialiased',
+                    textRendering: 'optimizeLegibility',
+                  }}
+                >
                   {navItems.map((item, idx) => {
                     const isRouteActive = location.pathname === item.path || (item.path.startsWith('/#') && location.pathname === '/');
                     return (
@@ -650,20 +716,42 @@ const Navigation = () => {
                         key={item.label}
                         to={item.path}
                         onClick={() => handleNavClick(item.path)}
-                        className={`flex items-center justify-between p-3 rounded-xl text-xs font-mono transition-all duration-200 touch-manipulation cursor-pointer active:scale-[0.98] ${
+                        className={`group relative flex items-center justify-between p-3.5 rounded-xl transition-all duration-200 touch-manipulation cursor-pointer overflow-hidden ${
                           isRouteActive
-                            ? 'bg-gradient-to-r from-[#221828] via-[#161222] to-[#0e0c18] border border-red-500/60 text-white shadow-[0_6px_22px_rgba(255,42,58,0.3),inset_0_1px_0_rgba(255,255,255,0.22)] font-bold'
-                            : 'bg-[#0e101c]/80 hover:bg-[#151829] border border-white/12 hover:border-white/25 text-neutral-300 hover:text-white shadow-[0_4px_14px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.08)]'
+                            ? 'bg-gradient-to-b from-[#32131e] via-[#200c14] to-[#12060b] border-2 border-red-500 text-white shadow-[0_0_28px_rgba(255,42,58,0.5),0_12px_26px_rgba(0,0,0,0.95),inset_0_1.5px_0_rgba(255,255,255,0.4)] -translate-y-0.5'
+                            : 'bg-gradient-to-b from-[#1b1e32] via-[#111322] to-[#0a0b14] border border-white/25 hover:border-red-500/80 text-white shadow-[0_8px_20px_rgba(0,0,0,0.8),inset_0_1.5px_0_rgba(255,255,255,0.22),inset_0_-1.5px_0_rgba(0,0,0,0.7)] hover:shadow-[0_16px_34px_rgba(0,0,0,0.95),0_0_22px_rgba(255,42,58,0.32),inset_0_1.5px_0_rgba(255,255,255,0.35)] hover:-translate-y-1 active:translate-y-0.5 active:scale-95'
                         }`}
+                        style={{
+                          WebkitFontSmoothing: 'antialiased',
+                          textRendering: 'optimizeLegibility',
+                        }}
                       >
-                        <div className="flex items-center gap-2 min-w-0">
-                          <span className={`text-[9px] font-mono px-1 py-0.2 rounded shrink-0 ${isRouteActive ? 'bg-red-500/20 text-red-400 font-bold' : 'bg-white/5 text-neutral-500'}`}>
+                        {/* Specular Diagonal Glint Sweep on Hover */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-600 pointer-events-none" />
+
+                        <div className="flex items-center gap-2.5 min-w-0 relative z-10">
+                          <span
+                            className={`font-mono text-xs font-black px-2 py-0.5 rounded-md shrink-0 shadow-inner ${
+                              isRouteActive
+                                ? 'bg-red-500/30 text-red-200 border border-red-500/60 shadow-[0_0_10px_rgba(255,42,58,0.6)]'
+                                : 'bg-white/10 text-white border border-white/25 group-hover:bg-red-500/20 group-hover:text-red-200 group-hover:border-red-500/40 transition-colors'
+                            }`}
+                          >
                             0{idx + 1}
                           </span>
-                          <span className="truncate">{item.label}</span>
+                          <span className="font-sans font-bold text-xs sm:text-sm tracking-tight text-white group-hover:text-red-300 transition-colors truncate">
+                            {item.label}
+                          </span>
                         </div>
-                        <span className={`text-xs shrink-0 ${isRouteActive ? 'text-red-400 font-bold' : 'text-neutral-500'}`}>
-                          →
+
+                        <span
+                          className={`font-mono text-xs font-black shrink-0 relative z-10 transition-transform duration-200 ${
+                            isRouteActive
+                              ? 'text-red-300 scale-110'
+                              : 'text-neutral-400 group-hover:text-red-300 group-hover:translate-x-1'
+                          }`}
+                        >
+                          &rarr;
                         </span>
                       </Link>
                     );
@@ -671,73 +759,226 @@ const Navigation = () => {
                 </div>
               </div>
 
-              {/* Bottom Quick Console: Founder Vault (With Passcode Info) & Contact */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-3 border-t border-white/15">
-                {/* Founder Vault with Specimen Clearance Guidance */}
+              {/* Bottom Quick Console: Founder Vault, AI Assistant & Direct Channel */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 pt-4 border-t border-white/15">
+                {/* Founder Vault with Specimen Clearance Guidance — 3D Cyber Bunker Chassis */}
                 <Link
                   to="/vault"
+                  onMouseEnter={() => {
+                    import('./vault/VaultLogin').catch(() => null);
+                    import('./vault/VaultLayout').catch(() => null);
+                  }}
+                  onTouchStart={() => {
+                    import('./vault/VaultLogin').catch(() => null);
+                    import('./vault/VaultLayout').catch(() => null);
+                  }}
                   onClick={() => {
                     setMobileMenuOpen(false);
                     if (lockVault) lockVault();
                   }}
-                  className="flex items-center justify-between p-3.5 rounded-2xl text-xs font-mono text-red-300 bg-gradient-to-r from-[#201018] via-[#140b10] to-[#0d070b] border border-red-500/50 hover:border-cyan-400 shadow-[0_8px_24px_rgba(255,42,58,0.3),inset_0_1px_0_rgba(255,255,255,0.16)] active:scale-[0.99] transition-all cursor-pointer group"
+                  className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-b from-[#2a111c] via-[#1a0a12] to-[#0e0509] border-2 border-red-500/60 hover:border-cyan-400 text-white shadow-[0_16px_36px_rgba(0,0,0,0.9),0_0_24px_rgba(255,42,58,0.25),inset_0_1.5px_0_rgba(255,255,255,0.25),inset_0_-2px_0_rgba(0,0,0,0.7)] hover:shadow-[0_20px_45px_rgba(0,0,0,0.95),0_0_32px_rgba(34,211,238,0.35)] hover:-translate-y-1 active:translate-y-0.5 active:scale-[0.99] transition-all duration-200 cursor-pointer group relative overflow-hidden"
+                  style={{
+                    WebkitFontSmoothing: 'antialiased',
+                    textRendering: 'optimizeLegibility',
+                  }}
                 >
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-xl bg-red-950/60 border border-red-500/40 flex items-center justify-center shrink-0 shadow-[0_0_12px_rgba(255,42,58,0.4)]">
-                      <Lock className="w-4 h-4 text-red-400" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-red-500/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+
+                  <div className="flex items-center gap-3 relative z-10 min-w-0">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-b from-[#441724] to-[#1c0810] border border-red-500/60 flex items-center justify-center shrink-0 shadow-[0_0_14px_rgba(255,42,58,0.5),inset_0_1px_0_rgba(255,255,255,0.3)] group-hover:scale-110 transition-transform">
+                      <Lock className="w-4.5 h-4.5 text-red-300" />
                     </div>
-                    <div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-black tracking-wider text-white block">FOUNDER VAULT</span>
-                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-bold">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-sans font-black text-sm text-white tracking-wide block">
+                          FOUNDER VAULT
+                        </span>
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-cyan-500/25 text-cyan-200 border border-cyan-500/40 font-bold shrink-0">
                           GATE 🔒
                         </span>
                       </div>
-                      <span className="text-[10px] text-neutral-300 block font-mono">
-                        Public Specimen Clearance &bull; <span className="text-cyan-300 font-semibold">Inspect Live Architecture</span>
+                      <span className="text-xs text-neutral-200 block font-mono font-medium mt-0.5 truncate">
+                        Clearance &bull; <span className="text-cyan-300 font-semibold">Live Architecture</span>
                       </span>
                     </div>
                   </div>
-                  <span className="text-[10px] text-red-300 font-mono font-bold px-2.5 py-1 rounded-lg bg-red-500/20 border border-red-500/40 shadow-inner group-hover:border-cyan-400 group-hover:text-cyan-300 transition-colors">
+
+                  <span className="relative z-10 text-xs text-red-300 font-mono font-bold px-3 py-1.5 rounded-xl bg-red-500/20 border border-red-500/40 shadow-inner group-hover:border-cyan-400 group-hover:text-cyan-200 transition-colors shrink-0">
                     EXPLORE ➔
                   </span>
                 </Link>
 
-                {/* AI Assistant Trigger */}
+                {/* AI Assistant Trigger — 3D Cyber Deck */}
                 <button
                   type="button"
                   onClick={() => {
                     setMobileMenuOpen(false);
                     window.dispatchEvent(new CustomEvent('open-ai-assistant'));
                   }}
-                  className="flex items-center justify-between p-3.5 rounded-2xl text-xs font-mono text-neutral-100 bg-gradient-to-r from-[#101934] via-[#0d1428] to-[#080d1c] border border-cyan-400/45 hover:border-cyan-300 shadow-[0_8px_24px_rgba(6,182,212,0.2),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-[0.98] transition-all cursor-pointer group"
+                  className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-b from-[#182348] via-[#0f1730] to-[#080d1e] border-2 border-cyan-400/50 hover:border-cyan-300 text-white shadow-[0_16px_36px_rgba(0,0,0,0.9),0_0_24px_rgba(6,182,212,0.2),inset_0_1.5px_0_rgba(255,255,255,0.25),inset_0_-2px_0_rgba(0,0,0,0.7)] hover:shadow-[0_20px_45px_rgba(0,0,0,0.95),0_0_32px_rgba(6,182,212,0.35)] hover:-translate-y-1 active:translate-y-0.5 active:scale-[0.99] transition-all duration-200 cursor-pointer group relative overflow-hidden"
+                  style={{
+                    WebkitFontSmoothing: 'antialiased',
+                    textRendering: 'optimizeLegibility',
+                  }}
                 >
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-xl bg-cyan-950/60 border border-cyan-400/50 flex items-center justify-center shrink-0">
-                      <Bot className="w-4 h-4 text-cyan-400" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+
+                  <div className="flex items-center gap-3 relative z-10 min-w-0">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-b from-[#1f3266] to-[#0a1226] border border-cyan-400/60 flex items-center justify-center shrink-0 shadow-[0_0_14px_rgba(6,182,212,0.5),inset_0_1px_0_rgba(255,255,255,0.3)] group-hover:scale-110 transition-transform">
+                      <Bot className="w-4.5 h-4.5 text-cyan-300" />
                     </div>
-                    <div className="text-left">
-                      <span className="font-bold tracking-wide text-white block">ASK SAHIL AI</span>
-                      <span className="text-[10px] text-cyan-300/80 block font-mono">Neural Assistant</span>
+                    <div className="text-left min-w-0">
+                      <span className="font-sans font-black text-sm text-white tracking-wide block">
+                        ASK SAHIL AI
+                      </span>
+                      <span className="text-xs text-cyan-200/90 block font-mono font-medium mt-0.5">
+                        Neural Assistant
+                      </span>
                     </div>
                   </div>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-lg bg-cyan-500/25 text-cyan-200 font-bold border border-cyan-400/40">
+
+                  <span className="relative z-10 text-xs font-mono font-bold px-3 py-1.5 rounded-xl bg-cyan-500/25 text-cyan-200 border border-cyan-400/40 shrink-0">
                     LIVE
                   </span>
                 </button>
 
-                {/* Direct Channel CTA */}
+                {/* Direct Channel CTA — 3D Sculpted Specular Card */}
                 <Link
                   to="/contact"
                   onClick={() => handleNavClick('/contact')}
-                  className="flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-b from-white via-neutral-100 to-neutral-200 hover:from-white hover:to-neutral-100 text-black font-mono text-xs font-black uppercase tracking-wider shadow-[0_16px_35px_rgba(255,255,255,0.25)] border border-white/90 active:scale-[0.98] transition-all cursor-pointer"
+                  className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-b from-white via-neutral-100 to-neutral-200 hover:from-white hover:to-neutral-100 text-black font-sans font-black text-xs uppercase tracking-wider shadow-[0_18px_40px_rgba(255,255,255,0.35),0_8px_20px_rgba(0,0,0,0.9),inset_0_2px_0_rgba(255,255,255,1),inset_0_-2px_0_rgba(0,0,0,0.25)] border-2 border-white hover:-translate-y-1 active:translate-y-0.5 active:scale-[0.99] transition-all duration-200 cursor-pointer group"
+                  style={{
+                    WebkitFontSmoothing: 'antialiased',
+                    textRendering: 'optimizeLegibility',
+                  }}
                 >
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-red-600 animate-ping" />
-                    <span>Direct Channel</span>
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-red-600 shadow-[0_0_8px_#dc2626] animate-ping" />
+                    <span className="text-black font-extrabold text-xs tracking-wider">
+                      Direct Channel
+                    </span>
                   </div>
-                  <ArrowUpRight className="w-4 h-4 text-black" />
+                  <ArrowUpRight className="w-4.5 h-4.5 text-black group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </Link>
+              </div>
+
+              {/* ------------------------------------------------------------- */}
+              {/* 3D TACTILE VERIFIED DIRECT SOCIAL NETWORK CHANNELS           */}
+              {/* ------------------------------------------------------------- */}
+              <div className="pt-5 border-t border-white/15 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="relative flex items-center justify-center w-2 h-2">
+                      <span className="absolute w-3.5 h-3.5 rounded-full bg-emerald-400/50 animate-ping" />
+                      <span className="relative w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" />
+                    </span>
+                    <span className="text-xs font-mono font-black uppercase tracking-wider text-white">
+                      VERIFIED DIRECT CHANNELS
+                    </span>
+                    <span className="text-[10px] font-mono font-bold text-red-400 uppercase tracking-widest bg-red-500/15 border border-red-500/40 px-2 py-0.5 rounded-md shadow-sm">
+                      FOUNDER SOCIALS
+                    </span>
+                  </div>
+                  <p className="text-xs text-neutral-300 font-sans font-medium">
+                    Direct architectural advisory &amp; real-time engineering feeds
+                  </p>
+                </div>
+
+                {/* 3D Tactile Interactive SQUARE Channel Buttons Grid */}
+                <div className="grid grid-cols-3 gap-3 sm:gap-4 w-full sm:w-auto max-w-xs sm:max-w-sm perspective-container-800">
+                  {/* 1. Instagram 3D Tactile SQUARE Cube with Perspective Left-Tilt */}
+                  <a
+                    href="https://www.instagram.com/neutronverse.ai"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="perspective-tilt-left relative group/cube aspect-square w-full sm:w-24 sm:h-24 md:w-26 md:h-26 rounded-2xl flex flex-col items-center justify-center p-3 select-none cursor-pointer overflow-hidden bg-gradient-to-br from-[#833ab4]/30 via-[#fd1d1d]/25 to-[#fcb045]/20 bg-[#0f0714] border-2 border-rose-500/60 border-b-[5px] border-b-rose-700 shadow-[0_8px_0_#1a0410,0_16px_28px_rgba(225,48,108,0.4),inset_0_1px_1px_rgba(255,255,255,0.45)] hover:border-rose-400 hover:border-b-rose-500 hover:shadow-[0_14px_0_#1a0410,0_24px_45px_rgba(225,48,108,0.7),0_0_30px_rgba(244,63,94,0.5),inset_0_1px_1px_rgba(255,255,255,0.6)] active:border-b-2 active:shadow-[0_2px_0_#1a0410,0_6px_12px_rgba(225,48,108,0.3),inset_0_2px_4px_rgba(0,0,0,0.5)]"
+                    title="Instagram @neutronverse.ai"
+                  >
+                    {/* Top Specular Glint Reflection Rim */}
+                    <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-white/80 to-transparent pointer-events-none" />
+                    
+                    {/* Live Corner Radar Beacon */}
+                    <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-rose-400 group-hover/cube:bg-rose-300 shadow-[0_0_8px_#f43f5e]" />
+
+                    {/* Luminous Diagonal Hover Sheen */}
+                    <div className="absolute -inset-full bg-gradient-to-r from-transparent via-white/20 to-transparent rotate-45 pointer-events-none group-hover/cube:translate-x-full transition-transform duration-700 ease-out" />
+
+                    {/* Instagram Sunset Gradient Camera Glyph with Z-Depth Elevation */}
+                    <div className="relative z-10 flex flex-col items-center justify-center preserve-3d-child">
+                      <svg className="w-7 h-7 sm:w-8 sm:h-8 group-hover/cube:scale-110 transition-transform duration-200 filter drop-shadow-[0_0_12px_rgba(244,63,94,0.85)]" viewBox="0 0 24 24" fill="none" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <defs>
+                          <linearGradient id="ig-sunset-cube-nav" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#f59e0b" />
+                            <stop offset="50%" stopColor="#f43f5e" />
+                            <stop offset="100%" stopColor="#c084fc" />
+                          </linearGradient>
+                        </defs>
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="url(#ig-sunset-cube-nav)" />
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" stroke="url(#ig-sunset-cube-nav)" />
+                        <circle cx="17.5" cy="6.5" r="1" fill="#f43f5e" />
+                      </svg>
+                      <span className="font-mono text-[10px] sm:text-[11px] font-black tracking-wider text-rose-200 mt-1.5 uppercase group-hover/cube:text-white transition-colors drop-shadow-sm">
+                        INSTA
+                      </span>
+                    </div>
+                  </a>
+
+                  {/* 2. LinkedIn 3D Tactile SQUARE Cube with Perspective Center-Tilt */}
+                  <a
+                    href="https://www.linkedin.com/in/sahil-bhatia-b3bb3a3a2"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="perspective-tilt-center relative group/cube aspect-square w-full sm:w-24 sm:h-24 md:w-26 md:h-26 rounded-2xl flex flex-col items-center justify-center p-3 select-none cursor-pointer overflow-hidden bg-gradient-to-br from-[#0077b5]/30 via-[#0288d1]/25 to-[#004182]/30 bg-[#030d17] border-2 border-cyan-500/60 border-b-[5px] border-b-cyan-700 shadow-[0_8px_0_#020c15,0_16px_28px_rgba(6,182,212,0.4),inset_0_1px_1px_rgba(255,255,255,0.45)] hover:border-cyan-400 hover:border-b-cyan-500 hover:shadow-[0_14px_0_#020c15,0_24px_45px_rgba(6,182,212,0.7),0_0_30px_rgba(14,165,233,0.5),inset_0_1px_1px_rgba(255,255,255,0.6)] active:border-b-2 active:shadow-[0_2px_0_#020c15,0_6px_12px_rgba(6,182,212,0.3),inset_0_2px_4px_rgba(0,0,0,0.5)]"
+                    title="LinkedIn Profile: Sahil Bhatia"
+                  >
+                    {/* Top Specular Glint Reflection Rim */}
+                    <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-white/80 to-transparent pointer-events-none" />
+                    
+                    {/* Live Corner Radar Beacon */}
+                    <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-cyan-400 group-hover/cube:bg-cyan-300 shadow-[0_0_8px_#06b6d4]" />
+
+                    {/* Luminous Diagonal Hover Sheen */}
+                    <div className="absolute -inset-full bg-gradient-to-r from-transparent via-white/20 to-transparent rotate-45 pointer-events-none group-hover/cube:translate-x-full transition-transform duration-700 ease-out" />
+
+                    {/* LinkedIn Cyber Cobalt Vector Icon with Z-Depth Elevation */}
+                    <div className="relative z-10 flex flex-col items-center justify-center preserve-3d-child">
+                      <svg className="w-7 h-7 sm:w-8 sm:h-8 text-cyan-400 group-hover/cube:text-cyan-300 group-hover/cube:scale-110 transition-all duration-200 filter drop-shadow-[0_0_12px_rgba(6,182,212,0.85)] fill-current" viewBox="0 0 24 24">
+                        <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                      </svg>
+                      <span className="font-mono text-[10px] sm:text-[11px] font-black tracking-wider text-cyan-200 mt-1.5 uppercase group-hover/cube:text-white transition-colors drop-shadow-sm">
+                        LINKEDIN
+                      </span>
+                    </div>
+                  </a>
+
+                  {/* 3. GitHub 3D Tactile SQUARE Cube with Perspective Right-Tilt */}
+                  <a
+                    href="https://github.com/sahilbhatia7474-tech"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="perspective-tilt-right relative group/cube aspect-square w-full sm:w-24 sm:h-24 md:w-26 md:h-26 rounded-2xl flex flex-col items-center justify-center p-3 select-none cursor-pointer overflow-hidden bg-gradient-to-br from-red-600/30 via-rose-900/25 to-[#121422] bg-[#090a14] border-2 border-red-500/60 border-b-[5px] border-b-red-700 shadow-[0_8px_0_#140508,0_16px_28px_rgba(255,42,58,0.4),inset_0_1px_1px_rgba(255,255,255,0.45)] hover:border-red-400 hover:border-b-red-500 hover:shadow-[0_14px_0_#140508,0_24px_45px_rgba(255,42,58,0.7),0_0_30px_rgba(255,42,58,0.5),inset_0_1px_1px_rgba(255,255,255,0.6)] active:border-b-2 active:shadow-[0_2px_0_#140508,0_6px_12px_rgba(255,42,58,0.3),inset_0_2px_4px_rgba(0,0,0,0.5)]"
+                    title="GitHub Repositories: sahilbhatia7474-tech"
+                  >
+                    {/* Top Specular Glint Reflection Rim */}
+                    <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-white/80 to-transparent pointer-events-none" />
+                    
+                    {/* Live Corner Radar Beacon */}
+                    <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-red-400 group-hover/cube:bg-red-300 shadow-[0_0_8px_#ff2a3a]" />
+
+                    {/* Luminous Diagonal Hover Sheen */}
+                    <div className="absolute -inset-full bg-gradient-to-r from-transparent via-white/20 to-transparent rotate-45 pointer-events-none group-hover/cube:translate-x-full transition-transform duration-700 ease-out" />
+
+                    {/* GitHub Carbon-Crimson Octocat Vector Icon with Z-Depth Elevation */}
+                    <div className="relative z-10 flex flex-col items-center justify-center preserve-3d-child">
+                      <svg className="w-7 h-7 sm:w-8 sm:h-8 text-neutral-100 group-hover/cube:text-white group-hover/cube:scale-110 transition-all duration-200 filter drop-shadow-[0_0_12px_rgba(255,42,58,0.85)] fill-current" viewBox="0 0 24 24">
+                        <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+                      </svg>
+                      <span className="font-mono text-[10px] sm:text-[11px] font-black tracking-wider text-red-200 mt-1.5 uppercase group-hover/cube:text-white transition-colors drop-shadow-sm">
+                        GITHUB
+                      </span>
+                    </div>
+                  </a>
+                </div>
               </div>
 
             </div>

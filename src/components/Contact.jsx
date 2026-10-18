@@ -5,10 +5,8 @@ import {
   ArrowUpRight,
   ShieldCheck,
   Terminal,
-  Activity,
   Send,
   Clock,
-  Compass,
   Cpu,
   Bot,
   Layers,
@@ -22,7 +20,6 @@ import {
   ChevronDown,
   Shield,
   Radio,
-  Server,
   User,
   AlertCircle,
   Flame,
@@ -312,7 +309,6 @@ const Contact = () => {
   };
 
   const contactEmail = identity?.contactEmail || 'sahilbhatia7474@gmail.com';
-  const systemName = identity?.systemName || 'PORTFOLIO OS';
 
   const rawSocial = identity?.socialLinks || {};
   const activeSocialLinks = [];
@@ -539,44 +535,6 @@ const Contact = () => {
               </div>
             </div>
 
-            {/* Hardware Telemetry & Runtime Console */}
-            <div className="rounded-3xl bg-[#0b0d18] border-2 border-white/15 p-6 space-y-4 font-mono text-xs text-neutral-300 shadow-[0_16px_36px_rgba(0,0,0,0.7)] relative overflow-hidden">
-              <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                <span className="text-neutral-400 uppercase tracking-wider flex items-center gap-2 font-bold">
-                  <Terminal className="w-3.5 h-3.5 text-red-400" />
-                  RUNTIME ENGINE
-                </span>
-                <span className="text-white font-bold">{systemName}</span>
-              </div>
-
-              <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                <span className="text-neutral-400 uppercase tracking-wider flex items-center gap-2 font-bold">
-                  <Compass className="w-3.5 h-3.5 text-neutral-300" />
-                  GEOGRAPHIC BASE
-                </span>
-                <span className="text-neutral-200 font-semibold">Delhi NCR &bull; Global Remote Advisory</span>
-              </div>
-
-              <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                <span className="text-neutral-400 uppercase tracking-wider flex items-center gap-2 font-bold">
-                  <Server className="w-3.5 h-3.5 text-cyan-400" />
-                  INTEGRATIONS
-                </span>
-                <span className="text-neutral-200 font-medium">OpenAI &bull; Anthropic &bull; Gemini &bull; LangChain &bull; FastAPI</span>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="text-neutral-400 uppercase tracking-wider flex items-center gap-2 font-bold">
-                  <Activity className="w-3.5 h-3.5 text-emerald-400" />
-                  ENGAGEMENT STATUS
-                </span>
-                <span className="text-emerald-300 font-black tracking-wider flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_12px_#34d399]" />
-                  ACCEPTING SELECT PROJECTS
-                </span>
-              </div>
-            </div>
-
             {/* Verified Direct Profiles */}
             {activeSocialLinks.length > 0 && (
               <div className="space-y-3 pt-1">
@@ -602,31 +560,31 @@ const Contact = () => {
             {/* Console Chassis Box - Selector 1 */}
             <div
               onMouseMove={handleConsoleMouseMove}
-              className="rounded-3xl bg-gradient-to-b from-[#111426] via-[#0b0d1a] to-[#070812] border-2 border-red-500/30 hover:border-red-500/50 p-6 sm:p-9 lg:p-10 shadow-[0_35px_80px_rgba(0,0,0,0.95),0_0_0_1px_rgba(255,255,255,0.1),0_0_35px_rgba(255,42,58,0.12)] relative overflow-hidden group transition-all duration-300"
+              className="rounded-3xl bg-gradient-to-b from-[#13172e] via-[#0c0f20] to-[#060814] border-2 border-red-500/40 hover:border-red-500/60 p-6 sm:p-9 lg:p-10 shadow-[0_35px_90px_-10px_rgba(0,0,0,0.98),0_0_0_1px_rgba(255,255,255,0.14),0_0_40px_rgba(255,42,58,0.18),inset_0_1px_1px_rgba(255,255,255,0.25)] relative overflow-hidden group transition-all duration-300 antialiased"
               style={{
                 backgroundImage: `
-                  radial-gradient(700px circle at ${lightPos.x}% ${lightPos.y}%, rgba(255, 42, 58, 0.12), rgba(99, 102, 241, 0.05) 30%, transparent 70%),
-                  linear-gradient(to bottom, rgba(17, 20, 38, 0.98), rgba(7, 8, 18, 0.99))
+                  radial-gradient(800px circle at ${lightPos.x}% ${lightPos.y}%, rgba(255, 42, 58, 0.16), rgba(99, 102, 241, 0.08) 32%, transparent 70%),
+                  linear-gradient(to bottom, rgba(19, 23, 46, 0.98), rgba(6, 8, 20, 0.99))
                 `,
               }}
             >
               {/* Tactical HUD Corner Registration Brackets */}
-              <span className="absolute top-3 left-3 text-red-500/40 font-mono text-xs font-black select-none pointer-events-none">┌</span>
-              <span className="absolute top-3 right-3 text-red-500/40 font-mono text-xs font-black select-none pointer-events-none">┐</span>
-              <span className="absolute bottom-3 left-3 text-red-500/40 font-mono text-xs font-black select-none pointer-events-none">└</span>
-              <span className="absolute bottom-3 right-3 text-red-500/40 font-mono text-xs font-black select-none pointer-events-none">┘</span>
+              <span className="absolute top-3 left-3 text-red-500/60 font-mono text-sm font-black select-none pointer-events-none drop-shadow-[0_0_8px_rgba(255,42,58,0.4)]">┌</span>
+              <span className="absolute top-3 right-3 text-red-500/60 font-mono text-sm font-black select-none pointer-events-none drop-shadow-[0_0_8px_rgba(255,42,58,0.4)]">┐</span>
+              <span className="absolute bottom-3 left-3 text-red-500/60 font-mono text-sm font-black select-none pointer-events-none drop-shadow-[0_0_8px_rgba(255,42,58,0.4)]">└</span>
+              <span className="absolute bottom-3 right-3 text-red-500/60 font-mono text-sm font-black select-none pointer-events-none drop-shadow-[0_0_8px_rgba(255,42,58,0.4)]">┘</span>
 
               {/* Luminous Top Perimeter Accent */}
-              <div className="absolute top-0 inset-x-0 h-[2.5px] bg-gradient-to-r from-transparent via-red-500 to-transparent shadow-[0_0_20px_#ff2a3a]" />
-              <div className="absolute top-0 inset-x-16 h-[3px] bg-gradient-to-r from-transparent via-red-500/80 to-transparent blur-[2px]" />
+              <div className="absolute top-0 inset-x-0 h-[2.5px] bg-gradient-to-r from-transparent via-red-500 to-transparent shadow-[0_0_24px_#ff2a3a]" />
+              <div className="absolute top-0 inset-x-16 h-[3px] bg-gradient-to-r from-transparent via-red-500/90 to-transparent blur-[2px]" />
 
               {/* Console Header Bar with High-Impact Readiness Progress Bar */}
-              <div className="pb-6 mb-8 border-b border-white/15 flex flex-wrap items-center justify-between gap-4 relative z-10">
-                <div className="space-y-1.5">
-                  <div className="flex items-center gap-2">
-                    <span className="relative flex items-center justify-center w-2.5 h-2.5">
-                      <span className="absolute w-4 h-4 rounded-full bg-red-500/50 animate-ping" />
-                      <span className="relative w-2 h-2 rounded-full bg-red-500 shadow-[0_0_12px_#ff2a3a]" />
+              <div className="pb-6 mb-8 border-b-2 border-white/10 flex flex-wrap items-center justify-between gap-4 relative z-10">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2.5">
+                    <span className="relative flex items-center justify-center w-3 h-3">
+                      <span className="absolute w-4 h-4 rounded-full bg-red-500/60 animate-ping" />
+                      <span className="relative w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_12px_#ff2a3a]" />
                     </span>
                     <span className="text-xs font-mono text-red-400 uppercase tracking-widest font-black">
                       INTAKE CONSOLE // DIRECT SUBMISSION GATEWAY
@@ -634,7 +592,7 @@ const Contact = () => {
                   </div>
                   <h3 className="text-2xl sm:text-3xl font-black font-display uppercase tracking-tight text-white flex items-center gap-3">
                     <span>{activeFormMode === 'minimalist' ? 'MINIMALIST TERMINAL FORM' : 'PROJECT SPECIFICATION'}</span>
-                    <span className="text-xs font-mono font-bold text-neutral-200 px-2.5 py-1 rounded-md bg-white/10 border border-white/20 tracking-wider hidden sm:inline-block shadow-inner">
+                    <span className="text-xs font-mono font-bold text-white px-3 py-1 rounded-lg bg-white/10 border-2 border-white/20 tracking-wider hidden sm:inline-block shadow-inner">
                       TLS 1.3 SECURED
                     </span>
                   </h3>
@@ -643,36 +601,36 @@ const Contact = () => {
                 {/* Form Mode Selector & Readiness Meter */}
                 <div className="flex flex-wrap items-center gap-3">
                   {/* Mode Selector Pill */}
-                  <div className="p-1 rounded-xl bg-black/60 border border-white/15 flex items-center gap-1 shadow-inner font-mono text-xs">
+                  <div className="p-1.5 rounded-2xl bg-black/80 border-2 border-white/15 flex items-center gap-1.5 shadow-inner font-mono text-xs">
                     <button
                       type="button"
                       onClick={() => setActiveFormMode('minimalist')}
-                      className={`px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                      className={`px-3.5 py-2 rounded-xl font-black flex items-center gap-2 transition-all duration-150 cursor-pointer active:scale-95 ${
                         activeFormMode === 'minimalist'
-                          ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-[0_0_12px_rgba(255,42,58,0.5)] border border-red-400/40'
-                          : 'text-neutral-400 hover:text-white'
+                          ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-[0_0_16px_rgba(255,42,58,0.6)] border border-red-400/50'
+                          : 'text-neutral-300 hover:text-white hover:bg-white/5'
                       }`}
                     >
-                      <Terminal className="w-3.5 h-3.5" />
+                      <Terminal className="w-4 h-4 text-white" />
                       <span>MINIMALIST TERMINAL</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => setActiveFormMode('comprehensive')}
-                      className={`px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                      className={`px-3.5 py-2 rounded-xl font-black flex items-center gap-2 transition-all duration-150 cursor-pointer active:scale-95 ${
                         activeFormMode === 'comprehensive'
-                          ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-[0_0_12px_rgba(255,42,58,0.5)] border border-red-400/40'
-                          : 'text-neutral-400 hover:text-white'
+                          ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-[0_0_16px_rgba(255,42,58,0.6)] border border-red-400/50'
+                          : 'text-neutral-300 hover:text-white hover:bg-white/5'
                       }`}
                     >
-                      <Sliders className="w-3.5 h-3.5" />
+                      <Sliders className="w-4 h-4 text-white" />
                       <span>DEEP SPECIFICATION</span>
                     </button>
                   </div>
 
                   {/* Specification Readiness Meter (visible in comprehensive mode) */}
                   {activeFormMode === 'comprehensive' && (
-                    <div className="flex items-center gap-3.5 bg-[#05060e] px-4 py-2 rounded-2xl border border-white/20 shadow-[0_4px_16px_rgba(0,0,0,0.6)]">
+                    <div className="flex items-center gap-3.5 bg-[#05060e] px-4 py-2.5 rounded-2xl border-2 border-white/20 shadow-[0_4px_16px_rgba(0,0,0,0.7)]">
                       <div className="text-right">
                         <span className="text-[10px] font-mono text-neutral-300 uppercase tracking-wider block font-black">
                           READINESS PROGRESS

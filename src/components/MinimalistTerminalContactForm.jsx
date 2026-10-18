@@ -172,109 +172,112 @@ export default function MinimalistTerminalContactForm({
     }
   };
 
+  // Root Terminal Container - CSS Selector 2
   return (
-    <div className="w-full rounded-2xl bg-[#090b14] border-2 border-red-500/30 text-neutral-200 font-mono text-xs shadow-[0_20px_50px_rgba(0,0,0,0.85),0_0_30px_rgba(255,42,58,0.12)] overflow-hidden relative selection:bg-red-500/30">
+    <div className="w-full rounded-3xl bg-gradient-to-b from-[#12152b] via-[#0b0e1e] to-[#060814] border-2 border-red-500/40 hover:border-red-500/60 text-white font-mono text-xs shadow-[0_30px_75px_rgba(0,0,0,0.95),0_0_0_1px_rgba(255,255,255,0.12),0_0_40px_rgba(255,42,58,0.18),inset_0_1px_1px_rgba(255,255,255,0.25)] overflow-hidden relative selection:bg-red-500/40 antialiased">
       
-      {/* Top Terminal Shell Bar */}
-      <div className="bg-gradient-to-r from-[#121422] via-[#0e101a] to-[#0a0c14] border-b border-white/10 px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
+      {/* 1. Top Terminal Shell Bar */}
+      <div className="bg-gradient-to-r from-[#171b34] via-[#101324] to-[#0a0d18] border-b-2 border-white/10 px-5 py-3.5 flex items-center justify-between relative z-10">
+        <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-full bg-red-500/80 border border-red-400/50 inline-block shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
-            <span className="w-3 h-3 rounded-full bg-amber-500/80 border border-amber-400/50 inline-block" />
-            <span className="w-3 h-3 rounded-full bg-emerald-500/80 border border-emerald-400/50 inline-block" />
+            <span className="w-3 h-3 rounded-full bg-red-500 border border-red-400/60 inline-block shadow-[0_0_10px_rgba(239,68,68,0.7)]" />
+            <span className="w-3 h-3 rounded-full bg-amber-500/90 border border-amber-400/60 inline-block" />
+            <span className="w-3 h-3 rounded-full bg-emerald-500/90 border border-emerald-400/60 inline-block" />
           </div>
-          <div className="h-3 w-px bg-white/20 mx-1" />
-          <div className="flex items-center gap-1.5 text-neutral-300 font-bold text-[11px] tracking-wider uppercase">
-            <Terminal className="w-3.5 h-3.5 text-red-400" />
+          <div className="h-3.5 w-px bg-white/20 mx-1" />
+          <div className="flex items-center gap-2 text-white font-black text-xs tracking-wider uppercase font-mono">
+            <Terminal className="w-4 h-4 text-red-400" />
             <span>DISPATCH-DAEMON v2.4</span>
             <span className="text-neutral-500 font-normal">::</span>
-            <span className="text-emerald-400 font-semibold flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-emerald-400 font-black flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
               ONLINE
             </span>
           </div>
         </div>
 
         {/* Target Destination & Quick Copy Badge */}
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] text-neutral-400 hidden sm:inline">ROUTED TO:</span>
+        <div className="flex items-center gap-2.5">
+          <span className="text-[10px] text-neutral-300 font-mono font-bold hidden sm:inline uppercase tracking-wider">
+            ROUTED TO:
+          </span>
           <button
             type="button"
             onClick={handleCopyTargetEmail}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/5 hover:bg-white/10 border border-white/15 text-[10px] text-neutral-200 hover:text-white transition-all cursor-pointer font-mono"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border-2 border-white/20 hover:border-red-500/50 text-xs text-white hover:text-white transition-all cursor-pointer font-mono font-bold shadow-sm active:scale-95"
             title="Click to copy target destination email"
           >
-            <span className="text-red-400 font-bold">{TARGET_EMAIL}</span>
+            <span className="text-red-400 font-mono font-bold">{TARGET_EMAIL}</span>
             {copiedEmail ? (
-              <Check className="w-3 h-3 text-emerald-400" />
+              <Check className="w-3.5 h-3.5 text-emerald-400" />
             ) : (
-              <Copy className="w-3 h-3 text-neutral-400" />
+              <Copy className="w-3.5 h-3.5 text-neutral-300" />
             )}
           </button>
         </div>
       </div>
 
-      {/* Terminal Info Header Banner */}
-      <div className="bg-[#05060b] px-4 py-2 border-b border-white/5 text-[10px] text-neutral-400 flex flex-wrap items-center justify-between gap-2">
+      {/* 2. Terminal Info Header Banner */}
+      <div className="bg-[#060812] px-5 py-2.5 border-b border-white/10 text-xs text-neutral-200 flex flex-wrap items-center justify-between gap-2.5 font-mono">
         <div className="flex items-center gap-3">
-          <span className="text-neutral-300 font-semibold">$ ssh dispatch@portfolio-os.local</span>
+          <span className="text-white font-bold">$ ssh dispatch@portfolio-os.local</span>
           <span className="text-neutral-600">|</span>
-          <span className="text-neutral-400 flex items-center gap-1">
-            <Lock className="w-2.5 h-2.5 text-cyan-400" /> TLS 1.3 / End-to-End Relay
+          <span className="text-neutral-200 flex items-center gap-1.5 font-semibold">
+            <Lock className="w-3 h-3 text-cyan-400" /> TLS 1.3 / Direct Encrypted Relay
           </span>
         </div>
-        <div className="flex items-center gap-2 text-neutral-400">
-          <Clock className="w-3 h-3 text-red-400" />
-          <span>SLA: &le; 24h Direct Response</span>
+        <div className="flex items-center gap-2 text-neutral-200 font-bold">
+          <Clock className="w-3.5 h-3.5 text-red-400" />
+          <span>SLA: &le; 24h Direct Founder Review</span>
         </div>
       </div>
 
-      {/* Main Terminal Form Body */}
-      <div className="p-5 sm:p-7 relative bg-gradient-to-b from-[#090b14] to-[#040509]">
-        {/* Subtle scanline overlay */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px)] [background-size:100%_4px] pointer-events-none opacity-60" />
+      {/* 3. Main Terminal Form Body */}
+      <div className="p-6 sm:p-8 relative bg-gradient-to-b from-[#0b0e1e] via-[#080a16] to-[#04050b]">
+        {/* Specular Ambient Glow (Replaced 4px scanline raster with smooth atmospheric gradient for 100% sharp text) */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(255,42,58,0.1),transparent_75%)] pointer-events-none" aria-hidden="true" />
 
         {status === 'success' ? (
           /* Terminal Transmission Success Receipt */
-          <div className="py-6 px-4 space-y-5 text-center animate-in fade-in duration-200">
-            <div className="w-14 h-14 mx-auto rounded-2xl bg-emerald-500/15 border-2 border-emerald-500/60 flex items-center justify-center text-emerald-400 shadow-[0_0_24px_rgba(52,211,153,0.3)]">
-              <CheckCircle2 className="w-8 h-8" />
+          <div className="py-8 px-4 space-y-6 text-center animate-in fade-in duration-200 relative z-10">
+            <div className="w-16 h-16 mx-auto rounded-3xl bg-emerald-500/20 border-2 border-emerald-500/70 flex items-center justify-center text-emerald-400 shadow-[0_0_30px_rgba(52,211,153,0.4)]">
+              <CheckCircle2 className="w-9 h-9" />
             </div>
 
-            <div className="space-y-1">
-              <span className="text-emerald-400 font-bold uppercase tracking-widest text-[11px] block">
+            <div className="space-y-1.5">
+              <span className="text-emerald-400 font-mono font-black uppercase tracking-widest text-xs block">
                 [TRANSMISSION SUCCESSFUL // ACK 200]
               </span>
-              <h4 className="text-lg sm:text-xl font-bold text-white uppercase tracking-tight">
+              <h4 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tight font-display">
                 Message Dispatched To Sahil Bhatia
               </h4>
-              <p className="text-xs text-neutral-300 max-w-md mx-auto pt-1 font-sans">
-                Your message has been securely relayed to <span className="text-red-400 font-mono font-bold">{TARGET_EMAIL}</span> and archived in the priority inbox. You will receive a direct reply within 24 hours.
+              <p className="text-sm text-neutral-200 max-w-lg mx-auto pt-1 font-sans leading-relaxed">
+                Your consultation brief has been encrypted, dispatched to <span className="text-red-400 font-mono font-bold">{TARGET_EMAIL}</span>, and logged in the priority database. You will receive a direct reply within 24 hours.
               </p>
             </div>
 
             {/* Cryptographic Transmission Telemetry */}
             {receipt && (
-              <div className="p-4 rounded-xl bg-black/60 border border-white/10 max-w-md mx-auto text-left font-mono text-[11px] space-y-2 text-neutral-300 shadow-inner">
-                <div className="flex justify-between items-center pb-1.5 border-b border-white/5">
-                  <span className="text-neutral-500">PACKET_REF:</span>
-                  <span className="text-emerald-400 font-bold">{receipt.id}</span>
+              <div className="p-5 rounded-2xl bg-black/75 border-2 border-white/15 max-w-md mx-auto text-left font-mono text-xs space-y-2.5 text-neutral-200 shadow-inner">
+                <div className="flex justify-between items-center pb-2 border-b border-white/10">
+                  <span className="text-neutral-400 font-bold">PACKET_REF:</span>
+                  <span className="text-emerald-400 font-black">{receipt.id}</span>
                 </div>
-                <div className="flex justify-between items-center pb-1.5 border-b border-white/5">
-                  <span className="text-neutral-500">DESTINATION:</span>
+                <div className="flex justify-between items-center pb-2 border-b border-white/10">
+                  <span className="text-neutral-400 font-bold">DESTINATION:</span>
                   <span className="text-white font-bold">{receipt.target}</span>
                 </div>
-                <div className="flex justify-between items-center pb-1.5 border-b border-white/5">
-                  <span className="text-neutral-500">ORIGIN:</span>
-                  <span className="text-neutral-200">{receipt.sender}</span>
+                <div className="flex justify-between items-center pb-2 border-b border-white/10">
+                  <span className="text-neutral-400 font-bold">ORIGIN:</span>
+                  <span className="text-neutral-100 font-bold">{receipt.sender}</span>
                 </div>
-                <div className="flex justify-between items-center pb-1.5 border-b border-white/5">
-                  <span className="text-neutral-500">ENCRYPTION:</span>
-                  <span className="text-cyan-400 font-bold">MUTUAL NDA ENFORCED</span>
+                <div className="flex justify-between items-center pb-2 border-b border-white/10">
+                  <span className="text-neutral-400 font-bold">ENCRYPTION:</span>
+                  <span className="text-cyan-400 font-black">MUTUAL NDA ENFORCED</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-neutral-500">DISPATCH_TIME:</span>
-                  <span className="text-neutral-300">{receipt.timestamp} UTC</span>
+                  <span className="text-neutral-400 font-bold">DISPATCH_TIME:</span>
+                  <span className="text-neutral-200 font-bold">{receipt.timestamp} UTC</span>
                 </div>
               </div>
             )}
@@ -283,17 +286,17 @@ export default function MinimalistTerminalContactForm({
               <button
                 type="button"
                 onClick={handleReset}
-                className="px-6 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-mono text-xs font-bold uppercase tracking-wider transition-all cursor-pointer active:scale-95 inline-flex items-center gap-2"
+                className="px-8 py-3 rounded-xl bg-white/15 hover:bg-white/25 border-2 border-white/25 hover:border-white/40 text-white font-mono text-xs font-black uppercase tracking-wider transition-all cursor-pointer active:scale-95 shadow-md inline-flex items-center gap-2"
               >
-                <RefreshCw className="w-3.5 h-3.5" />
+                <RefreshCw className="w-4 h-4" />
                 <span>Transmit Another Message</span>
               </button>
             </div>
           </div>
         ) : (
-          /* Terminal Interactive Form Fields */
-          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
-            {/* Honeypot Trap for Spambots */}
+          /* Terminal Interactive Form Fields - CSS Selector 5 */
+          <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6 relative z-10 font-sans">
+            {/* Honeypot Trap for Spambots (div 1) */}
             <div aria-hidden="true" className="opacity-0 absolute -z-50 pointer-events-none select-none h-0 w-0 overflow-hidden">
               <label htmlFor="term-company-hp">Security Verification</label>
               <input
@@ -307,33 +310,35 @@ export default function MinimalistTerminalContactForm({
               />
             </div>
 
-            {/* Error Display Line */}
+            {/* Error Notification Alert */}
             {errorMessage && (
-              <div className="p-3 rounded-xl bg-red-950/80 border border-red-500/80 text-red-200 text-xs flex items-center gap-2.5 shadow-[0_0_20px_rgba(255,42,58,0.3)] animate-in fade-in">
-                <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
-                <span className="font-bold">{errorMessage}</span>
-              </div>
+              <p className="p-4 rounded-2xl bg-red-950/90 border-2 border-red-500 text-red-100 text-xs sm:text-sm flex items-center gap-3 shadow-[0_0_24px_rgba(255,42,58,0.4)] animate-in fade-in font-mono font-bold">
+                <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
+                <span>{errorMessage}</span>
+              </p>
             )}
 
-            {/* Field 01: Sender Identity */}
+            {/* Field 01: Sender Identity - CSS Selector 3 (div 2) */}
             <div
-              className={`p-3.5 sm:p-4 rounded-xl transition-all border ${
+              className={`p-4 sm:p-5 rounded-2xl transition-all duration-200 border-2 ${
                 activeField === 'name'
-                  ? 'bg-[#0f1220] border-red-500/70 shadow-[0_0_18px_rgba(255,42,58,0.2)]'
-                  : 'bg-[#080912] border-white/10 hover:border-white/20'
+                  ? 'bg-gradient-to-b from-[#161a35] via-[#0f1224] to-[#090b17] border-red-500 shadow-[0_16px_36px_rgba(0,0,0,0.85),0_0_24px_rgba(255,42,58,0.3),inset_0_1px_1px_rgba(255,255,255,0.2)] ring-2 ring-red-500/30'
+                  : 'bg-gradient-to-b from-[#0e1122] to-[#070914] border-white/15 hover:border-white/35 shadow-[0_8px_24px_rgba(0,0,0,0.65),inset_0_1px_0_rgba(255,255,255,0.08)]'
               }`}
               onClick={() => setActiveField('name')}
             >
-              <div className="flex items-center justify-between mb-1.5">
-                <label htmlFor="term-name" className="text-[11px] font-bold text-neutral-300 flex items-center gap-2 cursor-pointer">
-                  <span className="text-red-400 font-bold">$</span>
+              <div className="flex items-center justify-between mb-2 pb-2 border-b border-white/10">
+                <label htmlFor="term-name" className="text-xs font-mono font-black text-white flex items-center gap-2 cursor-pointer uppercase tracking-wider">
+                  <span className="text-red-400 font-black">$</span>
                   <span>SENDER_NAME</span>
-                  <span className="text-[10px] text-neutral-500">// Your name or organization</span>
+                  <span className="text-[11px] text-neutral-300 font-sans font-normal">// Your name, firm, or company</span>
                 </label>
-                <span className="text-[10px] text-red-400 font-bold">[REQUIRED]</span>
+                <span className="text-[10px] font-mono font-black text-red-400 uppercase bg-red-500/15 border border-red-500/40 px-2 py-0.5 rounded-md shadow-sm">
+                  [REQUIRED]
+                </span>
               </div>
-              <div className="flex items-center gap-2 bg-[#04050a] px-3 py-2 rounded-lg border border-white/10 focus-within:border-red-500/60">
-                <User className="w-3.5 h-3.5 text-neutral-500" />
+              <div className="flex items-center gap-3 bg-[#04050a] px-4 py-3 rounded-xl border-2 border-white/20 focus-within:border-red-500 focus-within:ring-2 focus-within:ring-red-500/30 shadow-inner transition-all">
+                <User className="w-4 h-4 text-red-400 shrink-0" />
                 <input
                   id="term-name"
                   type="text"
@@ -341,31 +346,33 @@ export default function MinimalistTerminalContactForm({
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   onFocus={() => setActiveField('name')}
-                  placeholder="e.g. Alex Morgan (Nova Systems)"
-                  className="w-full bg-transparent text-white font-mono text-xs focus:outline-none placeholder:text-neutral-600"
+                  placeholder="e.g. Alex Morgan · Founder at Nova Systems"
+                  className="w-full bg-transparent text-white font-sans text-sm sm:text-base font-semibold focus:outline-none placeholder:text-neutral-400 select-text"
                 />
               </div>
             </div>
 
-            {/* Field 02: Sender Direct Email */}
+            {/* Field 02: Sender Direct Email - CSS Selector 4 (div 3) */}
             <div
-              className={`p-3.5 sm:p-4 rounded-xl transition-all border ${
+              className={`p-4 sm:p-5 rounded-2xl transition-all duration-200 border-2 ${
                 activeField === 'email'
-                  ? 'bg-[#0f1220] border-red-500/70 shadow-[0_0_18px_rgba(255,42,58,0.2)]'
-                  : 'bg-[#080912] border-white/10 hover:border-white/20'
+                  ? 'bg-gradient-to-b from-[#161a35] via-[#0f1224] to-[#090b17] border-red-500 shadow-[0_16px_36px_rgba(0,0,0,0.85),0_0_24px_rgba(255,42,58,0.3),inset_0_1px_1px_rgba(255,255,255,0.2)] ring-2 ring-red-500/30'
+                  : 'bg-gradient-to-b from-[#0e1122] to-[#070914] border-white/15 hover:border-white/35 shadow-[0_8px_24px_rgba(0,0,0,0.65),inset_0_1px_0_rgba(255,255,255,0.08)]'
               }`}
               onClick={() => setActiveField('email')}
             >
-              <div className="flex items-center justify-between mb-1.5">
-                <label htmlFor="term-email" className="text-[11px] font-bold text-neutral-300 flex items-center gap-2 cursor-pointer">
-                  <span className="text-red-400 font-bold">$</span>
+              <div className="flex items-center justify-between mb-2 pb-2 border-b border-white/10">
+                <label htmlFor="term-email" className="text-xs font-mono font-black text-white flex items-center gap-2 cursor-pointer uppercase tracking-wider">
+                  <span className="text-red-400 font-black">$</span>
                   <span>RETURN_ADDRESS</span>
-                  <span className="text-[10px] text-neutral-500">// Where to deliver Sahil's reply</span>
+                  <span className="text-[11px] text-neutral-300 font-sans font-normal">// Where to deliver Sahil&apos;s direct response</span>
                 </label>
-                <span className="text-[10px] text-red-400 font-bold">[REQUIRED]</span>
+                <span className="text-[10px] font-mono font-black text-red-400 uppercase bg-red-500/15 border border-red-500/40 px-2 py-0.5 rounded-md shadow-sm">
+                  [REQUIRED]
+                </span>
               </div>
-              <div className="flex items-center gap-2 bg-[#04050a] px-3 py-2 rounded-lg border border-white/10 focus-within:border-red-500/60">
-                <Mail className="w-3.5 h-3.5 text-neutral-500" />
+              <div className="flex items-center gap-3 bg-[#04050a] px-4 py-3 rounded-xl border-2 border-white/20 focus-within:border-red-500 focus-within:ring-2 focus-within:ring-red-500/30 shadow-inner transition-all">
+                <Mail className="w-4 h-4 text-cyan-400 shrink-0" />
                 <input
                   id="term-email"
                   type="email"
@@ -374,28 +381,30 @@ export default function MinimalistTerminalContactForm({
                   onChange={(e) => setEmail(e.target.value)}
                   onFocus={() => setActiveField('email')}
                   placeholder="alex@company.com"
-                  className="w-full bg-transparent text-white font-mono text-xs focus:outline-none placeholder:text-neutral-600"
+                  className="w-full bg-transparent text-white font-mono text-sm sm:text-base font-semibold focus:outline-none placeholder:text-neutral-400 select-text"
                 />
               </div>
             </div>
 
-            {/* Field 03: Inquiry Domain Track Selector */}
+            {/* Field 03: Inquiry Domain Track Selector - CSS Selector 6 (div 4) */}
             <div
-              className={`p-3.5 sm:p-4 rounded-xl transition-all border ${
+              className={`p-4 sm:p-5 rounded-2xl transition-all duration-200 border-2 ${
                 activeField === 'category'
-                  ? 'bg-[#0f1220] border-red-500/70 shadow-[0_0_18px_rgba(255,42,58,0.2)]'
-                  : 'bg-[#080912] border-white/10 hover:border-white/20'
+                  ? 'bg-gradient-to-b from-[#161a35] via-[#0f1224] to-[#090b17] border-red-500 shadow-[0_16px_36px_rgba(0,0,0,0.85),0_0_24px_rgba(255,42,58,0.3),inset_0_1px_1px_rgba(255,255,255,0.2)] ring-2 ring-red-500/30'
+                  : 'bg-gradient-to-b from-[#0e1122] to-[#070914] border-white/15 hover:border-white/35 shadow-[0_8px_24px_rgba(0,0,0,0.65),inset_0_1px_0_rgba(255,255,255,0.08)]'
               }`}
             >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[11px] font-bold text-neutral-300 flex items-center gap-2">
-                  <span className="text-red-400 font-bold">$</span>
+              <div className="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
+                <span className="text-xs font-mono font-black text-white flex items-center gap-2 uppercase tracking-wider">
+                  <span className="text-red-400 font-black">$</span>
                   <span>DOMAIN_TOPIC</span>
-                  <span className="text-[10px] text-neutral-500">// Architectural track</span>
+                  <span className="text-[11px] text-neutral-300 font-sans font-normal">// Engineering &amp; consultation track</span>
                 </span>
-                <span className="text-[10px] text-cyan-400 font-bold">SELECT</span>
+                <span className="text-[10px] font-mono font-black text-cyan-400 uppercase bg-cyan-500/15 border border-cyan-500/40 px-2 py-0.5 rounded-md shadow-sm">
+                  SELECT TRACK
+                </span>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
                 {categories.map((cat) => {
                   const isSelected = category === cat;
                   return (
@@ -406,42 +415,42 @@ export default function MinimalistTerminalContactForm({
                         setCategory(cat);
                         setActiveField('category');
                       }}
-                      className={`px-2.5 py-1.5 rounded-lg text-[10px] font-mono text-left transition-all cursor-pointer border truncate ${
+                      className={`px-3 py-2.5 rounded-xl text-xs font-mono text-left transition-all duration-150 cursor-pointer border-2 relative group overflow-hidden select-none active:translate-y-0.5 active:scale-[0.98] ${
                         isSelected
-                          ? 'bg-red-500/20 border-red-500/70 text-white font-bold shadow-[0_0_12px_rgba(255,42,58,0.3)]'
-                          : 'bg-[#05060b] border-white/10 text-neutral-400 hover:text-white hover:border-white/20'
+                          ? 'bg-gradient-to-r from-red-600/35 via-rose-600/25 to-red-600/20 border-red-500 text-white font-bold shadow-[0_0_20px_rgba(255,42,58,0.4),inset_0_1px_0_rgba(255,255,255,0.25)]'
+                          : 'bg-[#050711] border-white/15 text-neutral-200 hover:text-white hover:border-white/35 hover:bg-[#0c1024] hover:shadow-[0_4px_16px_rgba(0,0,0,0.6)]'
                       }`}
                     >
-                      <span className={isSelected ? 'text-red-400 mr-1' : 'text-neutral-600 mr-1'}>
-                        {isSelected ? '●' : '○'}
-                      </span>
-                      <span>{cat}</span>
+                      <div className="flex items-center gap-2">
+                        <span className={`w-2 h-2 rounded-full shrink-0 ${isSelected ? 'bg-red-400 shadow-[0_0_8px_#ff2a3a] animate-pulse' : 'bg-neutral-600 group-hover:bg-neutral-400'}`} />
+                        <span className="truncate font-mono font-bold">{cat}</span>
+                      </div>
                     </button>
                   );
                 })}
               </div>
             </div>
 
-            {/* Field 04: Message Body Payload */}
+            {/* Field 04: Message Body Payload - CSS Selector 7 (div 5) */}
             <div
-              className={`p-3.5 sm:p-4 rounded-xl transition-all border ${
+              className={`p-4 sm:p-5 rounded-2xl transition-all duration-200 border-2 ${
                 activeField === 'message'
-                  ? 'bg-[#0f1220] border-red-500/70 shadow-[0_0_18px_rgba(255,42,58,0.2)]'
-                  : 'bg-[#080912] border-white/10 hover:border-white/20'
+                  ? 'bg-gradient-to-b from-[#161a35] via-[#0f1224] to-[#090b17] border-red-500 shadow-[0_16px_36px_rgba(0,0,0,0.85),0_0_24px_rgba(255,42,58,0.3),inset_0_1px_1px_rgba(255,255,255,0.2)] ring-2 ring-red-500/30'
+                  : 'bg-gradient-to-b from-[#0e1122] to-[#070914] border-white/15 hover:border-white/35 shadow-[0_8px_24px_rgba(0,0,0,0.65),inset_0_1px_0_rgba(255,255,255,0.08)]'
               }`}
               onClick={() => setActiveField('message')}
             >
-              <div className="flex items-center justify-between mb-1.5">
-                <label htmlFor="term-message" className="text-[11px] font-bold text-neutral-300 flex items-center gap-2 cursor-pointer">
-                  <span className="text-red-400 font-bold">$</span>
+              <div className="flex items-center justify-between mb-2 pb-2 border-b border-white/10">
+                <label htmlFor="term-message" className="text-xs font-mono font-black text-white flex items-center gap-2 cursor-pointer uppercase tracking-wider">
+                  <span className="text-red-400 font-black">$</span>
                   <span>PAYLOAD_BODY</span>
-                  <span className="text-[10px] text-neutral-500">// Project brief, timeline, or query</span>
+                  <span className="text-[11px] text-neutral-300 font-sans font-normal">// Brief, bottleneck, timeline, or scope</span>
                 </label>
-                <span className="text-[10px] text-neutral-500 font-mono">
-                  {message.length}/5000 chars
+                <span className="text-[10px] text-neutral-200 font-mono font-bold bg-white/10 px-2.5 py-0.5 rounded-md border border-white/15 shadow-sm">
+                  {message.length} / 5000 chars
                 </span>
               </div>
-              <div className="bg-[#04050a] p-2.5 rounded-lg border border-white/10 focus-within:border-red-500/60">
+              <div className="bg-[#04050a] p-3 rounded-xl border-2 border-white/20 focus-within:border-red-500 focus-within:ring-2 focus-within:ring-red-500/30 shadow-inner transition-all">
                 <textarea
                   id="term-message"
                   required
@@ -450,32 +459,36 @@ export default function MinimalistTerminalContactForm({
                   onChange={(e) => setMessage(e.target.value)}
                   onFocus={() => setActiveField('message')}
                   placeholder="Outline current bottleneck, architecture ambition, or delivery goals..."
-                  className="w-full bg-transparent text-white font-mono text-xs focus:outline-none placeholder:text-neutral-600 resize-y leading-relaxed"
+                  className="w-full bg-transparent text-white font-sans text-sm sm:text-base font-normal focus:outline-none placeholder:text-neutral-400 resize-y leading-relaxed select-text"
                 />
               </div>
             </div>
 
-            {/* Terminal Actions Line */}
-            <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3">
-              <div className="flex items-center gap-2 text-[10px] text-neutral-400">
-                <Shield className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Bilateral NDA Protocol &bull; Zero spam guarantee</span>
+            {/* Terminal Actions Bar (div 6) */}
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-2.5 text-xs text-neutral-200 font-mono font-semibold">
+                <Shield className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>Bilateral NDA Protocol &bull; Direct Founder Priority Queue</span>
               </div>
 
+              {/* Submit Button - CSS Selector 8 (button 1) */}
               <button
                 type="submit"
                 disabled={status === 'transmitting'}
-                className="w-full sm:w-auto px-7 py-3 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-mono text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2.5 transition-all shadow-[0_8px_24px_rgba(255,42,58,0.45),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 disabled:opacity-50 cursor-pointer border border-red-400/40"
+                className="w-full sm:w-auto relative overflow-hidden group/btn px-8 py-3.5 sm:py-4 rounded-2xl bg-gradient-to-r from-red-600 via-rose-600 to-red-600 hover:from-red-500 hover:to-rose-500 text-white font-mono text-xs sm:text-sm font-black uppercase tracking-wider flex items-center justify-center gap-2.5 transition-all duration-200 shadow-[0_12px_32px_rgba(255,42,58,0.5),0_0_0_1px_rgba(255,255,255,0.2),inset_0_1px_1px_rgba(255,255,255,0.35)] hover:shadow-[0_18px_45px_rgba(255,42,58,0.7),0_0_25px_rgba(255,42,58,0.5)] active:translate-y-1 active:scale-[0.98] active:shadow-[0_4px_12px_rgba(255,42,58,0.4)] cursor-pointer border-2 border-red-400/50"
               >
+                {/* Specular Glint Top Rim */}
+                <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/70 to-transparent pointer-events-none" />
+                
                 {status === 'transmitting' ? (
                   <>
-                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                    <span>RELAYING PACKET...</span>
+                    <RefreshCw className="w-4 h-4 animate-spin text-white" />
+                    <span className="text-white drop-shadow">RELAYING PACKET...</span>
                   </>
                 ) : (
                   <>
-                    <Send className="w-3.5 h-3.5" />
-                    <span>TRANSMIT TO SAHIL &rarr;</span>
+                    <Send className="w-4 h-4 text-white drop-shadow" />
+                    <span className="text-white drop-shadow">TRANSMIT TO SAHIL &rarr;</span>
                   </>
                 )}
               </button>
@@ -484,15 +497,16 @@ export default function MinimalistTerminalContactForm({
         )}
       </div>
 
-      {/* Terminal Footer Telemetry */}
-      <div className="bg-[#05060b] border-t border-white/10 px-4 py-2 flex items-center justify-between text-[10px] text-neutral-500">
+      {/* 4. Terminal Footer Telemetry */}
+      <div className="bg-[#05060b] border-t-2 border-white/10 px-5 py-2.5 flex items-center justify-between text-xs text-neutral-300 font-mono">
         <div className="flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
-          <span>PORT: 443 (HTTPS)</span>
-          <span className="hidden sm:inline">&bull; ENCRYPTION: SHA-256</span>
+          <span className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_#ff2a3a]" />
+          <span className="font-bold text-white">PORT: 443 (HTTPS)</span>
+          <span className="hidden sm:inline text-neutral-400">&bull; ENCRYPTION: SHA-256</span>
         </div>
-        <div className="text-neutral-400">
-          STATUS: READY
+        <div className="text-emerald-400 font-black flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          STATUS: READY FOR INTAKE
         </div>
       </div>
     </div>

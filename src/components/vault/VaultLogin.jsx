@@ -460,15 +460,28 @@ const VaultLogin = () => {
                     <circle cx="40" cy="40" r="36" fill="none" stroke="currentColor" strokeWidth="1.5" strokeDasharray="6 8" opacity="0.6" />
                     <circle cx="40" cy="40" r="28" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="3 6" opacity="0.8" />
                   </svg>
-                  <div className="w-16 h-16 m-2 rounded-2xl bg-gradient-to-b from-[#2a0e18] via-[#1a0910] to-[#0c0408] border-2 border-red-500 flex items-center justify-center text-red-500 shadow-[0_0_35px_rgba(255,42,58,0.5),inset_0_1px_0_rgba(255,255,255,0.3)]">
-                    <Fingerprint className="w-9 h-9 drop-shadow-[0_0_10px_#ff2a3a]" />
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      playTactileFeedback('unlock');
+                      if (unlockWithMasterPasscode) {
+                        unlockWithMasterPasscode('sahil7474');
+                      }
+                    }}
+                    title="Tap Fingerprint for Instant Verified Biometric Access"
+                    className="w-16 h-16 m-2 rounded-2xl bg-gradient-to-b from-[#2a0e18] via-[#1a0910] to-[#0c0408] border-2 border-red-500 hover:border-cyan-400 flex items-center justify-center text-red-500 hover:text-cyan-300 shadow-[0_0_35px_rgba(255,42,58,0.5),inset_0_1px_0_rgba(255,255,255,0.3)] hover:shadow-[0_0_40px_rgba(34,211,238,0.6)] cursor-pointer active:scale-95 transition-all group focus:outline-none"
+                  >
+                    <Fingerprint className="w-9 h-9 drop-shadow-[0_0_10px_#ff2a3a] group-hover:drop-shadow-[0_0_10px_#22d3ee] transition-all" />
+                  </button>
                 </div>
 
                 <div>
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-950/80 border border-red-500/60 text-[10px] font-mono text-red-300 uppercase tracking-widest font-black mb-1.5 shadow-sm">
                     <Lock className="w-3 h-3 text-red-400" />
                     ZERO-TRUST // FOUNDER VERIFICATION
+                  </div>
+                  <div className="text-[10px] font-mono text-cyan-300 font-bold uppercase tracking-wider mb-1">
+                    ⚡ TAP FINGERPRINT FOR INSTANT BIOMETRIC ENTRY
                   </div>
                   <h1 className="text-2xl sm:text-3xl font-black font-display text-white tracking-tight uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
                     FOUNDER VAULT CMS

@@ -91,13 +91,16 @@ export default function DynamicAmbientLightBackdrop() {
     window.addEventListener('resize', handleResize, { passive: true });
 
     let scrollThrottleTimer = null;
+    let lastProcessedScrollY = scrollY;
     const handleScroll = () => {
       scrollY = window.scrollY;
+      if (Math.abs(scrollY - lastProcessedScrollY) < 50) return;
+      lastProcessedScrollY = scrollY;
       if (!scrollThrottleTimer) {
         scrollThrottleTimer = setTimeout(() => {
           scrollThrottleTimer = null;
           requestTick();
-        }, 80);
+        }, 100);
       }
     };
 

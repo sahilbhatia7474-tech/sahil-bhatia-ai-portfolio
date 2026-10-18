@@ -6,6 +6,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import SystemBootLoader from './components/SystemBootLoader';
 import CustomCursor from './components/CustomCursor';
 import SpiderVerseBackgroundWall from './components/SpiderVerseBackgroundWall';
+import CaptainAmericaShieldBackground from './components/CaptainAmericaShieldBackground';
 import DynamicAmbientLightBackdrop from './components/DynamicAmbientLightBackdrop';
 import Navigation from './components/Navigation';
 import CRTScanlineOverlay from './components/CRTScanlineOverlay';
@@ -40,7 +41,7 @@ const RefundPolicyPage = lazy(() => import('./pages/RefundPolicyPage'));
 
 // Lazy-load private Founder Vault CMS to isolate bundle size from public portfolio
 const VaultLayout = lazy(() => import('./components/vault/VaultLayout'));
-const ProtectedRoute = lazy(() => import('./components/vault/ProtectedRoute'));
+import ProtectedRoute from './components/vault/ProtectedRoute';
 
 // Route Section Smooth Scroller
 function ScrollManager() {
@@ -201,6 +202,9 @@ function PublicExperience() {
       {/* Spider-Man Web-Shooting & Geometric Spider-Net Cosmic Wall Layer */}
       <SpiderVerseBackgroundWall />
 
+      {/* Global Fixed Captain America Vibranium Shield - Centered in Viewport across Entire Website */}
+      <CaptainAmericaShieldBackground />
+
       {/* Dynamic Ambient Light Layer behind Main Content Containers (Color Temp & Intensity Responsive) */}
       <DynamicAmbientLightBackdrop />
 
@@ -272,6 +276,15 @@ function PublicExperience() {
 
 // Master Application Component with Providers & Routing
 function App() {
+  // Pre-warm Founder Vault layout in background so entering is instantaneous
+  useEffect(() => {
+    const idleTimer = setTimeout(() => {
+      import('./components/vault/VaultLogin').catch(() => null);
+      import('./components/vault/VaultLayout').catch(() => null);
+    }, 1500);
+    return () => clearTimeout(idleTimer);
+  }, []);
+
   return (
     <BrowserRouter>
       {/* Cinematic CRT Monitor Horizontal Scanline Overlay */}
@@ -281,26 +294,19 @@ function App() {
         <AuthProvider>
           <PortfolioDataProvider>
             <Routes>
-              {/* Private Founder Vault Route (Lazy-loaded) */}
+              {/* Private Founder Vault Route */}
               <Route
                 path="/vault/*"
                 element={
-                  <Suspense
-                    fallback={
-                      <div className="min-h-screen bg-[#070708] flex items-center justify-center font-mono text-xs text-neutral-400">
-                        <div className="flex items-center gap-3 bg-[#0d0e14] border border-white/10 px-6 py-4 rounded-xl shadow-2xl">
-                          <RefreshCw className="w-4 h-4 text-red-500 animate-spin" />
-                          <span className="text-white font-semibold uppercase tracking-wider">
-                            INITIALIZING FOUNDER VAULT...
-                          </span>
-                        </div>
-                      </div>
-                    }
-                  >
-                    <ProtectedRoute>
+                  <ProtectedRoute>
+                    <Suspense
+                      fallback={
+                        <div className="w-full min-h-screen bg-[#040509]" />
+                      }
+                    >
                       <VaultLayout />
-                    </ProtectedRoute>
-                  </Suspense>
+                    </Suspense>
+                  </ProtectedRoute>
                 }
               />
 

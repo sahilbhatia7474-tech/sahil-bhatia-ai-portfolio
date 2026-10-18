@@ -117,7 +117,7 @@ export const AuthProvider = ({ children }) => {
 
   const [isVaultUnlocked, setIsVaultUnlocked] = useState(false);
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [authError, setAuthError] = useState(null);
 
   const lockVault = () => {
@@ -431,10 +431,15 @@ export const AuthProvider = ({ children }) => {
   const unlockAsPublicViewer = async () => {
     let firebaseAnonUser = null;
     try {
-      const res = await signInAnonymously(auth);
+      // Race Firebase network call with a snappy timeout so slow connections never stall the user transition
+      const anonPromise = signInAnonymously(auth);
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Auth race timeout')), 250)
+      );
+      const res = await Promise.race([anonPromise, timeoutPromise]);
       firebaseAnonUser = res.user;
-    } catch (err) {
-      console.warn('Notice on anonymous sign-in attempt:', err?.message);
+    } catch {
+      // Instant non-blocking fallback to guest session
     }
 
     const guestUser = firebaseAnonUser || {

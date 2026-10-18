@@ -688,6 +688,14 @@ const FutureVault = () => {
               Manage, publish, and sync new research signals dynamically via{' '}
               <Link
                 to="/vault"
+                onMouseEnter={() => {
+                  import('./vault/VaultLogin').catch(() => null);
+                  import('./vault/VaultLayout').catch(() => null);
+                }}
+                onTouchStart={() => {
+                  import('./vault/VaultLogin').catch(() => null);
+                  import('./vault/VaultLayout').catch(() => null);
+                }}
                 onClick={() => lockVault && lockVault()}
                 className="text-red-400 hover:text-red-300 font-black underline decoration-red-500/60 hover:decoration-red-400 transition-colors"
               >

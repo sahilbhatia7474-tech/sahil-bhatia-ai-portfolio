@@ -65,10 +65,16 @@ body {
 }
 
 /* Ensure crisp typography and eliminate font blurriness */
-h1, h2, h3, h4, h5, h6, p, span, a, button, input, textarea, code, pre {
+*, *::before, *::after {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6, p, span, a, button, input, textarea, code, pre, kbd, label {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
 /* Precision grid background & 3D Spatial Grid */
@@ -94,6 +100,58 @@ h1, h2, h3, h4, h5, h6, p, span, a, button, input, textarea, code, pre {
 .perspective-floor-grid {
   transform: perspective(700px) rotateX(62deg);
   transform-origin: 50% 100%;
+}
+
+/* =========================================================
+   3D PERSPECTIVE CUBE TILT INTERACTION STYLES
+   ========================================================= */
+.perspective-container-800 {
+  perspective: 800px;
+}
+
+.perspective-tilt-left {
+  transform-style: preserve-3d;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease, border-color 0.2s ease;
+  will-change: transform;
+}
+.perspective-tilt-left:hover {
+  transform: perspective(800px) rotateX(10deg) rotateY(-12deg) translateY(-8px) translateZ(12px);
+}
+.perspective-tilt-left:active {
+  transform: perspective(800px) rotateX(2deg) rotateY(-2deg) translateY(2px) translateZ(-4px);
+}
+
+.perspective-tilt-center {
+  transform-style: preserve-3d;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease, border-color 0.2s ease;
+  will-change: transform;
+}
+.perspective-tilt-center:hover {
+  transform: perspective(800px) rotateX(12deg) rotateY(0deg) translateY(-8px) translateZ(12px);
+}
+.perspective-tilt-center:active {
+  transform: perspective(800px) rotateX(3deg) rotateY(0deg) translateY(2px) translateZ(-4px);
+}
+
+.perspective-tilt-right {
+  transform-style: preserve-3d;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease, border-color 0.2s ease;
+  will-change: transform;
+}
+.perspective-tilt-right:hover {
+  transform: perspective(800px) rotateX(10deg) rotateY(12deg) translateY(-8px) translateZ(12px);
+}
+.perspective-tilt-right:active {
+  transform: perspective(800px) rotateX(2deg) rotateY(2deg) translateY(2px) translateZ(-4px);
+}
+
+.preserve-3d-child {
+  transform-style: preserve-3d;
+  transform: translateZ(16px);
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.group\/cube:hover .preserve-3d-child {
+  transform: translateZ(26px);
 }
 
 /* =========================================================

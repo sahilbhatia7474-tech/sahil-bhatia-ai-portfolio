@@ -14,24 +14,8 @@ import { memo } from 'react';
  * 100% non-blocking (pointer-events-none), hardware-accelerated, and accessible.
  */
 function CRTScanlineOverlay() {
-  return (
-    <div
-      className="crt-overlay-container"
-      aria-hidden="true"
-    >
-      {/* 1. Micro-Raster Pixel Scanlines Pattern */}
-      <div className="crt-scanlines-pattern" />
-
-      {/* 2. Animated Slow-Moving Horizontal Electron Beam Sweep */}
-      <div className="crt-beam-sweep">
-        {/* Luminous Specular Lead Line */}
-        <div className="crt-beam-lead-line" />
-      </div>
-
-      {/* 3. Subtle CRT Monitor Peripheral Vignette */}
-      <div className="crt-screen-vignette" />
-    </div>
-  );
+  // Return null to prevent horizontal CRT scanline raster stripes and electron sweeps from fragmenting font glyphs and blurring text
+  return null;
 }
 
 export default memo(CRTScanlineOverlay);
