@@ -6,6 +6,7 @@ import {
   Key,
   AlertCircle,
   ArrowLeft,
+  ArrowRight,
   Mail,
   CheckCircle2,
   ExternalLink,
@@ -145,7 +146,7 @@ const VaultLogin = () => {
     setLocalError(null);
     const codeToTest = (directCode || passcode || '').trim();
     if (!codeToTest) {
-      setLocalError('Please enter your secret founder passcode (e.g. sahil7474).');
+      setLocalError('Please enter your secret founder passcode.');
       return;
     }
     setIsSubmittingPasscode(true);
@@ -368,38 +369,48 @@ const VaultLogin = () => {
               setLocalError(null);
               playTactileFeedback('tab');
             }}
-            className={`relative py-4 px-3.5 rounded-xl font-mono text-xs uppercase font-black tracking-wider transition-all duration-200 cursor-pointer flex flex-col items-center justify-center gap-1.5 overflow-hidden active:scale-[0.98] ${
+            className={`group relative py-4 px-3.5 rounded-xl font-mono text-xs uppercase font-black tracking-wider transition-all duration-300 cursor-pointer flex flex-col items-center justify-center gap-1.5 overflow-hidden active:scale-[0.98] ${
               activeMode === 'guest'
-                ? 'bg-gradient-to-b from-[#0a2034] via-[#061422] to-[#030c14] border-2 border-cyan-400 text-white shadow-[0_0_35px_rgba(6,182,212,0.5),0_10px_25px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,255,255,0.4)] scale-[1.02]'
-                : 'bg-[#0c0f1c] hover:bg-[#14192d] border border-white/15 text-slate-200 hover:text-white hover:border-white/30'
+                ? 'bg-gradient-to-b from-[#0e304d] via-[#082036] to-[#04111d] border-2 border-cyan-300 text-white shadow-[0_0_40px_rgba(6,182,212,0.65),0_12px_28px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.6)] scale-[1.02]'
+                : 'bg-gradient-to-b from-[#0b1c2e] via-[#071322] to-[#040c16] hover:from-[#0f2740] hover:to-[#081726] border-2 border-cyan-500/60 hover:border-cyan-300 text-cyan-100 hover:text-white shadow-[0_0_24px_rgba(6,182,212,0.35)] hover:shadow-[0_0_40px_rgba(6,182,212,0.6)] hover:scale-[1.01]'
             }`}
           >
-            {/* Top Specular Edge Highlight */}
-            {activeMode === 'guest' && (
-              <span className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-200 to-transparent shadow-[0_0_8px_#06b6d4]" />
-            )}
+            {/* Top Free Access Pulsing Ribbon Tag */}
+            <span className="absolute -top-0.5 right-2 px-2 py-0.5 rounded-b-md bg-gradient-to-r from-cyan-400 to-emerald-400 text-[#040d16] font-mono font-black text-[9px] uppercase tracking-wider shadow-[0_0_14px_rgba(6,182,212,0.9)] animate-pulse z-10 flex items-center gap-1">
+              <Sparkles className="w-2.5 h-2.5 fill-current" />
+              <span>FREE ACCESS</span>
+            </span>
 
-            <div className="flex items-center gap-2">
-              {/* Glowing Blinking Cyan Tactical Beacon */}
+            {/* Top Specular Edge Highlight Laser */}
+            <span className={`absolute top-0 inset-x-0 h-[2px] ${
+              activeMode === 'guest'
+                ? 'bg-gradient-to-r from-transparent via-cyan-200 to-transparent shadow-[0_0_12px_#06b6d4]'
+                : 'bg-gradient-to-r from-transparent via-cyan-400/80 to-transparent shadow-[0_0_8px_#06b6d4]'
+            }`} />
+
+            <div className="flex items-center gap-2 mt-0.5">
+              {/* Glowing Blinking Cyan Tactical Beacon (Always Pinging to attract clicks) */}
               <span className="relative flex h-3 w-3">
-                <span className={`absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75 ${activeMode === 'guest' ? 'animate-ping' : ''}`} />
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-cyan-400 shadow-[0_0_12px_#06b6d4]" />
+                <span className="absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-90 animate-ping" />
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-cyan-400 shadow-[0_0_14px_#06b6d4]" />
               </span>
-              <Eye className={`w-4 h-4 ${activeMode === 'guest' ? 'text-cyan-300 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]' : 'text-neutral-400'}`} />
-              <span className="font-display font-black text-white text-[13px] tracking-wide">PUBLIC GUEST</span>
+              <Eye className="w-4 h-4 text-cyan-300 drop-shadow-[0_0_8px_rgba(6,182,212,0.9)] group-hover:scale-110 transition-transform" />
+              <span className="font-display font-black text-white text-[13px] tracking-wide group-hover:text-cyan-200 transition-colors">
+                PUBLIC GUEST
+              </span>
             </div>
 
             <div className="flex items-center gap-1">
-              <span className={`text-[10px] font-mono tracking-wider font-bold px-2 py-0.5 rounded ${
-                activeMode === 'guest' ? 'bg-cyan-950/80 text-cyan-200 border border-cyan-400/50 shadow-sm' : 'text-neutral-400'
-              }`}>
-                [SPECIMEN EXPLORER]
+              <span className="text-[10px] font-mono tracking-wider font-black px-2 py-0.5 rounded bg-cyan-950/90 text-cyan-300 border border-cyan-400/60 shadow-[0_0_10px_rgba(6,182,212,0.3)] flex items-center gap-1">
+                <Zap className="w-2.5 h-2.5 text-amber-300" />
+                <span>NO PASSWORD REQUIRED</span>
               </span>
             </div>
 
-            {activeMode === 'guest' && (
-              <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-16 h-1 bg-cyan-400 rounded-full shadow-[0_0_12px_#06b6d4]" />
-            )}
+            {/* Bottom Horizon Accent Bar */}
+            <span className={`absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-20 h-1 bg-cyan-400 rounded-full shadow-[0_0_14px_#06b6d4] transition-all duration-300 ${
+              activeMode === 'guest' ? 'opacity-100 scale-100' : 'opacity-70 group-hover:opacity-100 group-hover:scale-110'
+            }`} />
           </button>
 
         </div>
@@ -407,11 +418,18 @@ const VaultLogin = () => {
         {/* ========================================================================= */}
         {/* SELECTOR 2: MAIN SECURITY GATEWAY CARD                                    */}
         {/* ========================================================================= */}
-        <div className={`rounded-3xl bg-[#070912] border-2 p-6 sm:p-8 transition-all duration-300 shadow-[0_24px_80px_rgba(0,0,0,0.98)] relative overflow-hidden ${
+        <div className={`rounded-3xl bg-gradient-to-b from-[#090c1a] via-[#070914] to-[#04050c] border-2 p-6 sm:p-8 transition-all duration-500 shadow-[0_24px_80px_rgba(0,0,0,0.98)] relative overflow-hidden ${
           activeMode === 'founder'
-            ? 'border-red-500/70 shadow-[0_0_60px_rgba(255,42,58,0.25)]'
-            : 'border-cyan-400/70 shadow-[0_0_60px_rgba(6,182,212,0.25)]'
+            ? 'border-red-500/70 shadow-[0_0_70px_rgba(255,42,58,0.3),inset_0_1px_0_rgba(255,255,255,0.2)]'
+            : 'border-cyan-400/80 shadow-[0_0_70px_rgba(6,182,212,0.35),inset_0_1px_0_rgba(255,255,255,0.25)]'
         }`}>
+
+          {/* Ambient Inner Holographic Sheen */}
+          <div
+            className={`absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-48 rounded-full blur-3xl pointer-events-none transition-colors duration-700 ${
+              activeMode === 'founder' ? 'bg-red-600/15' : 'bg-cyan-500/20'
+            }`}
+          />
 
           {/* Precision Top Laser Accent Sweep */}
           <div className={`absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-current to-transparent opacity-90 ${
@@ -463,12 +481,16 @@ const VaultLogin = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      playTactileFeedback('unlock');
-                      if (unlockWithMasterPasscode) {
-                        unlockWithMasterPasscode('sahil7474');
+                      playTactileFeedback('click');
+                      if (passcode.trim()) {
+                        handlePasscodeSubmit();
+                      } else {
+                        const input = document.getElementById('founder-passcode-input');
+                        if (input) input.focus();
+                        setLocalError('Please enter your secret founder passcode below.');
                       }
                     }}
-                    title="Tap Fingerprint for Instant Verified Biometric Access"
+                    title="Verified Founder Biometric Gateway"
                     className="w-16 h-16 m-2 rounded-2xl bg-gradient-to-b from-[#2a0e18] via-[#1a0910] to-[#0c0408] border-2 border-red-500 hover:border-cyan-400 flex items-center justify-center text-red-500 hover:text-cyan-300 shadow-[0_0_35px_rgba(255,42,58,0.5),inset_0_1px_0_rgba(255,255,255,0.3)] hover:shadow-[0_0_40px_rgba(34,211,238,0.6)] cursor-pointer active:scale-95 transition-all group focus:outline-none"
                   >
                     <Fingerprint className="w-9 h-9 drop-shadow-[0_0_10px_#ff2a3a] group-hover:drop-shadow-[0_0_10px_#22d3ee] transition-all" />
@@ -481,7 +503,7 @@ const VaultLogin = () => {
                     ZERO-TRUST // FOUNDER VERIFICATION
                   </div>
                   <div className="text-[10px] font-mono text-cyan-300 font-bold uppercase tracking-wider mb-1">
-                    ⚡ TAP FINGERPRINT FOR INSTANT BIOMETRIC ENTRY
+                    SECURE ZERO-TRUST AUTHENTICATION REQUIRED
                   </div>
                   <h1 className="text-2xl sm:text-3xl font-black font-display text-white tracking-tight uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
                     FOUNDER VAULT CMS
@@ -510,31 +532,42 @@ const VaultLogin = () => {
               {/* ------------------------------------------------------------- */}
               {/* FEATURE 1: 3D INSTANT MASTER PASSCODE UNLOCK (FASTEST PATH)  */}
               {/* ------------------------------------------------------------- */}
-              <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-b from-[#1e0814] via-[#12050b] to-[#080306] border-2 border-red-500/70 shadow-[0_0_35px_rgba(255,42,58,0.35),0_10px_25px_rgba(0,0,0,0.9)] space-y-3.5 relative overflow-hidden">
-                <div className="flex items-center justify-between text-xs font-mono">
-                  <span className="text-white font-black flex items-center gap-2">
-                    <Key className="w-4 h-4 text-red-500" />
-                    FOUNDER MASTER PASSCODE
+              <div className="relative p-5 sm:p-6 rounded-2xl bg-gradient-to-b from-[#240816] via-[#15060e] to-[#090307] border-2 border-red-500/80 shadow-[0_0_40px_rgba(255,42,58,0.4),0_12px_32px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.2)] space-y-4 overflow-hidden group">
+                {/* Luminous Top Cybernetic Laser Rail */}
+                <span className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-red-400 to-transparent shadow-[0_0_14px_#ff2a3a]" />
+                
+                {/* Ambient Breathing Sheen */}
+                <div className="absolute -top-12 -right-12 w-36 h-36 rounded-full bg-red-600/20 blur-2xl pointer-events-none" />
+
+                <div className="flex items-center justify-between text-xs font-mono relative z-10">
+                  <span className="text-white font-black flex items-center gap-2 tracking-wide">
+                    <span className="w-7 h-7 rounded-lg bg-red-950/90 border border-red-500/80 flex items-center justify-center text-red-400 shadow-[0_0_12px_rgba(255,42,58,0.5)]">
+                      <Key className="w-4 h-4 text-red-400" />
+                    </span>
+                    <span>FOUNDER MASTER PASSCODE</span>
                   </span>
-                  <span className="text-[10px] px-2 py-0.5 rounded bg-red-950 border border-red-500/60 text-red-300 font-mono font-black tracking-wider shadow-sm">
-                    INSTANT UNLOCK ⚡
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-950/90 border border-red-500/60 text-red-300 font-mono text-[10px] font-black tracking-wider shadow-[0_0_12px_rgba(255,42,58,0.3)]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping shadow-[0_0_8px_#ff2a3a]" />
+                    <span>ENCRYPTED &bull; ZERO-TRUST</span>
                   </span>
                 </div>
 
-                <form onSubmit={handlePasscodeSubmit} className="flex flex-col sm:flex-row gap-2">
+                <form onSubmit={handlePasscodeSubmit} className="flex flex-col sm:flex-row gap-2.5 relative z-10">
                   <div className="relative flex-1">
                     <input
+                      id="founder-passcode-input"
                       type={showPassword ? 'text' : 'password'}
                       value={passcode}
                       onChange={(e) => setPasscode(e.target.value)}
-                      placeholder="Enter secret passcode (e.g. sahil7474)..."
-                      className="w-full min-h-[48px] px-3.5 py-2.5 pl-10 pr-10 rounded-xl bg-[#070912] border-2 border-white/25 text-white placeholder-neutral-400 text-sm font-mono focus:outline-none focus:border-red-500 focus:shadow-[0_0_15px_rgba(255,42,58,0.5)] transition-all font-semibold"
+                      placeholder="Enter secret founder passcode..."
+                      autoComplete="current-password"
+                      className="w-full min-h-[52px] px-4 py-3 pl-11 pr-11 rounded-xl bg-[#060812] border-2 border-white/20 text-white placeholder-neutral-400 text-sm font-mono focus:outline-none focus:border-red-500 focus:shadow-[0_0_20px_rgba(255,42,58,0.6)] transition-all font-semibold"
                     />
-                    <Key className="w-4 h-4 text-red-400 absolute left-3.5 top-4" />
+                    <Key className="w-4 h-4 text-red-400 absolute left-4 top-4 pointer-events-none" />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3.5 top-3.5 text-neutral-400 hover:text-white transition-colors cursor-pointer"
+                      className="absolute right-4 top-4 text-neutral-400 hover:text-white transition-colors cursor-pointer"
                       title={showPassword ? 'Hide passcode' : 'Show passcode'}
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -544,31 +577,30 @@ const VaultLogin = () => {
                   <button
                     type="submit"
                     disabled={isSubmittingPasscode}
-                    className="min-h-[48px] px-6 py-2.5 rounded-xl bg-gradient-to-r from-red-600 via-rose-600 to-red-600 hover:from-red-500 hover:to-rose-500 text-white font-mono text-xs font-black uppercase tracking-wider transition-all shadow-[0_0_25px_rgba(255,42,58,0.6),0_6px_16px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.4)] active:scale-95 cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2 shrink-0 border border-red-400/60"
+                    className="group/btn relative min-h-[52px] px-8 py-3 rounded-xl bg-gradient-to-r from-red-600 via-rose-500 to-red-600 hover:from-red-500 hover:via-rose-400 hover:to-red-500 ring-2 ring-red-500/70 hover:ring-red-300 ring-offset-2 ring-offset-[#090307] text-white font-mono text-xs font-black uppercase tracking-wider transition-all duration-300 shadow-[0_0_38px_rgba(255,42,58,0.8),0_10px_24px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,255,255,0.6)] hover:shadow-[0_0_55px_rgba(255,42,58,1),0_14px_32px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.8)] hover:-translate-y-0.5 hover:scale-[1.03] active:translate-y-0 active:scale-[0.98] cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2.5 shrink-0 border-2 border-red-300/90 overflow-hidden"
                   >
-                    <Unlock className="w-4 h-4" />
-                    <span>{isSubmittingPasscode ? 'VERIFYING...' : 'UNLOCK'}</span>
+                    {/* Top Specular Edge Laser Accent */}
+                    <span className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-white/80 to-transparent shadow-[0_0_12px_#ffffff]" />
+                    {/* Continuous Shimmer Light Beam */}
+                    <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 ease-out pointer-events-none" />
+                    <Unlock className="w-4 h-4 text-white drop-shadow-[0_0_8px_#ffffff] group-hover/btn:rotate-[-8deg] transition-transform duration-300" />
+                    <span className="relative z-10 font-black tracking-widest drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                      {isSubmittingPasscode ? 'VERIFYING...' : 'UNLOCK VAULT'}
+                    </span>
+                    <Zap className="w-3.5 h-3.5 text-amber-300 animate-bounce relative z-10 drop-shadow-[0_0_8px_#f59e0b]" />
                   </button>
                 </form>
 
-                {/* Quick Passcode Chips */}
-                <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono text-slate-200 pt-2 border-t border-white/10">
-                  <span className="text-neutral-400 text-[10px] uppercase font-bold">Quick Master Keys:</span>
-                  {['sahil7474', 'sahil1471', 'ARCHITECT'].map((k) => (
-                    <button
-                      key={k}
-                      type="button"
-                      onClick={() => {
-                        setPasscode(k);
-                        playTactileFeedback('chip');
-                        handlePasscodeSubmit(null, k);
-                      }}
-                      className="px-2.5 py-1 rounded-lg bg-black/70 hover:bg-red-950/80 text-white hover:text-red-300 border border-white/20 hover:border-red-500/70 text-[10px] font-mono font-bold transition-all cursor-pointer shadow-sm active:scale-95 flex items-center gap-1"
-                    >
-                      <Zap className="w-2.5 h-2.5 text-amber-400" />
-                      <span>{k}</span>
-                    </button>
-                  ))}
+                {/* Private Security Verification Indicator */}
+                <div className="flex items-center justify-between text-[11px] font-mono text-slate-300 pt-2 border-t border-white/10 relative z-10">
+                  <span className="flex items-center gap-1.5 text-neutral-300 text-[10px] uppercase font-bold">
+                    <Shield className="w-3.5 h-3.5 text-red-400" />
+                    <span>PRIVATE PASSCODE PROTECTION &bull; ZERO-KNOWLEDGE</span>
+                  </span>
+                  <span className="text-emerald-400 font-bold text-[10px] tracking-widest flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    [ARMED &amp; ACTIVE]
+                  </span>
                 </div>
               </div>
 
@@ -589,19 +621,46 @@ const VaultLogin = () => {
                   type="button"
                   onClick={handleGoogleSignIn}
                   disabled={isSubmittingGoogle || isSubmittingPassword || isSubmittingPasscode}
-                  className="w-full min-h-[52px] py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#181120] via-[#221226] to-[#181120] hover:from-[#2e1834] hover:to-[#2e1834] border-2 border-red-500/70 active:scale-[0.99] text-white font-mono text-xs uppercase tracking-wider font-black transition-all shadow-[0_0_25px_rgba(255,42,58,0.35),0_8px_20px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,255,255,0.25)] flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50"
+                  className="group/google relative w-full min-h-[60px] py-4 px-5 rounded-2xl bg-gradient-to-r from-[#240e1f] via-[#35142d] to-[#240e1f] hover:from-[#3a1532] hover:via-[#4c1941] hover:to-[#3a1532] border-2 border-red-500 hover:border-red-300 ring-2 ring-red-500/40 hover:ring-red-400/90 ring-offset-2 ring-offset-[#070914] hover:-translate-y-0.5 hover:scale-[1.015] active:translate-y-0 active:scale-[0.99] text-white font-mono text-xs uppercase tracking-wider font-black transition-all duration-300 shadow-[0_0_38px_rgba(255,42,58,0.5),0_12px_28px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.35)] hover:shadow-[0_0_55px_rgba(255,42,58,0.8),0_16px_36px_rgba(0,0,0,0.98),inset_0_1px_0_rgba(255,255,255,0.6)] flex items-center justify-between gap-3 cursor-pointer disabled:opacity-50 overflow-hidden"
                 >
-                  {/* Google SVG G-Icon */}
-                  <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
-                    <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
-                    <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 10.03 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
-                    <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
-                  </svg>
-                  <span>{isSubmittingGoogle ? 'VERIFYING FOUNDER TOKEN...' : 'AUTHENTICATE WITH GOOGLE ACCOUNT'}</span>
+                  {/* Top Specular Edge Highlight */}
+                  <span className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-red-300 to-transparent shadow-[0_0_12px_#ff2a3a]" />
+                  {/* Shimmer Sweep */}
+                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/google:translate-x-full transition-transform duration-1000 ease-out pointer-events-none" />
+
+                  <div className="flex items-center gap-3.5 relative z-10">
+                    <div className="w-10 h-10 rounded-xl bg-white/10 border-2 border-white/25 flex items-center justify-center p-2 shadow-md group-hover/google:scale-110 group-hover/google:border-red-300 transition-all">
+                      {/* Google SVG G-Icon */}
+                      <svg className="w-full h-full drop-shadow-[0_0_6px_rgba(255,255,255,0.4)]" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+                        <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+                        <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 10.03 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+                        <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                      </svg>
+                    </div>
+                    <div className="text-left">
+                      <div className="font-display font-black text-white text-xs sm:text-sm tracking-wide group-hover/google:text-red-200 transition-colors drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                        {isSubmittingGoogle ? 'VERIFYING FOUNDER TOKEN...' : 'AUTHENTICATE WITH GOOGLE'}
+                      </div>
+                      <div className="text-[10px] font-mono text-red-300 font-bold uppercase tracking-wider flex items-center gap-1.5 mt-0.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_#34d399]" />
+                        <span>INSTANT ZERO-TOUCH LOGIN &bull; {AUTHORIZED_FOUNDER_EMAILS[0]}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2.5 relative z-10 shrink-0">
+                    <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-red-950/90 border border-red-500/60 text-red-300 text-[10px] font-mono font-bold tracking-wider shadow-[0_0_10px_rgba(255,42,58,0.3)]">
+                      <Zap className="w-3 h-3 text-amber-300" />
+                      <span>1-CLICK AUTH</span>
+                    </span>
+                    <div className="w-8 h-8 rounded-lg bg-white/10 group-hover/google:bg-red-500 group-hover/google:text-white flex items-center justify-center text-red-400 transition-all shadow-sm">
+                      <ArrowRight className="w-4 h-4 group-hover/google:translate-x-0.5 transition-transform" />
+                    </div>
+                  </div>
                 </button>
                 <p className="text-[11px] text-slate-300 text-center font-mono">
-                  Signs in directly with <strong className="text-white font-bold">{AUTHORIZED_FOUNDER_EMAILS[0]}</strong> via Google OAuth.
+                  Direct founder clearance for <strong className="text-white font-bold">{AUTHORIZED_FOUNDER_EMAILS[0]}</strong>.
                 </p>
               </div>
 
@@ -617,7 +676,24 @@ const VaultLogin = () => {
               {/* ------------------------------------------------------------- */}
               {/* FEATURE 3: CONFIDENTIAL EMAIL + PASSWORD FORM                 */}
               {/* ------------------------------------------------------------- */}
-              <form onSubmit={handleEmailPasswordSubmit} className="space-y-4">
+              <form onSubmit={handleEmailPasswordSubmit} className="relative p-5 sm:p-6 rounded-2xl bg-gradient-to-b from-[#1c0819] via-[#10050e] to-[#070206] border-2 border-red-500/70 hover:border-red-500/90 shadow-[0_0_35px_rgba(255,42,58,0.3),0_14px_32px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.2)] space-y-4 overflow-hidden transition-all duration-300 group/form">
+                {/* Luminous Top Cybernetic Laser Rail */}
+                <span className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-red-400 to-transparent shadow-[0_0_12px_#ff2a3a]" />
+
+                {/* Form Tactical Header */}
+                <div className="flex items-center justify-between text-xs font-mono pb-2 border-b border-white/10">
+                  <span className="text-white font-black flex items-center gap-2 tracking-wide">
+                    <span className="w-6 h-6 rounded-md bg-red-950/80 border border-red-500/60 flex items-center justify-center text-red-400 shadow-sm">
+                      <Mail className="w-3.5 h-3.5 text-red-400" />
+                    </span>
+                    <span>CONFIDENTIAL FOUNDER CREDENTIALS</span>
+                  </span>
+                  <span className="text-[10px] font-mono text-neutral-400 font-bold uppercase tracking-wider flex items-center gap-1">
+                    <Shield className="w-3 h-3 text-red-400" />
+                    <span>FIREBASE AUTH</span>
+                  </span>
+                </div>
+
                 <div className="space-y-1.5">
                   <label className="block text-[11px] font-mono text-slate-200 uppercase tracking-wider font-bold">
                     Founder Email Address
@@ -630,9 +706,9 @@ const VaultLogin = () => {
                       placeholder="founder@example.com"
                       autoComplete="username"
                       required
-                      className="w-full min-h-[46px] px-3.5 py-2.5 pl-10 rounded-xl bg-[#080a14] border-2 border-white/20 text-white placeholder-neutral-400 text-xs font-mono focus:outline-none focus:border-red-500 focus:shadow-[0_0_15px_rgba(255,42,58,0.4)] transition-all font-semibold"
+                      className="w-full min-h-[50px] px-4 py-3 pl-11 rounded-xl bg-[#080a14] border-2 border-white/20 text-white placeholder-neutral-400 text-xs font-mono focus:outline-none focus:border-red-500 focus:shadow-[0_0_20px_rgba(255,42,58,0.55)] transition-all font-semibold"
                     />
-                    <Mail className="w-4 h-4 text-red-400 absolute left-3 top-3.5" />
+                    <Mail className="w-4 h-4 text-red-400 absolute left-3.5 top-4 pointer-events-none" />
                   </div>
                 </div>
 
@@ -648,33 +724,87 @@ const VaultLogin = () => {
                       placeholder="Enter secret founder password..."
                       autoComplete="current-password"
                       required
-                      className="w-full min-h-[46px] px-3.5 py-2.5 pl-10 rounded-xl bg-[#080a14] border-2 border-white/20 text-white placeholder-neutral-400 text-xs font-mono focus:outline-none focus:border-red-500 focus:shadow-[0_0_15px_rgba(255,42,58,0.4)] transition-all font-semibold"
+                      className="w-full min-h-[50px] px-4 py-3 pl-11 rounded-xl bg-[#080a14] border-2 border-white/20 text-white placeholder-neutral-400 text-xs font-mono focus:outline-none focus:border-red-500 focus:shadow-[0_0_20px_rgba(255,42,58,0.55)] transition-all font-semibold"
                     />
-                    <Key className="w-4 h-4 text-red-400 absolute left-3 top-3.5" />
+                    <Key className="w-4 h-4 text-red-400 absolute left-3.5 top-4 pointer-events-none" />
                   </div>
                 </div>
 
                 <button
                   type="submit"
                   disabled={isSubmittingPassword || isSubmittingGoogle || isSubmittingPasscode}
-                  className="w-full min-h-[46px] py-3 px-4 rounded-xl bg-[#101322] hover:bg-[#1a1f36] border-2 border-white/25 hover:border-white/50 text-white font-mono text-xs uppercase tracking-wider font-black transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 shadow-md active:scale-95"
+                  className="group/pwd relative w-full min-h-[54px] py-3.5 px-6 rounded-xl bg-gradient-to-r from-[#2c0e1e] via-[#48122c] to-[#2c0e1e] hover:from-red-600 hover:via-rose-600 hover:to-red-600 border-2 border-red-500/80 hover:border-red-300 ring-2 ring-red-500/30 hover:ring-red-400/80 ring-offset-2 ring-offset-[#080206] text-white font-mono text-xs uppercase tracking-wider font-black transition-all duration-300 shadow-[0_0_30px_rgba(255,42,58,0.4),0_8px_22px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,255,255,0.3)] hover:shadow-[0_0_55px_rgba(255,42,58,0.85),0_12px_28px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.6)] hover:-translate-y-0.5 hover:scale-[1.015] active:translate-y-0 active:scale-[0.98] flex items-center justify-between gap-3 cursor-pointer disabled:opacity-50 overflow-hidden"
                 >
-                  <CheckCircle2 className="w-4 h-4 text-red-400" />
-                  <span>{isSubmittingPassword ? 'VERIFYING FOUNDER KEY...' : 'SIGN IN WITH PASSWORD'}</span>
+                  {/* Top Specular Edge Highlight */}
+                  <span className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-red-300 to-transparent shadow-[0_0_10px_#ff2a3a]" />
+                  {/* Shimmer Sweep */}
+                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/pwd:translate-x-full transition-transform duration-1000 ease-out pointer-events-none" />
+
+                  <div className="flex items-center gap-2.5 relative z-10">
+                    <CheckCircle2 className="w-5 h-5 text-red-400 group-hover/pwd:text-emerald-300 group-hover/pwd:scale-110 drop-shadow-[0_0_8px_#ff2a3a] transition-all" />
+                    <span className="drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                      {isSubmittingPassword ? 'VERIFYING FOUNDER KEY...' : 'SIGN IN WITH PASSWORD'}
+                    </span>
+                  </div>
+                  <div className="w-8 h-8 rounded-lg bg-white/10 group-hover/pwd:bg-white group-hover/pwd:text-black flex items-center justify-center text-red-300 transition-all shadow-sm relative z-10">
+                    <ArrowRight className="w-4 h-4 group-hover/pwd:translate-x-0.5 transition-transform" />
+                  </div>
                 </button>
               </form>
 
-              {/* Bottom Quick Switch Note */}
-              <div className="text-center pt-2 border-t border-white/10">
+              {/* Bottom Quick Switch Note (Unmissable, Lively, Ultra-Inviting 3D Banner Button) */}
+              <div className="pt-3 border-t border-white/15">
                 <button
                   type="button"
                   onClick={() => {
                     setActiveMode('guest');
                     playTactileFeedback('tab');
                   }}
-                  className="text-xs font-mono text-cyan-300 hover:text-cyan-200 underline underline-offset-4 cursor-pointer font-bold tracking-wide"
+                  className="group relative w-full p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-[#071d2e] via-[#0d3452] to-[#071d2e] hover:from-[#0b283e] hover:via-[#134468] hover:to-[#0b283e] border-2 border-cyan-400 hover:border-cyan-200 ring-2 ring-cyan-400/40 hover:ring-cyan-300 ring-offset-2 ring-offset-[#070914] text-white transition-all duration-300 shadow-[0_0_35px_rgba(6,182,212,0.45),0_10px_28px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.4)] hover:shadow-[0_0_55px_rgba(6,182,212,0.75),0_14px_36px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.7)] hover:-translate-y-0.5 hover:scale-[1.015] active:translate-y-0 active:scale-[0.98] cursor-pointer flex items-center justify-between gap-3 overflow-hidden text-left"
                 >
-                  Want to explore public projects without password? Switch to Guest Mode &rarr;
+                  {/* Top Specular Edge Highlight Laser */}
+                  <span className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-200 to-transparent shadow-[0_0_12px_#22d3ee]" />
+
+                  {/* Shimmer Light Reflection Sweep */}
+                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out pointer-events-none" />
+
+                  {/* Left Side: Glowing Eye + Headline + Subtitle */}
+                  <div className="flex items-center gap-3.5 relative z-10">
+                    <div className="w-11 h-11 rounded-xl bg-black/60 border-2 border-cyan-400/80 flex items-center justify-center text-cyan-300 group-hover:scale-110 group-hover:border-cyan-200 transition-all shadow-[0_0_18px_rgba(6,182,212,0.5)] shrink-0">
+                      <Eye className="w-5 h-5 drop-shadow-[0_0_8px_#06b6d4] group-hover:rotate-6 transition-transform" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="relative flex h-2.5 w-2.5">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-300 opacity-90" />
+                          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-400 shadow-[0_0_8px_#06b6d4]" />
+                        </span>
+                        <span className="font-display font-black text-sm sm:text-base text-white tracking-wide group-hover:text-cyan-200 transition-colors drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                          NO PASSWORD? EXPLORE AS GUEST
+                        </span>
+                        <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-bounce hidden sm:inline" />
+                      </div>
+                      <div className="text-[11px] font-mono text-cyan-200 font-bold uppercase tracking-wider flex items-center gap-1.5 mt-0.5">
+                        <span className="text-emerald-300 font-extrabold">100% FREE ACCESS</span>
+                        <span className="text-neutral-400">&bull;</span>
+                        <span className="text-slate-300 font-medium">1-Click Specimen Sandbox</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Side: High-Energy Action Pill & Arrow */}
+                  <div className="flex items-center gap-2 relative z-10 shrink-0">
+                    <span className="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-300 to-emerald-300 text-black font-mono font-black text-[11px] uppercase tracking-wider shadow-[0_0_14px_rgba(6,182,212,0.9)] group-hover:scale-105 transition-all">
+                      <Zap className="w-3.5 h-3.5 fill-black" />
+                      <span>SWITCH TO GUEST &rarr;</span>
+                    </span>
+                    <div className="w-9 h-9 rounded-xl bg-white/15 group-hover:bg-cyan-300 group-hover:text-black flex items-center justify-center text-cyan-200 transition-all group-hover:translate-x-1 shadow-md">
+                      <ArrowRight className="w-4 h-4 font-bold" />
+                    </div>
+                  </div>
+
+                  {/* Bottom Horizon Accent Light Strip */}
+                  <span className="absolute -bottom-0.5 inset-x-8 h-1 bg-gradient-to-r from-transparent via-cyan-300 to-transparent rounded-full shadow-[0_0_14px_#06b6d4]" />
                 </button>
               </div>
 
@@ -744,43 +874,63 @@ const VaultLogin = () => {
                 </div>
               </div>
 
-              {/* 1-Click Interactive 3D Guest Button */}
-              <div className="space-y-3 pt-1">
+              {/* 1-Click Interactive 3D Guest Button (Ultra-Lively, High Energy & Irresistible) */}
+              <div className="space-y-3 pt-2">
                 <button
                   type="button"
                   onClick={handleGuestExplore}
                   disabled={isSubmittingGuest}
-                  className="w-full min-h-[56px] py-4 px-6 rounded-2xl bg-gradient-to-r from-[#0c2e48] via-[#12456e] to-[#0c2e48] hover:from-[#175484] hover:to-[#175484] border-2 border-cyan-400 text-white font-mono text-sm uppercase font-black tracking-wider transition-all shadow-[0_0_35px_rgba(6,182,212,0.5),0_10px_25px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,255,255,0.4)] flex items-center justify-center gap-3 cursor-pointer active:scale-[0.98] disabled:opacity-50 group"
+                  className="group relative w-full min-h-[76px] py-4 px-5 sm:px-7 rounded-2xl bg-gradient-to-r from-[#07243d] via-[#104b77] to-[#07243d] hover:from-[#0b3354] hover:via-[#165d93] hover:to-[#0b3354] border-2 border-cyan-300 hover:border-cyan-100 ring-2 ring-cyan-400/40 hover:ring-cyan-300/80 ring-offset-2 ring-offset-[#050814] text-white font-mono text-sm uppercase font-black tracking-wider transition-all duration-300 shadow-[0_0_55px_rgba(6,182,212,0.7),0_16px_36px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.7)] hover:shadow-[0_0_75px_rgba(6,182,212,0.95),0_20px_48px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.9)] flex items-center justify-between gap-3 cursor-pointer hover:scale-[1.02] hover:-translate-y-0.5 active:scale-[0.98] active:translate-y-0 disabled:opacity-50 overflow-hidden"
                 >
-                  <Eye className="w-5 h-5 text-cyan-300 group-hover:scale-110 transition-transform drop-shadow-[0_0_8px_#06b6d4]" />
-                  <span className="tracking-widest">
-                    {isSubmittingGuest ? 'INITIALIZING GUEST SESSION...' : 'ENTER FOUNDER VAULT (READ-ONLY)'}
-                  </span>
-                </button>
-                <div className="flex items-center justify-center gap-2 text-[11px] text-slate-200 text-center font-mono font-medium">
-                  <Check className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>No login required &bull; 1-Click instant specimen session &bull; Zero risk to data</span>
-                </div>
-              </div>
+                  {/* Top Specular Edge Laser Accent */}
+                  <span className="absolute top-0 inset-x-0 h-[3px] bg-gradient-to-r from-transparent via-cyan-100 to-transparent shadow-[0_0_16px_#22d3ee]" />
 
-              {/* Quick Guest Passcode Chips */}
-              <div className="p-3 rounded-xl bg-[#06101c] border border-cyan-400/30 flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono">
-                <span className="text-neutral-400 text-[10px] uppercase font-bold">Public Guest Keys:</span>
-                <div className="flex items-center gap-2">
-                  {['guest', 'visitor', 'sahil'].map((code) => (
-                    <button
-                      key={code}
-                      type="button"
-                      onClick={() => {
-                        playTactileFeedback('chip');
-                        if (unlockWithMasterPasscode) unlockWithMasterPasscode(code);
-                      }}
-                      className="px-2.5 py-1 rounded-lg bg-cyan-950/70 hover:bg-cyan-900 text-cyan-200 border border-cyan-400/40 text-[10px] font-mono font-bold transition-all cursor-pointer shadow-sm active:scale-95 flex items-center gap-1"
-                    >
-                      <Zap className="w-2.5 h-2.5 text-cyan-400" />
-                      <span>{code}</span>
-                    </button>
-                  ))}
+                  {/* Dynamic Shimmer Light Sweep on Hover */}
+                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out pointer-events-none" />
+
+                  {/* Ambient Pulsing Background Glow */}
+                  <div className="absolute inset-0 bg-cyan-400/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+
+                  {/* Left Side: Eye Icon + Dynamic Live Beacon + Action Text */}
+                  <div className="flex items-center gap-3.5 relative z-10">
+                    <span className="relative flex h-4 w-4 shrink-0">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-300 opacity-90" />
+                      <span className="relative inline-flex rounded-full h-4 w-4 bg-cyan-400 shadow-[0_0_14px_#06b6d4]" />
+                    </span>
+                    <div className="w-12 h-12 rounded-xl bg-black/60 border-2 border-cyan-300/80 flex items-center justify-center text-cyan-200 group-hover:scale-110 group-hover:text-white group-hover:border-cyan-100 transition-all shadow-[0_0_22px_rgba(6,182,212,0.5),inset_0_1px_0_rgba(255,255,255,0.3)] shrink-0">
+                      <Eye className="w-6 h-6 drop-shadow-[0_0_10px_#06b6d4] group-hover:rotate-6 transition-transform" />
+                    </div>
+                    <div className="text-left">
+                      <div className="text-white font-display font-black text-base sm:text-lg tracking-wider flex items-center gap-2 group-hover:text-cyan-200 transition-colors drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                        <span>{isSubmittingGuest ? 'INITIALIZING GUEST SESSION...' : 'ENTER FOUNDER VAULT'}</span>
+                        <Sparkles className="w-4 h-4 text-amber-300 animate-bounce hidden sm:inline" />
+                      </div>
+                      <div className="text-[11px] font-mono text-cyan-200 font-bold uppercase tracking-wider flex items-center gap-1.5 mt-0.5">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
+                        <span className="text-emerald-300 font-extrabold">1-CLICK INSTANT ACCESS</span>
+                        <span className="text-neutral-400">&bull;</span>
+                        <span className="text-slate-300 font-medium">NO PASSWORD REQUIRED</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Side: High-Energy Action Pill & Bouncing Arrow */}
+                  <div className="flex items-center gap-2.5 relative z-10 shrink-0">
+                    <span className="hidden md:inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-300 to-emerald-300 text-black font-mono font-black text-[11px] uppercase tracking-wider shadow-[0_0_16px_rgba(6,182,212,0.9)] group-hover:scale-105 transition-all">
+                      <Zap className="w-3.5 h-3.5 fill-black" />
+                      <span>CLICK TO ENTER &rarr;</span>
+                    </span>
+                    <div className="w-10 h-10 rounded-xl bg-white/15 group-hover:bg-cyan-300 group-hover:text-black flex items-center justify-center text-cyan-200 transition-all group-hover:translate-x-1.5 shadow-md">
+                      <ArrowRight className="w-5 h-5 font-bold" />
+                    </div>
+                  </div>
+
+                  {/* Bottom Horizon Accent Light Strip */}
+                  <span className="absolute -bottom-0.5 inset-x-6 h-1.5 bg-gradient-to-r from-transparent via-cyan-300 to-transparent rounded-full shadow-[0_0_18px_#06b6d4]" />
+                </button>
+                <div className="flex items-center justify-center gap-2 text-[11px] text-slate-300 text-center font-mono font-medium">
+                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Public Specimen Sandbox &bull; Instant Exploration &bull; Zero Credentials Needed</span>
                 </div>
               </div>
 

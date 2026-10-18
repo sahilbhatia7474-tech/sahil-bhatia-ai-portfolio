@@ -137,8 +137,18 @@ export const VaultPageTransitionOverlay = ({
     : 'FOUNDER';
   const latencyLabel = isGateway ? '0.4 MS' : '0.6 MS';
 
+  useEffect(() => {
+    if (isOpen && typeof document !== 'undefined') {
+      const origOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = origOverflow;
+      };
+    }
+  }, [isOpen]);
+
   const overlayContent = (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       {isOpen && (
         <motion.div
           key="cyber-vault-transition-shroud"
@@ -150,10 +160,14 @@ export const VaultPageTransitionOverlay = ({
           style={{
             position: 'fixed',
             inset: 0,
-            width: '100%',
-            height: '100%',
-            maxWidth: '100%',
-            maxHeight: '100%',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100vw',
+            height: '100dvh',
+            minHeight: '100dvh',
+            maxHeight: '100dvh',
             zIndex: 999999,
             margin: 0,
             backgroundColor: '#040509',
@@ -306,7 +320,7 @@ export const VaultPageTransitionOverlay = ({
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 1.02, opacity: 0 }}
             transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-            className="relative z-20 w-full max-w-md my-auto p-5 sm:p-7 rounded-3xl bg-[#070914] border-2 border-white/20 backdrop-blur-2xl shadow-[0_25px_70px_rgba(0,0,0,0.98),inset_0_1px_0_rgba(255,255,255,0.3)] text-center overflow-hidden"
+            className="relative z-20 w-full max-w-md m-0 p-5 sm:p-7 rounded-3xl bg-[#070914] border-2 border-white/20 backdrop-blur-2xl shadow-[0_25px_70px_rgba(0,0,0,0.98),inset_0_1px_0_rgba(255,255,255,0.3)] text-center overflow-hidden"
           >
             {/* Top Specular Edge Laser Accent */}
             <div

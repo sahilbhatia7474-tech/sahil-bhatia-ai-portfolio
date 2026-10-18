@@ -44,10 +44,14 @@ export const ProtectedRoute = ({ children }) => {
       prevUnlockedRef.current = isVaultUnlocked;
       setIsOverlayOpen(true);
 
+      // Immediately reset scroll at transition start to prevent mid-animation layout shift
+      if (typeof window !== 'undefined') {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      }
+
       // View swap midpoint (220ms) while fully shrouded
       const midTimer = setTimeout(() => {
         setDisplayedUnlocked(isVaultUnlocked);
-        window.scrollTo({ top: 0, behavior: 'instant' });
       }, 220);
 
       // Snappy smooth reveal (550ms total, well within 1-second limit)

@@ -84,7 +84,6 @@ export default function CaptainAmericaShieldBackground() {
         className="relative w-[480px] sm:w-[620px] md:w-[740px] lg:w-[860px] xl:w-[940px] aspect-square flex items-center justify-center pointer-events-none select-none will-change-transform"
         style={{
           transform: 'perspective(1100px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)',
-          transition: 'transform 0.12s ease-out',
           transformStyle: 'preserve-3d',
         }}
       >
