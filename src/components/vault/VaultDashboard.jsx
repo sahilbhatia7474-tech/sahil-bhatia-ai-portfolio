@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { usePortfolioData } from '../../context/PortfolioDataContext';
+import { useAuth } from '../../lib/authContext';
 import {
   FolderKanban,
   Award,
@@ -20,6 +21,7 @@ import {
   ArrowUpRight,
   Shield,
   Filter,
+  Lock,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -137,6 +139,7 @@ const InteractiveTiltCard = ({
 };
 
 const VaultDashboard = ({ setActiveTab, openNewModal }) => {
+  const { canEdit } = useAuth();
   const {
     allProjects,
     certificates,
@@ -350,10 +353,17 @@ const VaultDashboard = ({ setActiveTab, openNewModal }) => {
 
           <div className="flex flex-wrap items-center gap-3">
             {/* Founder Access Status Indicator */}
-            <div className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-red-950/90 to-[#1e0a14] border-2 border-red-500/70 text-xs font-mono text-red-100 flex items-center gap-2.5 shadow-[0_0_20px_rgba(255,42,58,0.4),inset_0_1px_0_rgba(255,255,255,0.2)]">
-              <span className="w-2.5 h-2.5 rounded-full bg-red-400 animate-pulse shadow-[0_0_10px_#ff2a3a]" />
-              <span className="font-black tracking-wider uppercase text-xs">FOUNDER ROOT // ACTIVE</span>
-            </div>
+            {canEdit ? (
+              <div className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-red-950/90 to-[#1e0a14] border-2 border-red-500/70 text-xs font-mono text-red-100 flex items-center gap-2.5 shadow-[0_0_20px_rgba(255,42,58,0.4),inset_0_1px_0_rgba(255,255,255,0.2)]">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-400 animate-pulse shadow-[0_0_10px_#ff2a3a]" />
+                <span className="font-black tracking-wider uppercase text-xs">FOUNDER ROOT // ACTIVE</span>
+              </div>
+            ) : (
+              <div className="px-4 py-2.5 rounded-xl bg-[#091524] border-2 border-cyan-400/60 text-xs font-mono text-cyan-200 flex items-center gap-2.5 shadow-[0_0_20px_rgba(6,182,212,0.3)]">
+                <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_10px_#06b6d4]" />
+                <span className="font-black tracking-wider uppercase text-xs">GUEST SPECIMEN // READ-ONLY</span>
+              </div>
+            )}
 
             {/* 3D Tactile Live vs Draft Preview Toggle */}
             <div className="p-1.5 rounded-xl bg-[#060814]/90 border-2 border-white/25 flex items-center gap-1 font-mono text-xs shadow-[inset_0_2px_8px_rgba(0,0,0,0.9),0_6px_16px_rgba(0,0,0,0.6)]">
@@ -556,12 +566,19 @@ const VaultDashboard = ({ setActiveTab, openNewModal }) => {
               <PlusCircle className="w-4.5 h-4.5 drop-shadow-[0_0_8px_#ff2a3a]" />
             </div>
             <h3 className="text-sm font-mono font-black text-white uppercase tracking-wider drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-              RAPID ACTIONS & CONTENT CREATION
+              RAPID ACTIONS &amp; CONTENT CREATION
             </h3>
           </div>
-          <span className="text-xs font-mono text-red-300 font-bold uppercase tracking-wider drop-shadow-[0_0_6px_rgba(255,42,58,0.4)]">
-            TOUCH-READY DIRECT DISPATCH ⚡
-          </span>
+          {canEdit ? (
+            <span className="text-xs font-mono text-red-300 font-bold uppercase tracking-wider drop-shadow-[0_0_6px_rgba(255,42,58,0.4)]">
+              TOUCH-READY DIRECT DISPATCH ⚡
+            </span>
+          ) : (
+            <span className="text-xs font-mono text-amber-300 font-bold uppercase tracking-wider flex items-center gap-1.5 bg-amber-950/40 border border-amber-500/30 px-2.5 py-1 rounded-lg">
+              <Lock className="w-3.5 h-3.5" />
+              <span>FOUNDER PASSCODE REQUIRED TO CREATE</span>
+            </span>
+          )}
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
@@ -579,16 +596,27 @@ const VaultDashboard = ({ setActiveTab, openNewModal }) => {
                 key={action.label}
                 onClick={() => {
                   playTactileFeedback('action');
+                  if (!canEdit) {
+                    if (openNewModal) {
+                      openNewModal(action.tab);
+                    } else {
+                      setActiveTab(action.tab);
+                    }
+                    return;
+                  }
                   setActiveTab(action.tab);
                   if (action.openModal && openNewModal) {
                     openNewModal(action.tab);
                   }
                 }}
                 className="min-h-[56px] p-4 rounded-xl bg-gradient-to-b from-[#161c36] via-[#101426] to-[#0a0d18] hover:from-[#20284c] hover:to-[#141930] border-2 border-white/20 hover:border-red-500/80 text-left transition-all duration-200 flex flex-col justify-between gap-3 cursor-pointer shadow-[0_8px_20px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.2)] active:translate-y-1 active:scale-95 group"
+                title={canEdit ? action.label : `${action.label} (Founder Passcode Required)`}
               >
                 <div className="flex items-center justify-between w-full">
                   <Icon className={`w-5 h-5 ${action.color} group-hover:scale-110 transition-transform drop-shadow-[0_0_8px_currentColor]`} />
-                  <span className="text-xs font-mono text-slate-400 group-hover:text-white transition-colors">↗</span>
+                  <span className="text-xs font-mono text-slate-400 group-hover:text-white transition-colors">
+                    {canEdit ? '↗' : '🔒'}
+                  </span>
                 </div>
                 <span className="text-xs font-mono text-white font-black uppercase tracking-wide leading-tight group-hover:text-red-300 transition-colors drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
                   {action.label}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../lib/authContext';
 import { usePortfolioData } from '../../context/PortfolioDataContext';
 import VaultDashboard from './VaultDashboard';
@@ -60,6 +60,8 @@ const TABS = [
   { id: 'diagnostics', label: 'Diagnostics & Storage', icon: Wrench },
 ];
 
+import FounderUnlockModal from './FounderUnlockModal';
+
 function playSidebarTactileSound() {
   try {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -94,6 +96,15 @@ const VaultLayout = () => {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [createSignal, setCreateSignal] = useState(null);
+  const [showUnlockModal, setShowUnlockModal] = useState(false);
+  const mainContentRef = useRef(null);
+
+  // Auto-scroll to top of workspace whenever tab changes
+  useEffect(() => {
+    if (mainContentRef.current) {
+      mainContentRef.current.scrollTo({ top: 0, behavior: 'instant' });
+    }
+  }, [activeTab]);
 
   const handleSelectTab = (tabId) => {
     navigate(`/vault/${tabId}`);
@@ -101,13 +112,17 @@ const VaultLayout = () => {
   };
 
   const handleOpenNewModal = (tabId) => {
+    if (!canEdit) {
+      setShowUnlockModal(true);
+      return;
+    }
     navigate(`/vault/${tabId}`);
     setCreateSignal(tabId);
   };
 
   return (
     <div
-      className="min-h-screen cyber-vault-bg text-neutral-100 flex flex-col font-sans antialiased relative selection:bg-red-600 selection:text-white overflow-hidden font-crisp"
+      className="h-screen max-h-screen h-[100dvh] cyber-vault-bg text-neutral-100 flex flex-col font-sans antialiased relative selection:bg-red-600 selection:text-white overflow-hidden font-crisp"
       style={{
         WebkitFontSmoothing: 'antialiased',
         MozOsxFontSmoothing: 'grayscale',
@@ -138,7 +153,7 @@ const VaultLayout = () => {
       {/* ========================================================================= */}
       {/* SELECTOR 1: TOP FOUNDER NAVIGATION BAR — 3D HOLOGRAPHIC COMMAND STRIP    */}
       {/* ========================================================================= */}
-      <header className="sticky top-0 z-40 bg-[#080b18]/85 backdrop-blur-2xl border-b border-red-500/40 px-4 sm:px-6 py-3 flex items-center justify-between shadow-[0_16px_45px_rgba(0,0,0,0.95),0_0_35px_rgba(255,42,58,0.22)] relative select-none">
+      <header className="shrink-0 sticky top-0 z-40 bg-[#080b18]/85 backdrop-blur-2xl border-b border-red-500/40 px-4 sm:px-6 py-3 flex items-center justify-between shadow-[0_16px_45px_rgba(0,0,0,0.95),0_0_35px_rgba(255,42,58,0.22)] relative select-none">
         {/* Specular Top Rim Shine */}
         <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/50 to-transparent shadow-[0_0_10px_rgba(255,255,255,0.9)]" />
         {/* Bottom Laser Horizon Rail */}
@@ -225,14 +240,25 @@ const VaultLayout = () => {
                 </span>
               </div>
             ) : (
-              <div className="hidden xl:flex flex-col text-right font-mono text-[10px] pl-2 border-l border-white/15">
-                <span className="text-cyan-300 font-black flex items-center justify-end gap-1.5 drop-shadow-[0_0_6px_rgba(6,182,212,0.4)]">
-                  <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#06b6d4]" />
-                  PUBLIC GUEST VIEWER
-                </span>
-                <span className="text-neutral-300 font-bold">
-                  [READ-ONLY SPECIMEN]
-                </span>
+              <div className="flex items-center gap-2">
+                <div className="hidden xl:flex flex-col text-right font-mono text-[10px] pl-2 border-l border-white/15">
+                  <span className="text-cyan-300 font-black flex items-center justify-end gap-1.5 drop-shadow-[0_0_6px_rgba(6,182,212,0.4)]">
+                    <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#06b6d4]" />
+                    PUBLIC GUEST VIEWER
+                  </span>
+                  <span className="text-neutral-300 font-bold">
+                    [READ-ONLY SPECIMEN]
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowUnlockModal(true)}
+                  className="min-h-[40px] px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 border border-red-400/80 text-white text-xs font-mono font-black uppercase tracking-wider flex items-center gap-1.5 cursor-pointer shadow-[0_0_20px_rgba(255,42,58,0.5)] active:scale-95 transition-all"
+                  title="Authenticate with Founder Passcode to enable write and edit operations"
+                >
+                  <Lock className="w-3.5 h-3.5 text-white" />
+                  <span>Unlock Edit</span>
+                </button>
               </div>
             )}
 
@@ -262,7 +288,7 @@ const VaultLayout = () => {
       </header>
 
       {/* Vault Workspace with Sidebar */}
-      <div className="flex-1 flex overflow-hidden relative z-10">
+      <div className="flex-1 min-h-0 flex overflow-hidden relative z-10">
         {/* Sidebar Navigation (Glassloomy Command Panel) */}
         {/* Sidebar Navigation (3D Glassloomy Command Panel) */}
         <aside
@@ -382,7 +408,11 @@ const VaultLayout = () => {
         )}
 
         {/* Main Content Workspace */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 relative z-10">
+        <main
+          ref={mainContentRef}
+          tabIndex={0}
+          className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 lg:p-8 relative z-10 overscroll-y-contain focus:outline-none"
+        >
           <div className="max-w-6xl mx-auto space-y-6">
             
             {/* PUBLIC VISITOR NOTICE BANNER (Only Sahil Bhatia Can Edit) */}
@@ -402,14 +432,24 @@ const VaultLayout = () => {
                       </span>
                     </div>
                     <p className="text-xs text-neutral-300 font-sans mt-0.5">
-                      You are exploring the live Founder Vault. <strong className="text-white">Strict Security Notice:</strong> All content, projects, models, and systems can be edited and published exclusively by <span className="text-red-400 font-mono font-black">Sahil Bhatia</span> (Verified Founder).
+                      You are exploring the live Founder Vault in Read-Only Specimen mode. <strong className="text-white">Strict Security Notice:</strong> All content, projects, models, and systems can be edited and published exclusively by <span className="text-red-400 font-mono font-black">Sahil Bhatia</span> (Verified Founder).
                     </p>
                   </div>
                 </div>
 
-                <div className="shrink-0 text-right">
-                  <span className="text-[10px] font-mono text-neutral-400 block">AUTHORIZATION:</span>
-                  <span className="text-xs font-mono font-bold text-red-400">SAHIL BHATIA ONLY</span>
+                <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setShowUnlockModal(true)}
+                    className="px-4 py-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-mono text-xs font-black uppercase tracking-wider flex items-center gap-1.5 shadow-[0_0_18px_rgba(255,42,58,0.5)] transition-all cursor-pointer active:scale-95"
+                  >
+                    <Lock className="w-3.5 h-3.5 text-white" />
+                    <span>Founder Unlock</span>
+                  </button>
+                  <div className="text-right hidden sm:block">
+                    <span className="text-[9px] font-mono text-neutral-400 block uppercase">AUTHORIZATION:</span>
+                    <span className="text-[11px] font-mono font-bold text-red-400">SAHIL BHATIA ONLY</span>
+                  </div>
                 </div>
               </div>
             )}
@@ -467,6 +507,12 @@ const VaultLayout = () => {
           </div>
         </main>
       </div>
+
+      {/* Founder Passcode Unlock Modal */}
+      <FounderUnlockModal
+        isOpen={showUnlockModal}
+        onClose={() => setShowUnlockModal(false)}
+      />
     </div>
   );
 };

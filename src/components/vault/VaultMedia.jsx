@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { usePortfolioData } from '../../context/PortfolioDataContext';
 import { saveItem, deleteItem } from '../../lib/dbService';
+import { useAuth } from '../../lib/authContext';
 import MediaUploadControl from './MediaUploadControl';
 import {
   Image as ImageIcon,
@@ -14,6 +15,7 @@ import {
   Save,
   RefreshCw,
   Filter,
+  Lock,
 } from 'lucide-react';
 
 const MEDIA_CATEGORIES = [
@@ -28,6 +30,7 @@ const MEDIA_CATEGORIES = [
 
 const VaultMedia = ({ openCreateSignal, clearCreateSignal }) => {
   const { media, refreshAllData } = usePortfolioData();
+  const { canEdit } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [isUploading, setIsUploading] = useState(false);
   const [copiedId, setCopiedId] = useState(null);
@@ -35,7 +38,9 @@ const VaultMedia = ({ openCreateSignal, clearCreateSignal }) => {
   const [saving, setSaving] = useState(false);
 
   if (openCreateSignal && !isUploading) {
-    setIsUploading(true);
+    if (canEdit) {
+      setIsUploading(true);
+    }
     if (clearCreateSignal) clearCreateSignal();
   }
 
@@ -50,6 +55,10 @@ const VaultMedia = ({ openCreateSignal, clearCreateSignal }) => {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    if (!canEdit) {
+      setFeedback({ type: 'error', text: 'Authentication required. Only the founder can upload media assets.' });
+      return;
+    }
     if (!formData.title.trim() || !formData.url.trim()) {
       setFeedback({ type: 'error', text: 'Asset title and URL/file are required.' });
       return;
@@ -88,6 +97,10 @@ const VaultMedia = ({ openCreateSignal, clearCreateSignal }) => {
   };
 
   const handleDelete = async (item) => {
+    if (!canEdit) {
+      setFeedback({ type: 'error', text: 'Unauthorized. Only the founder can delete media assets.' });
+      return;
+    }
     if (!window.confirm(`Delete media asset "${item.title}"?`)) return;
     const res = await deleteItem('media', item.id);
     if (res.success) {
@@ -114,13 +127,20 @@ const VaultMedia = ({ openCreateSignal, clearCreateSignal }) => {
           </p>
         </div>
 
-        <button
-          onClick={() => setIsUploading(true)}
-          className="min-h-[44px] px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center justify-center gap-2 cursor-pointer"
-        >
-          <Upload className="w-4 h-4" />
-          <span>Upload Asset</span>
-        </button>
+        {canEdit ? (
+          <button
+            onClick={() => setIsUploading(true)}
+            className="min-h-[44px] px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <Upload className="w-4 h-4" />
+            <span>Upload Asset</span>
+          </button>
+        ) : (
+          <div className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-neutral-900/80 border border-white/10 font-mono text-xs text-neutral-400">
+            <Lock className="w-3.5 h-3.5 text-amber-400" />
+            <span>FOUNDER ACCESS REQUIRED TO UPLOAD</span>
+          </div>
+        )}
       </div>
 
       {feedback && (
@@ -221,13 +241,19 @@ const VaultMedia = ({ openCreateSignal, clearCreateSignal }) => {
                   )}
                 </button>
 
-                <button
-                  onClick={() => handleDelete(item)}
-                  className="p-1.5 rounded bg-red-950/20 hover:bg-red-950/40 border border-red-500/20 text-red-400 cursor-pointer"
-                  title="Delete Asset"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
+                {canEdit ? (
+                  <button
+                    onClick={() => handleDelete(item)}
+                    className="p-1.5 rounded bg-red-950/20 hover:bg-red-950/40 border border-red-500/20 text-red-400 cursor-pointer"
+                    title="Delete Asset"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                ) : (
+                  <span className="text-[10px] font-mono text-neutral-600 flex items-center gap-1">
+                    <Lock className="w-3 h-3" />
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -262,6 +288,7 @@ const VaultMedia = ({ openCreateSignal, clearCreateSignal }) => {
             </div>
 
             <form onSubmit={handleSave} className="p-6 space-y-4 text-xs font-sans text-neutral-300">
+              <fieldset disabled={!canEdit} className="space-y-4">
               <div className="space-y-1.5">
                 <label className="block font-mono text-[11px] text-neutral-400 uppercase">
                   Asset Title / Label *
@@ -340,23 +367,31 @@ const VaultMedia = ({ openCreateSignal, clearCreateSignal }) => {
                   className="w-full min-h-[40px] px-3.5 py-2 rounded-lg bg-[#141620] border border-white/15 text-white font-mono text-xs focus:outline-none focus:border-red-500"
                 />
               </div>
+              </fieldset>
 
-              <div className="pt-4 border-t border-white/10 flex justify-end gap-3">
+              <div className="pt-4 border-t border-white/10 flex justify-end gap-3 items-center">
                 <button
                   type="button"
                   onClick={() => setIsUploading(false)}
                   className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-neutral-400 font-mono text-xs cursor-pointer"
                 >
-                  Cancel
+                  {canEdit ? 'Cancel' : 'Close Specimen'}
                 </button>
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="min-h-[42px] px-6 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center gap-2 cursor-pointer disabled:opacity-50"
-                >
-                  {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                  <span>{saving ? 'Adding...' : 'Add Media Asset'}</span>
-                </button>
+                {canEdit ? (
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className="min-h-[42px] px-6 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                  >
+                    {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                    <span>{saving ? 'Adding...' : 'Add Media Asset'}</span>
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 font-mono text-xs text-amber-300">
+                    <Lock className="w-3.5 h-3.5 text-amber-400" />
+                    <span>LOCKED // READ-ONLY</span>
+                  </div>
+                )}
               </div>
             </form>
           </div>

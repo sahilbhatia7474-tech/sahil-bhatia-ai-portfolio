@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { usePortfolioData } from '../../context/PortfolioDataContext';
 import { saveItem, deleteItem } from '../../lib/dbService';
+import { useAuth } from '../../lib/authContext';
 import {
   Plus,
   ExternalLink,
@@ -13,6 +14,7 @@ import {
   RefreshCw,
   Filter,
   FileCheck,
+  Lock,
 } from 'lucide-react';
 
 const EVIDENCE_TYPES = [
@@ -33,6 +35,7 @@ const PROOF_STATES = ['Concept', 'Prototype', 'In Progress', 'Built', 'Verified'
 
 const VaultProof = () => {
   const { proofItems, allProjects, refreshAllData } = usePortfolioData();
+  const { canEdit } = useAuth();
   const [editingProof, setEditingProof] = useState(null);
   const [isCreatingNew, setIsCreatingNew] = useState(false);
   const [typeFilter, setTypeFilter] = useState('ALL');
@@ -71,6 +74,7 @@ const VaultProof = () => {
   };
 
   const openNew = () => {
+    if (!canEdit) return;
     setEditingProof(null);
     setFormData({
       title: '',
@@ -86,6 +90,10 @@ const VaultProof = () => {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    if (!canEdit) {
+      setFeedback({ type: 'error', text: 'Authentication required. Only the founder can save proof evidence.' });
+      return;
+    }
     if (!formData.title.trim()) {
       setFeedback({ type: 'error', text: 'Proof Title is required.' });
       return;
@@ -114,6 +122,10 @@ const VaultProof = () => {
   };
 
   const handleDelete = async (item) => {
+    if (!canEdit) {
+      setFeedback({ type: 'error', text: 'Unauthorized. Only the founder can delete proof items.' });
+      return;
+    }
     if (!window.confirm(`Delete proof item "${item.title}"?`)) return;
     const res = await deleteItem('proofItems', item.id);
     if (res.success) {
@@ -136,13 +148,20 @@ const VaultProof = () => {
           </p>
         </div>
 
-        <button
-          onClick={openNew}
-          className="min-h-[44px] px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center justify-center gap-2 cursor-pointer"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add Proof Evidence</span>
-        </button>
+        {canEdit ? (
+          <button
+            onClick={openNew}
+            className="min-h-[44px] px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add Proof Evidence</span>
+          </button>
+        ) : (
+          <div className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-neutral-900/80 border border-white/10 font-mono text-xs text-neutral-400">
+            <Lock className="w-3.5 h-3.5 text-amber-400" />
+            <span>FOUNDER ACCESS REQUIRED TO EDIT</span>
+          </div>
+        )}
       </div>
 
       {feedback && (
@@ -244,18 +263,29 @@ const VaultProof = () => {
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
-              <button
-                onClick={() => openEdit(item)}
-                className="p-2 rounded-lg bg-[#141620] hover:bg-[#1d202e] border border-white/15 text-neutral-300 hover:text-white cursor-pointer"
-              >
-                <Edit2 className="w-3.5 h-3.5" />
-              </button>
-              <button
-                onClick={() => handleDelete(item)}
-                className="p-2 rounded-lg bg-red-950/20 hover:bg-red-950/40 border border-red-500/20 text-red-400 cursor-pointer"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-              </button>
+              {canEdit ? (
+                <>
+                  <button
+                    onClick={() => openEdit(item)}
+                    className="p-2 rounded-lg bg-[#141620] hover:bg-[#1d202e] border border-white/15 text-neutral-300 hover:text-white cursor-pointer"
+                    title="Edit proof item"
+                  >
+                    <Edit2 className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(item)}
+                    className="p-2 rounded-lg bg-red-950/20 hover:bg-red-950/40 border border-red-500/20 text-red-400 cursor-pointer"
+                    title="Delete proof item"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </>
+              ) : (
+                <div className="flex items-center gap-1 text-[10px] font-mono text-neutral-500 px-2 py-1 rounded bg-black/30 border border-white/5">
+                  <Lock className="w-3 h-3 text-neutral-600" />
+                  <span>Read-Only</span>
+                </div>
+              )}
             </div>
           </div>
         ))}
@@ -292,6 +322,7 @@ const VaultProof = () => {
             </div>
 
             <form onSubmit={handleSave} className="p-6 overflow-y-auto space-y-4 flex-1 text-xs font-sans text-neutral-300">
+              <fieldset disabled={!canEdit} className="space-y-4">
               <div className="space-y-1.5">
                 <label className="block font-mono text-[11px] text-neutral-400 uppercase">
                   Evidence Item Title *
@@ -379,8 +410,9 @@ const VaultProof = () => {
                   className="w-full px-3.5 py-2 rounded-lg bg-[#141620] border border-white/15 text-white text-xs focus:outline-none focus:border-red-500"
                 />
               </div>
+              </fieldset>
 
-              <div className="pt-4 border-t border-white/10 flex justify-end gap-3">
+              <div className="pt-4 border-t border-white/10 flex justify-end gap-3 items-center">
                 <button
                   type="button"
                   onClick={() => {
@@ -389,16 +421,23 @@ const VaultProof = () => {
                   }}
                   className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-neutral-400 font-mono text-xs cursor-pointer"
                 >
-                  Cancel
+                  {canEdit ? 'Cancel' : 'Close Specimen'}
                 </button>
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="min-h-[42px] px-6 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center gap-2 cursor-pointer disabled:opacity-50"
-                >
-                  {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                  <span>{saving ? 'Saving...' : 'Save Evidence'}</span>
-                </button>
+                {canEdit ? (
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className="min-h-[42px] px-6 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                  >
+                    {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                    <span>{saving ? 'Saving...' : 'Save Evidence'}</span>
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 font-mono text-xs text-amber-300">
+                    <Lock className="w-3.5 h-3.5 text-amber-400" />
+                    <span>LOCKED // READ-ONLY</span>
+                  </div>
+                )}
               </div>
             </form>
           </div>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { usePortfolioData } from '../../context/PortfolioDataContext';
 import { saveSiteSettings, seedInitialDatabase } from '../../lib/dbService';
+import { useAuth } from '../../lib/authContext';
 import {
   Settings,
   Save,
@@ -10,10 +11,12 @@ import {
   AlertTriangle,
   RotateCcw,
   Database,
+  Lock,
 } from 'lucide-react';
 
 const VaultSiteSettings = () => {
   const { siteSettings, refreshAllData } = usePortfolioData();
+  const { canEdit } = useAuth();
   const [formData, setFormData] = useState({
     title: 'SAHIL BHATIA — AI PORTFOLIO & SYSTEMS',
     domain: 'SAHIL / PORTFOLIO OS',
@@ -53,6 +56,10 @@ const VaultSiteSettings = () => {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    if (!canEdit) {
+      setFeedback({ type: 'error', text: 'Authentication required. Only the founder can save site settings.' });
+      return;
+    }
     setSaving(true);
     setFeedback(null);
 
@@ -67,6 +74,10 @@ const VaultSiteSettings = () => {
   };
 
   const handleSeedDatabase = async (force = false) => {
+    if (!canEdit) {
+      setSeedFeedback({ type: 'error', text: 'Unauthorized. Only the founder can calibrate or seed the database.' });
+      return;
+    }
     setSeeding(true);
     setSeedFeedback(null);
     try {
@@ -97,14 +108,21 @@ const VaultSiteSettings = () => {
           </p>
         </div>
 
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="min-h-[44px] px-6 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-        >
-          {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-          <span>{saving ? 'Syncing...' : 'Save Site Settings'}</span>
-        </button>
+        {canEdit ? (
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="min-h-[44px] px-6 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+          >
+            {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            <span>{saving ? 'Syncing...' : 'Save Site Settings'}</span>
+          </button>
+        ) : (
+          <div className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-neutral-900/80 border border-white/10 font-mono text-xs text-neutral-400">
+            <Lock className="w-3.5 h-3.5 text-amber-400" />
+            <span>FOUNDER ACCESS REQUIRED TO EDIT</span>
+          </div>
+        )}
       </div>
 
       {feedback && (
@@ -131,6 +149,7 @@ const VaultSiteSettings = () => {
 
       {/* Form Grid */}
       <form onSubmit={handleSave} className="space-y-6">
+        <fieldset disabled={!canEdit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-1.5">
             <label className="block text-xs font-mono text-neutral-400 uppercase">
@@ -252,6 +271,7 @@ const VaultSiteSettings = () => {
             </div>
           </div>
         </div>
+        </fieldset>
       </form>
 
       {/* Database Calibration and Initialization Card */}
@@ -268,24 +288,33 @@ const VaultSiteSettings = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              disabled={seeding}
-              onClick={() => handleSeedDatabase(false)}
-              className="min-h-[38px] px-4 py-2 rounded bg-white/10 hover:bg-white/20 text-white font-mono text-xs uppercase tracking-wider font-semibold transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
-            >
-              {seeding ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Database className="w-3.5 h-3.5" />}
-              <span>Sync Presets</span>
-            </button>
-            <button
-              type="button"
-              disabled={seeding}
-              onClick={() => handleSeedDatabase(true)}
-              className="min-h-[38px] px-4 py-2 rounded bg-red-950/40 border border-red-500/30 hover:bg-red-900/50 text-red-300 font-mono text-xs uppercase tracking-wider font-semibold transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span>Force Re-seed</span>
-            </button>
+            {canEdit ? (
+              <>
+                <button
+                  type="button"
+                  disabled={seeding}
+                  onClick={() => handleSeedDatabase(false)}
+                  className="min-h-[38px] px-4 py-2 rounded bg-white/10 hover:bg-white/20 text-white font-mono text-xs uppercase tracking-wider font-semibold transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  {seeding ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Database className="w-3.5 h-3.5" />}
+                  <span>Sync Presets</span>
+                </button>
+                <button
+                  type="button"
+                  disabled={seeding}
+                  onClick={() => handleSeedDatabase(true)}
+                  className="min-h-[38px] px-4 py-2 rounded bg-red-950/40 border border-red-500/30 hover:bg-red-900/50 text-red-300 font-mono text-xs uppercase tracking-wider font-semibold transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Force Re-seed</span>
+                </button>
+              </>
+            ) : (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-900 border border-white/10 font-mono text-xs text-neutral-400">
+                <Lock className="w-3 h-3 text-neutral-500" />
+                <span>Founder Authorization Required</span>
+              </div>
+            )}
           </div>
         </div>
 

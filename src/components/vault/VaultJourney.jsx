@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { usePortfolioData } from '../../context/PortfolioDataContext';
+import { useAuth } from '../../lib/authContext';
 import { saveItem, deleteItem } from '../../lib/dbService';
 import {
   Briefcase,
@@ -13,9 +14,12 @@ import {
   X,
   Save,
   RefreshCw,
+  Lock,
+  Eye,
 } from 'lucide-react';
 
 const VaultJourney = ({ openCreateSignal, clearCreateSignal }) => {
+  const { canEdit } = useAuth();
   const { allJourney, refreshAllData } = usePortfolioData();
   const [editingItem, setEditingItem] = useState(null);
   const [isCreatingNew, setIsCreatingNew] = useState(false);
@@ -24,7 +28,9 @@ const VaultJourney = ({ openCreateSignal, clearCreateSignal }) => {
 
   // If parent triggered creation
   if (openCreateSignal && !isCreatingNew) {
-    setIsCreatingNew(true);
+    if (canEdit) {
+      setIsCreatingNew(true);
+    }
     if (clearCreateSignal) clearCreateSignal();
   }
 
@@ -59,6 +65,10 @@ const VaultJourney = ({ openCreateSignal, clearCreateSignal }) => {
   };
 
   const openNew = () => {
+    if (!canEdit) {
+      setFeedback({ type: 'error', text: 'ACCESS DENIED: Creating records is restricted to verified founder Sahil Bhatia.' });
+      return;
+    }
     setEditingItem(null);
     setFormData({
       company: '',
@@ -94,6 +104,10 @@ const VaultJourney = ({ openCreateSignal, clearCreateSignal }) => {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    if (!canEdit) {
+      setFeedback({ type: 'error', text: 'ACCESS DENIED: Modifications are restricted strictly to verified founder Sahil Bhatia (sahilbhatia7474@gmail.com).' });
+      return;
+    }
     if (!formData.company.trim() || !formData.role.trim()) {
       setFeedback({ type: 'error', text: 'Company and Role are required.' });
       return;
@@ -125,6 +139,10 @@ const VaultJourney = ({ openCreateSignal, clearCreateSignal }) => {
   };
 
   const handleDelete = async (item) => {
+    if (!canEdit) {
+      setFeedback({ type: 'error', text: 'ACCESS DENIED: Deletions are restricted to verified founder Sahil Bhatia.' });
+      return;
+    }
     if (!window.confirm(`Delete experience record for ${item.company}?`)) return;
     const res = await deleteItem('journey', item.id);
     if (res.success) {
@@ -147,13 +165,20 @@ const VaultJourney = ({ openCreateSignal, clearCreateSignal }) => {
           </p>
         </div>
 
-        <button
-          onClick={openNew}
-          className="min-h-[44px] px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center justify-center gap-2 cursor-pointer"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add Journey Record</span>
-        </button>
+        {canEdit ? (
+          <button
+            onClick={openNew}
+            className="min-h-[44px] px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add Journey Record</span>
+          </button>
+        ) : (
+          <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#091524] border border-cyan-400/40 text-cyan-300 font-mono text-xs shadow-inner">
+            <Lock className="w-4 h-4 text-cyan-400" />
+            <span>READ-ONLY SPECIMEN // EDITING LOCKED</span>
+          </div>
+        )}
       </div>
 
       {feedback && (
@@ -240,19 +265,31 @@ const VaultJourney = ({ openCreateSignal, clearCreateSignal }) => {
 
               {/* Actions */}
               <div className="flex items-center gap-2 shrink-0">
-                <button
-                  onClick={() => openEdit(item)}
-                  className="min-h-[38px] px-3 py-1.5 rounded-lg bg-[#141620] hover:bg-[#1d202e] border border-white/15 text-neutral-200 hover:text-white text-xs font-mono flex items-center gap-1.5 cursor-pointer"
-                >
-                  <Edit2 className="w-3.5 h-3.5 text-neutral-400" />
-                  <span>Edit</span>
-                </button>
-                <button
-                  onClick={() => handleDelete(item)}
-                  className="min-h-[38px] p-2 rounded-lg bg-red-950/20 hover:bg-red-950/40 border border-red-500/20 text-red-400 cursor-pointer"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
+                {canEdit ? (
+                  <>
+                    <button
+                      onClick={() => openEdit(item)}
+                      className="min-h-[38px] px-3 py-1.5 rounded-lg bg-[#141620] hover:bg-[#1d202e] border border-white/15 text-neutral-200 hover:text-white text-xs font-mono flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <Edit2 className="w-3.5 h-3.5 text-neutral-400" />
+                      <span>Edit</span>
+                    </button>
+                    <button
+                      onClick={() => handleDelete(item)}
+                      className="min-h-[38px] p-2 rounded-lg bg-red-950/20 hover:bg-red-950/40 border border-red-500/20 text-red-400 cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => openEdit(item)}
+                    className="min-h-[38px] px-3.5 py-1.5 rounded-lg bg-cyan-950/30 hover:bg-cyan-900/40 border border-cyan-400/40 text-cyan-200 text-xs font-mono flex items-center gap-1.5 cursor-pointer shadow-sm transition-colors"
+                  >
+                    <Eye className="w-3.5 h-3.5 text-cyan-400" />
+                    <span>Inspect</span>
+                  </button>
+                )}
               </div>
             </div>
           );
@@ -284,6 +321,7 @@ const VaultJourney = ({ openCreateSignal, clearCreateSignal }) => {
             </div>
 
             <form onSubmit={handleSave} className="p-6 overflow-y-auto space-y-4 flex-1 text-xs font-sans text-neutral-300">
+              <fieldset disabled={!canEdit} className="contents">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="block font-mono text-[11px] text-neutral-400 uppercase">
@@ -401,27 +439,49 @@ const VaultJourney = ({ openCreateSignal, clearCreateSignal }) => {
                   className="w-full min-h-[40px] px-3.5 py-2 rounded-lg bg-[#141620] border border-white/15 text-white font-mono text-xs focus:outline-none focus:border-red-500"
                 />
               </div>
+              </fieldset>
 
               {/* Action buttons */}
-              <div className="pt-4 border-t border-white/10 flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsCreatingNew(false);
-                    setEditingItem(null);
-                  }}
-                  className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-neutral-400 font-mono text-xs cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="min-h-[42px] px-6 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center gap-2 cursor-pointer disabled:opacity-50"
-                >
-                  {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                  <span>{saving ? 'Saving...' : 'Save Record'}</span>
-                </button>
+              <div className="pt-4 border-t border-white/10 flex items-center justify-between gap-3">
+                {canEdit ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsCreatingNew(false);
+                        setEditingItem(null);
+                      }}
+                      className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-neutral-400 font-mono text-xs cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={saving}
+                      className="min-h-[42px] px-6 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                    >
+                      {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                      <span>{saving ? 'Saving...' : 'Save Record'}</span>
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-2 text-cyan-300 font-mono text-xs">
+                      <Lock className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>Read-Only Specimen (Editing Locked)</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsCreatingNew(false);
+                        setEditingItem(null);
+                      }}
+                      className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white font-mono text-xs cursor-pointer"
+                    >
+                      Close Specimen
+                    </button>
+                  </>
+                )}
               </div>
             </form>
           </div>

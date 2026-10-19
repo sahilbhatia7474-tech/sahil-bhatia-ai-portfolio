@@ -395,6 +395,7 @@ const VaultProjectEditor = ({ project, isNew, readOnly = false, onClose, onSaved
 
         {/* Scrollable Form Body */}
         <div className="p-6 overflow-y-auto space-y-6 flex-1 text-xs font-sans text-neutral-300">
+          <fieldset disabled={readOnly} className="contents">
           
           {/* Core Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1143,7 +1144,7 @@ const VaultProjectEditor = ({ project, isNew, readOnly = false, onClose, onSaved
               </div>
             </div>
           </div>
-
+          </fieldset>
         </div>
 
         {/* Action Footer */}

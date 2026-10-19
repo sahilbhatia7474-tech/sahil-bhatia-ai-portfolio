@@ -87,14 +87,16 @@ export const VaultPageTransitionOverlay = ({
     }
   }, [isOpen, direction]);
 
-  // Lock body scroll and prevent viewport shifts during full-screen transition
+  // Lock body scroll only while overlay is open, and safely restore when closed/unmounted
   useEffect(() => {
-    if (isOpen && typeof document !== 'undefined') {
-      const prevOverflow = document.body.style.overflow;
+    if (typeof document === 'undefined') return;
+    if (isOpen) {
       document.body.style.overflow = 'hidden';
       return () => {
-        document.body.style.overflow = prevOverflow;
+        document.body.style.overflow = '';
       };
+    } else {
+      document.body.style.overflow = '';
     }
   }, [isOpen]);
 
@@ -136,16 +138,6 @@ export const VaultPageTransitionOverlay = ({
     ? 'GUEST'
     : 'FOUNDER';
   const latencyLabel = isGateway ? '0.4 MS' : '0.6 MS';
-
-  useEffect(() => {
-    if (isOpen && typeof document !== 'undefined') {
-      const origOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => {
-        document.body.style.overflow = origOverflow;
-      };
-    }
-  }, [isOpen]);
 
   const overlayContent = (
     <AnimatePresence mode="wait">

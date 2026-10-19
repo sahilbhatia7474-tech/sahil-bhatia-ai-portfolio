@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { usePortfolioData } from '../../context/PortfolioDataContext';
+import { useAuth } from '../../lib/authContext';
 import { saveItem } from '../../lib/dbService';
 import { isValidHttpUrl } from '../../lib/projectLinks';
-import { Save, Check, AlertCircle, RefreshCw, UserCheck, Eye, EyeOff, Film, Play, Upload, Image as ImageIcon } from 'lucide-react';
+import { Save, Check, AlertCircle, RefreshCw, UserCheck, Eye, EyeOff, Film, Play, Upload, Image as ImageIcon, Lock, ShieldCheck } from 'lucide-react';
 import { uploadStorageAsset } from '../../lib/storageService';
 import MediaUploadControl from './MediaUploadControl';
 
 const VaultIdentity = () => {
+  const { canEdit } = useAuth();
   const { identity, refreshAllData } = usePortfolioData();
   const [formData, setFormData] = useState({
     name: '',
@@ -171,6 +173,13 @@ const VaultIdentity = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!canEdit) {
+      setMessage({
+        type: 'error',
+        text: 'ACCESS DENIED: Identity alterations are locked strictly to verified founder Sahil Bhatia (sahilbhatia7474@gmail.com). You are in Read-Only Specimen mode.',
+      });
+      return;
+    }
     setSaving(true);
     setMessage(null);
 
@@ -255,15 +264,31 @@ const VaultIdentity = () => {
           </p>
         </div>
 
-        <button
-          onClick={handleSubmit}
-          disabled={saving}
-          className="min-h-[44px] px-6 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-        >
-          {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-          <span>{saving ? 'Synchronizing...' : 'Save Identity'}</span>
-        </button>
+        {canEdit ? (
+          <button
+            onClick={handleSubmit}
+            disabled={saving}
+            className="min-h-[44px] px-6 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+          >
+            {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            <span>{saving ? 'Synchronizing...' : 'Save Identity'}</span>
+          </button>
+        ) : (
+          <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#091524] border border-cyan-400/40 text-cyan-300 font-mono text-xs shadow-inner">
+            <Lock className="w-4 h-4 text-cyan-400" />
+            <span>READ-ONLY SPECIMEN // EDITING LOCKED</span>
+          </div>
+        )}
       </div>
+
+      {!canEdit && (
+        <div className="p-3.5 rounded-xl bg-gradient-to-r from-[#0c1527] via-[#09101d] to-[#080d17] border border-cyan-500/30 flex items-center gap-3 text-xs font-mono text-cyan-200">
+          <ShieldCheck className="w-4 h-4 text-cyan-400 shrink-0" />
+          <span>
+            <strong>Read-Only Specimen Mode:</strong> Profile parameters and identity metadata are view-only. Form alterations and publishing are restricted to Sahil Bhatia.
+          </span>
+        </div>
+      )}
 
       {message && (
         <div
@@ -278,8 +303,9 @@ const VaultIdentity = () => {
         </div>
       )}
 
-      {/* Form Fields */}
+      {/* Form Fields wrapped in fieldset to disable all child inputs if not founder */}
       <form onSubmit={handleSubmit} className="space-y-6">
+        <fieldset disabled={!canEdit} className="contents">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Full Name */}
           <div className="space-y-1.5">
@@ -833,6 +859,7 @@ const VaultIdentity = () => {
             </div>
           </div>
         </div>
+        </fieldset>
       </form>
     </div>
   );

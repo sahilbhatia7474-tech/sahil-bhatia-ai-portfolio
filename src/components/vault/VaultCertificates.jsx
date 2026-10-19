@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { usePortfolioData } from '../../context/PortfolioDataContext';
 import { saveItem, deleteItem } from '../../lib/dbService';
+import { useAuth } from '../../lib/authContext';
 import MediaUploadControl from './MediaUploadControl';
 import {
   Award,
@@ -16,17 +17,21 @@ import {
   X,
   Save,
   RefreshCw,
+  Lock,
 } from 'lucide-react';
 
 const VaultCertificates = ({ openCreateSignal, clearCreateSignal }) => {
   const { certificates, refreshAllData } = usePortfolioData();
+  const { canEdit } = useAuth();
   const [editingCert, setEditingCert] = useState(null);
   const [isCreatingNew, setIsCreatingNew] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const [saving, setSaving] = useState(false);
 
   if (openCreateSignal && !isCreatingNew) {
-    setIsCreatingNew(true);
+    if (canEdit) {
+      setIsCreatingNew(true);
+    }
     if (clearCreateSignal) clearCreateSignal();
   }
 
@@ -99,6 +104,10 @@ const VaultCertificates = ({ openCreateSignal, clearCreateSignal }) => {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    if (!canEdit) {
+      setFeedback({ type: 'error', text: 'Authentication required. Only the founder can save or modify certificates.' });
+      return;
+    }
     if (!formData.title.trim() || !formData.issuer.trim()) {
       setFeedback({ type: 'error', text: 'Certificate Title and Issuer are required.' });
       return;
@@ -128,6 +137,10 @@ const VaultCertificates = ({ openCreateSignal, clearCreateSignal }) => {
   };
 
   const handleDelete = async (cert) => {
+    if (!canEdit) {
+      setFeedback({ type: 'error', text: 'Unauthorized. Only the founder can delete certificates.' });
+      return;
+    }
     if (!window.confirm(`Delete certificate "${cert.title}"?`)) return;
     const res = await deleteItem('certificates', cert.id);
     if (res.success) {
@@ -150,13 +163,20 @@ const VaultCertificates = ({ openCreateSignal, clearCreateSignal }) => {
           </p>
         </div>
 
-        <button
-          onClick={openNew}
-          className="min-h-[44px] px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center justify-center gap-2 cursor-pointer"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add Certificate</span>
-        </button>
+        {canEdit ? (
+          <button
+            onClick={openNew}
+            className="min-h-[44px] px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add Certificate</span>
+          </button>
+        ) : (
+          <div className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-neutral-900/80 border border-white/10 font-mono text-xs text-neutral-400">
+            <Lock className="w-3.5 h-3.5 text-amber-400" />
+            <span>FOUNDER ACCESS REQUIRED TO EDIT</span>
+          </div>
+        )}
       </div>
 
       {feedback && (
@@ -248,20 +268,29 @@ const VaultCertificates = ({ openCreateSignal, clearCreateSignal }) => {
                 <span className="text-[10px] font-mono text-neutral-500">Self-Verified</span>
               )}
 
-              <div className="flex items-center gap-1.5">
-                <button
-                  onClick={() => openEdit(cert)}
-                  className="p-1.5 rounded-md bg-[#141620] hover:bg-[#1d202e] border border-white/15 text-neutral-300 hover:text-white cursor-pointer"
-                >
-                  <Edit2 className="w-3.5 h-3.5" />
-                </button>
-                <button
-                  onClick={() => handleDelete(cert)}
-                  className="p-1.5 rounded-md bg-red-950/20 hover:bg-red-950/40 border border-red-500/20 text-red-400 cursor-pointer"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-              </div>
+              {canEdit ? (
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => openEdit(cert)}
+                    className="p-1.5 rounded-md bg-[#141620] hover:bg-[#1d202e] border border-white/15 text-neutral-300 hover:text-white cursor-pointer"
+                    title="Edit certificate"
+                  >
+                    <Edit2 className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(cert)}
+                    className="p-1.5 rounded-md bg-red-950/20 hover:bg-red-950/40 border border-red-500/20 text-red-400 cursor-pointer"
+                    title="Delete certificate"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-1 text-[10px] font-mono text-neutral-500">
+                  <Lock className="w-3 h-3 text-neutral-600" />
+                  <span>Read-Only</span>
+                </div>
+              )}
             </div>
           </div>
         ))}
@@ -298,6 +327,7 @@ const VaultCertificates = ({ openCreateSignal, clearCreateSignal }) => {
             </div>
 
             <form onSubmit={handleSave} className="p-6 overflow-y-auto space-y-4 flex-1 text-xs font-sans text-neutral-300">
+              <fieldset disabled={!canEdit} className="space-y-4">
               <div className="space-y-1.5">
                 <label className="block font-mono text-[11px] text-neutral-400 uppercase">
                   Certificate Title *
@@ -462,9 +492,10 @@ const VaultCertificates = ({ openCreateSignal, clearCreateSignal }) => {
                   </label>
                 </div>
               </div>
+              </fieldset>
 
               {/* Action Buttons */}
-              <div className="pt-4 border-t border-white/10 flex justify-end gap-3">
+              <div className="pt-4 border-t border-white/10 flex justify-end gap-3 items-center">
                 <button
                   type="button"
                   onClick={() => {
@@ -473,16 +504,23 @@ const VaultCertificates = ({ openCreateSignal, clearCreateSignal }) => {
                   }}
                   className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-neutral-400 font-mono text-xs cursor-pointer"
                 >
-                  Cancel
+                  {canEdit ? 'Cancel' : 'Close Specimen'}
                 </button>
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="min-h-[42px] px-6 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center gap-2 cursor-pointer disabled:opacity-50"
-                >
-                  {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                  <span>{saving ? 'Saving...' : 'Save Certificate'}</span>
-                </button>
+                {canEdit ? (
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className="min-h-[42px] px-6 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                  >
+                    {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                    <span>{saving ? 'Saving...' : 'Save Certificate'}</span>
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 font-mono text-xs text-amber-300">
+                    <Lock className="w-3.5 h-3.5 text-amber-400" />
+                    <span>LOCKED // READ-ONLY</span>
+                  </div>
+                )}
               </div>
             </form>
           </div>

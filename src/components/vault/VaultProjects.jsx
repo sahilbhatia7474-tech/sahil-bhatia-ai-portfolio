@@ -51,6 +51,10 @@ const VaultProjects = ({ openCreateSignal, clearCreateSignal }) => {
   const categories = Array.from(new Set(allProjects.map((p) => p.category).filter(Boolean)));
 
   const handleTogglePublish = async (project) => {
+    if (!canEdit) {
+      setFeedback({ type: 'error', text: 'ACCESS DENIED: Publishing operations are restricted strictly to verified founder Sahil Bhatia.' });
+      return;
+    }
     const isCurrentlyPublished = project.status === 'PUBLISHED';
     const res = await publishItem('projects', project.id, !isCurrentlyPublished);
     if (res.success) {
@@ -65,6 +69,10 @@ const VaultProjects = ({ openCreateSignal, clearCreateSignal }) => {
   };
 
   const handleDuplicate = async (project) => {
+    if (!canEdit) {
+      setFeedback({ type: 'error', text: 'ACCESS DENIED: Duplication is restricted to verified founder Sahil Bhatia.' });
+      return;
+    }
     const newId = `copy-${Date.now().toString().slice(-4)}`;
     const copyPayload = {
       ...project,
@@ -86,6 +94,10 @@ const VaultProjects = ({ openCreateSignal, clearCreateSignal }) => {
   };
 
   const handleDelete = async (id, title) => {
+    if (!canEdit) {
+      setFeedback({ type: 'error', text: 'ACCESS DENIED: Deletions are restricted to verified founder Sahil Bhatia.' });
+      return;
+    }
     if (!window.confirm(`Are you sure you want to delete "${title}"?`)) return;
     const res = await deleteItem('projects', id);
     if (res.success) {

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { usePortfolioData } from '../../context/PortfolioDataContext';
 import { saveNavigationItems } from '../../lib/dbService';
+import { useAuth } from '../../lib/authContext';
 import {
   Compass,
   Save,
@@ -12,6 +13,7 @@ import {
   MoveUp,
   MoveDown,
   RotateCcw,
+  Lock,
 } from 'lucide-react';
 
 const DEFAULT_ITEMS = [
@@ -28,6 +30,7 @@ const DEFAULT_ITEMS = [
 
 const VaultNavigation = () => {
   const { navigation, refreshAllData } = usePortfolioData();
+  const { canEdit } = useAuth();
   const [items, setItems] = useState(DEFAULT_ITEMS);
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState(null);
@@ -63,6 +66,7 @@ const VaultNavigation = () => {
   };
 
   const moveItem = (index, direction) => {
+    if (!canEdit) return;
     const targetIdx = index + direction;
     if (targetIdx < 0 || targetIdx >= items.length) return;
 
@@ -76,10 +80,15 @@ const VaultNavigation = () => {
   };
 
   const handleResetDefaults = () => {
+    if (!canEdit) return;
     setItems(DEFAULT_ITEMS);
   };
 
   const handleSave = async () => {
+    if (!canEdit) {
+      setFeedback({ type: 'error', text: 'Authentication required. Only the founder can save navigation hierarchy.' });
+      return;
+    }
     setSaving(true);
     setFeedback(null);
     const res = await saveNavigationItems(items);
@@ -106,24 +115,31 @@ const VaultNavigation = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleResetDefaults}
-            className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white font-mono text-xs flex items-center gap-1.5 cursor-pointer"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>Reset Defaults</span>
-          </button>
+        {canEdit ? (
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleResetDefaults}
+              className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white font-mono text-xs flex items-center gap-1.5 cursor-pointer"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Reset Defaults</span>
+            </button>
 
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="min-h-[44px] px-6 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-          >
-            {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-            <span>{saving ? 'Syncing...' : 'Save Navigation'}</span>
-          </button>
-        </div>
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="min-h-[44px] px-6 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-[0_0_20px_rgba(255,42,58,0.3)] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            >
+              {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+              <span>{saving ? 'Syncing...' : 'Save Navigation'}</span>
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-neutral-900/80 border border-white/10 font-mono text-xs text-neutral-400">
+            <Lock className="w-3.5 h-3.5 text-amber-400" />
+            <span>FOUNDER ACCESS REQUIRED TO EDIT</span>
+          </div>
+        )}
       </div>
 
       {feedback && (
@@ -168,8 +184,9 @@ const VaultNavigation = () => {
                 <input
                   type="text"
                   value={item.label}
+                  disabled={!canEdit}
                   onChange={(e) => handleUpdateLabel(index, e.target.value)}
-                  className="min-h-[36px] px-3 py-1 rounded bg-[#141620] border border-white/10 text-white font-mono text-xs focus:outline-none focus:border-red-500"
+                  className="min-h-[36px] px-3 py-1 rounded bg-[#141620] border border-white/10 text-white font-mono text-xs focus:outline-none focus:border-red-500 disabled:opacity-75 disabled:cursor-not-allowed"
                 />
               </div>
 
@@ -177,47 +194,60 @@ const VaultNavigation = () => {
                 <input
                   type="text"
                   value={item.target}
+                  disabled={!canEdit}
                   onChange={(e) => handleUpdateTarget(index, e.target.value)}
                   placeholder="/route or #anchor"
-                  className="min-h-[36px] px-3 py-1 rounded bg-[#141620] border border-white/10 text-neutral-300 font-mono text-xs focus:outline-none focus:border-red-500"
+                  className="min-h-[36px] px-3 py-1 rounded bg-[#141620] border border-white/10 text-neutral-300 font-mono text-xs focus:outline-none focus:border-red-500 disabled:opacity-75 disabled:cursor-not-allowed"
                 />
               </div>
             </div>
 
             <div className="flex items-center justify-end gap-2">
               {/* Visible Toggle */}
-              <button
-                type="button"
-                onClick={() => handleToggleVisible(index)}
-                className={`min-h-[36px] px-3 py-1 rounded text-xs font-mono flex items-center gap-1.5 cursor-pointer ${
-                  item.visible !== false
-                    ? 'bg-emerald-950/30 border border-emerald-500/30 text-emerald-400'
-                    : 'bg-neutral-800 text-neutral-400'
-                }`}
-              >
-                {item.visible !== false ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
-                <span>{item.visible !== false ? 'Shown' : 'Hidden'}</span>
-              </button>
+              {canEdit ? (
+                <button
+                  type="button"
+                  onClick={() => handleToggleVisible(index)}
+                  className={`min-h-[36px] px-3 py-1 rounded text-xs font-mono flex items-center gap-1.5 cursor-pointer ${
+                    item.visible !== false
+                      ? 'bg-emerald-950/30 border border-emerald-500/30 text-emerald-400'
+                      : 'bg-neutral-800 text-neutral-400'
+                  }`}
+                >
+                  {item.visible !== false ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                  <span>{item.visible !== false ? 'Shown' : 'Hidden'}</span>
+                </button>
+              ) : (
+                <span className={`px-2.5 py-1 rounded text-[11px] font-mono flex items-center gap-1 ${
+                  item.visible !== false ? 'text-emerald-400 bg-emerald-950/30' : 'text-neutral-500 bg-neutral-900'
+                }`}>
+                  <Lock className="w-3 h-3 text-neutral-500" />
+                  <span>{item.visible !== false ? 'Visible' : 'Hidden'}</span>
+                </span>
+              )}
 
               {/* Move Up */}
-              <button
-                type="button"
-                disabled={index === 0}
-                onClick={() => moveItem(index, -1)}
-                className="p-2 rounded bg-[#141620] hover:bg-[#1d202e] text-neutral-300 disabled:opacity-30 cursor-pointer"
-              >
-                <MoveUp className="w-3.5 h-3.5" />
-              </button>
+              {canEdit && (
+                <>
+                  <button
+                    type="button"
+                    disabled={index === 0}
+                    onClick={() => moveItem(index, -1)}
+                    className="p-2 rounded bg-[#141620] hover:bg-[#1d202e] text-neutral-300 disabled:opacity-30 cursor-pointer"
+                  >
+                    <MoveUp className="w-3.5 h-3.5" />
+                  </button>
 
-              {/* Move Down */}
-              <button
-                type="button"
-                disabled={index === items.length - 1}
-                onClick={() => moveItem(index, 1)}
-                className="p-2 rounded bg-[#141620] hover:bg-[#1d202e] text-neutral-300 disabled:opacity-30 cursor-pointer"
-              >
-                <MoveDown className="w-3.5 h-3.5" />
-              </button>
+                  <button
+                    type="button"
+                    disabled={index === items.length - 1}
+                    onClick={() => moveItem(index, 1)}
+                    className="p-2 rounded bg-[#141620] hover:bg-[#1d202e] text-neutral-300 disabled:opacity-30 cursor-pointer"
+                  >
+                    <MoveDown className="w-3.5 h-3.5" />
+                  </button>
+                </>
+              )}
             </div>
           </div>
         ))}

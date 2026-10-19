@@ -94,7 +94,11 @@ export const AuthProvider = ({ children }) => {
     try {
       if (typeof window !== 'undefined') {
         const storedRole = sessionStorage.getItem('sahil_vault_role');
-        return storedRole === 'FOUNDER_OWNER' || storedRole === 'PUBLIC_VIEWER' || sessionStorage.getItem('sahil_founder_authorized') === 'true';
+        if (storedRole === 'PUBLIC_VIEWER') return false;
+        return (
+          storedRole === 'FOUNDER_OWNER' &&
+          sessionStorage.getItem('sahil_founder_authorized') === 'true'
+        );
       }
     } catch {
       // safe fallback
@@ -107,7 +111,10 @@ export const AuthProvider = ({ children }) => {
       if (typeof window !== 'undefined') {
         const storedRole = sessionStorage.getItem('sahil_vault_role');
         if (storedRole === 'PUBLIC_VIEWER') return false;
-        return storedRole === 'FOUNDER_OWNER' || sessionStorage.getItem('sahil_founder_authorized') === 'true';
+        return (
+          storedRole === 'FOUNDER_OWNER' &&
+          sessionStorage.getItem('sahil_founder_authorized') === 'true'
+        );
       }
     } catch {
       // safe fallback
@@ -180,7 +187,7 @@ export const AuthProvider = ({ children }) => {
       const storedRole = sessionStorage.getItem('sahil_vault_role');
       if (storedRole === 'PUBLIC_VIEWER') {
         setRole('PUBLIC_VIEWER');
-        setIsFounder(true);
+        setIsFounder(false);
         setCanEdit(false);
         if (!user) {
           setUser({
@@ -190,7 +197,7 @@ export const AuthProvider = ({ children }) => {
           });
         }
         setLoading(false);
-      } else if (storedRole === 'FOUNDER_OWNER' || sessionStorage.getItem('sahil_founder_authorized') === 'true') {
+      } else if (storedRole === 'FOUNDER_OWNER' && sessionStorage.getItem('sahil_founder_authorized') === 'true') {
         setRole('FOUNDER_OWNER');
         setIsFounder(true);
         setCanEdit(true);
@@ -212,7 +219,7 @@ export const AuthProvider = ({ children }) => {
         if (firebaseUser.isAnonymous) {
           // Public visitor signed in anonymously via Firebase Auth
           setUser(firebaseUser);
-          setIsFounder(true);
+          setIsFounder(false);
           setCanEdit(false);
           setRole('PUBLIC_VIEWER');
           try {
@@ -240,9 +247,9 @@ export const AuthProvider = ({ children }) => {
             seedInitialDatabase().catch(() => {});
           } else {
             // Public user authenticated with non-admin Google/Email account:
-            // Allowed anonymous/visitor read access, restricted from writing
+            // Allowed anonymous/visitor read access, strictly restricted from writing
             setUser(firebaseUser);
-            setIsFounder(true);
+            setIsFounder(false);
             setCanEdit(false);
             setRole('PUBLIC_VIEWER');
             try {

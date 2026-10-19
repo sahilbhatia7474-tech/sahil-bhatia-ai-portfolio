@@ -67,7 +67,7 @@ export const ProtectedRoute = ({ children }) => {
   }, [isVaultUnlocked]);
 
   return (
-    <div className="relative min-h-screen bg-[#040509]">
+    <div className={`relative bg-[#040509] ${displayedUnlocked ? 'h-screen h-[100dvh] max-h-screen overflow-hidden flex flex-col' : 'min-h-screen'}`}>
       {/* Framer Motion Cyber Vault Page Transition Shroud */}
       <VaultPageTransitionOverlay
         isOpen={isOverlayOpen}
@@ -95,7 +95,7 @@ export const ProtectedRoute = ({ children }) => {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.99 }}
             transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full min-h-screen"
+            className="w-full h-full max-h-screen overflow-hidden flex flex-col flex-1 min-h-0"
           >
             {children}
           </motion.div>

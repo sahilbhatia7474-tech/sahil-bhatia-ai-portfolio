@@ -4,6 +4,7 @@ import {
   Database, HardDrive, ShieldCheck, Lock, Terminal, ExternalLink, Copy, Check
 } from 'lucide-react';
 import { app, auth, db, storage } from '../../lib/firebase';
+import { useAuth } from '../../lib/authContext';
 import { isAuthorizedFounderEmail } from '../../lib/authConstants';
 import { 
   lastUploadDiagnostic, 
@@ -15,6 +16,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import firebaseConfigData from '../../../firebase-applet-config.json';
 
 export default function VaultDiagnostics() {
+  const { canEdit } = useAuth();
   const [testing, setTesting] = useState(false);
   const [copied, setCopied] = useState(false);
   const [lastUploadInfo, setLastUploadInfo] = useState(getLastUploadDiagnostic());
@@ -126,6 +128,13 @@ export default function VaultDiagnostics() {
   };
 
   const runLiveUploadTest = async () => {
+    if (!canEdit) {
+      setDiagnostics((prev) => ({
+        ...prev,
+        uploadTest: { status: 'LOCKED', details: 'Synthetic upload test requires Founder authentication.', timestamp: new Date().toLocaleTimeString() },
+      }));
+      return;
+    }
     setTesting(true);
     setDiagnostics((prev) => ({
       ...prev,
@@ -373,13 +382,20 @@ export default function VaultDiagnostics() {
           <p className="text-[11px] font-mono text-neutral-300 break-words leading-relaxed">
             {diagnostics.uploadTest.details || 'Click "Run Upload Test" below to execute an end-to-end binary upload test.'}
           </p>
-          <button
-            onClick={runLiveUploadTest}
-            disabled={testing}
-            className="w-full mt-2 py-1.5 px-3 rounded bg-white/10 hover:bg-white/20 disabled:opacity-50 text-white font-mono text-xs cursor-pointer transition-colors"
-          >
-            Run Synthetic Upload Test
-          </button>
+          {canEdit ? (
+            <button
+              onClick={runLiveUploadTest}
+              disabled={testing}
+              className="w-full mt-2 py-1.5 px-3 rounded bg-white/10 hover:bg-white/20 disabled:opacity-50 text-white font-mono text-xs cursor-pointer transition-colors"
+            >
+              Run Synthetic Upload Test
+            </button>
+          ) : (
+            <div className="w-full mt-2 py-1.5 px-3 rounded bg-neutral-900 border border-white/10 text-neutral-400 font-mono text-xs flex items-center justify-center gap-1.5">
+              <Lock className="w-3.5 h-3.5 text-amber-400" />
+              <span>Founder Clearance Required</span>
+            </div>
+          )}
         </div>
       </div>
 
