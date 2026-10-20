@@ -38,45 +38,6 @@
   animation: subtleBloomPulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-html {
-  overscroll-behavior-y: auto;
-  touch-action: pan-y;
-  font-family: var(--font-sans);
-  -webkit-text-size-adjust: 100%;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-  font-synthesis: none;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  background-color: #070708;
-  color: #f3f4f6;
-  font-family: var(--font-sans);
-  overflow-x: clip;
-  max-width: 100%;
-  position: relative;
-  -webkit-overflow-scrolling: touch;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
-
-/* Ensure crisp typography and eliminate font blurriness */
-*, *::before, *::after {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-h1, h2, h3, h4, h5, h6, p, span, a, button, input, textarea, code, pre, kbd, label {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-}
-
 /* Precision grid background & 3D Spatial Grid */
 .bg-spatial-grid {
   background-size: 40px 40px;

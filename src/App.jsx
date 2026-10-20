@@ -38,6 +38,7 @@ const ServicesPage = lazy(() => import('./pages/ServicesPage'));
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
 const RefundPolicyPage = lazy(() => import('./pages/RefundPolicyPage'));
+const ResumePage = lazy(() => import('./pages/ResumePage'));
 
 // Lazy-load private Founder Vault CMS to isolate bundle size from public portfolio
 const VaultLayout = lazy(() => import('./components/vault/VaultLayout'));
@@ -319,6 +320,22 @@ function App() {
                 element={
                   <Suspense fallback={<div className="min-h-screen bg-[#070708] flex items-center justify-center font-mono text-xs text-neutral-400">Loading Professional Journey Timeline...</div>}>
                     <JourneyPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/resume"
+                element={
+                  <Suspense fallback={<div className="min-h-screen bg-[#070708] flex items-center justify-center font-mono text-xs text-neutral-400">Loading Resume & Curriculum Vitae...</div>}>
+                    <ResumePage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/cv"
+                element={
+                  <Suspense fallback={<div className="min-h-screen bg-[#070708] flex items-center justify-center font-mono text-xs text-neutral-400">Loading Resume & Curriculum Vitae...</div>}>
+                    <ResumePage />
                   </Suspense>
                 }
               />

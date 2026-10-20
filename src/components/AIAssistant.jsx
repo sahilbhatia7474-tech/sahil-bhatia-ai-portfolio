@@ -8,13 +8,16 @@ import {
   ArrowRight,
   ExternalLink,
   Bot,
+  FileText,
 } from 'lucide-react';
 import { usePortfolioData } from '../context/PortfolioDataContext';
 import { queryAIAssistant } from '../lib/knowledgeModel';
 import { isValidHttpUrl } from '../lib/projectLinks';
 import { useBodyScrollLock, forceUnlockBodyScroll } from '../lib/scrollLock';
+import VaultPageTransitionOverlay from './vault/VaultPageTransitionOverlay';
 
 const SUGGESTED_PROMPTS = [
+  { label: '📄 VIEW RESUME (CV)', destination: '/resume', type: 'resume' },
   { label: 'WHO IS SAHIL?', prompt: 'WHO IS SAHIL?' },
   { label: 'WHAT HAS HE BUILT?', prompt: 'WHAT HAS HE BUILT?' },
   { label: 'SHOW AI SYSTEMS', prompt: 'SHOW AI SYSTEMS' },
@@ -25,6 +28,7 @@ const SUGGESTED_PROMPTS = [
 ];
 
 const INITIAL_WELCOME_ACTIONS = [
+  { label: '📄 VIEW RESUME (CV)', destination: '/resume', type: 'resume' },
   { label: 'WHO IS SAHIL?', prompt: 'WHO IS SAHIL?' },
   { label: 'WHAT HAS HE BUILT?', prompt: 'WHAT HAS HE BUILT?' },
   { label: 'SHOW AI SYSTEMS', prompt: 'SHOW AI SYSTEMS' },
@@ -47,6 +51,7 @@ export default function AIAssistant() {
   const [isOpen, setIsOpen] = useState(false);
   const [inputQuery, setInputQuery] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [resumeTransition, setResumeTransition] = useState(false);
   const chatContainerRef = useRef(null);
   const inputRef = useRef(null);
 

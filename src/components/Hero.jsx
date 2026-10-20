@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { ArrowDown, Cpu, Play, Pause, Volume2, VolumeX, X, Sparkles, ShieldCheck, ArrowRight, Lock, Zap, Eye } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { ArrowDown, Cpu, Play, Pause, Volume2, VolumeX, X, Sparkles, ShieldCheck, ArrowRight, Lock, Zap, Eye, FileText } from 'lucide-react';
 import { usePortfolioData } from '../context/PortfolioDataContext';
 import { useAuth } from '../lib/authContext';
 import FeaturedBuilderCard3D from './FeaturedBuilderCard3D';
+import VaultPageTransitionOverlay from './vault/VaultPageTransitionOverlay';
 
 const Hero = () => {
   const navigate = useNavigate();
@@ -13,13 +14,53 @@ const Hero = () => {
   const [showIntroModal, setShowIntroModal] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [isEnteringVault, setIsEnteringVault] = useState(false);
   const videoRef = useRef(null);
+
+  // High-Tech Cyber Page Transition Overlay State
+  const [transitionOverlay, setTransitionOverlay] = useState({
+    isOpen: false,
+    direction: 'gateway',
+    title: '',
+    subtitle: '',
+  });
+
+  const handleOpenResume = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    setTransitionOverlay({
+      isOpen: true,
+      direction: 'resume',
+      title: 'INITIALIZING VERIFIED DOSSIER',
+      subtitle: 'Decrypting Sahil Bhatia’s official curriculum vitae, verified engineering credentials & system telemetry...',
+    });
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+    setTimeout(() => {
+      navigate('/resume');
+    }, 450);
+    setTimeout(() => {
+      setTransitionOverlay((prev) => ({ ...prev, isOpen: false }));
+    }, 850);
+  };
 
   const handleEnterVaultSpecimen = (e) => {
     if (e && e.preventDefault) e.preventDefault();
     if (lockVault) lockVault();
-    navigate('/vault');
+    setTransitionOverlay({
+      isOpen: true,
+      direction: 'gateway',
+      title: 'INITIALIZING SECURITY GATEWAY',
+      subtitle: 'Establishing zero-trust encrypted handshake with Founder Vault security terminal...',
+    });
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+    setTimeout(() => {
+      navigate('/vault');
+    }, 450);
+    setTimeout(() => {
+      setTransitionOverlay((prev) => ({ ...prev, isOpen: false }));
+    }, 850);
   };
 
   const intro = identity?.introVideo;
@@ -345,42 +386,96 @@ const Hero = () => {
               </div>
             </div>
 
-            {/* Action Group with High-Contrast Multi-Tier 3D Interactive Instruments */}
-            <div className="pt-4 flex flex-wrap items-center gap-4">
+            {/* Action Group with High-Contrast Multi-Tier 3D Interactive Instruments (CSS Selector 1) */}
+            <div className="pt-4 flex flex-wrap items-center gap-3.5 sm:gap-4.5">
+              {/* Primary Action 1: Inspect Curated Projects */}
               <a
                 href="#projects"
-                className="group/cta px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#ff2a3a] to-[#d61928] hover:from-[#ff3d4c] hover:to-[#e61e2f] text-white font-mono text-xs uppercase tracking-wider font-black transition-all shadow-[0_12px_35px_rgba(255,42,58,0.5),inset_0_1px_0_rgba(255,255,255,0.35)] hover:shadow-[0_18px_45px_rgba(255,42,58,0.7),inset_0_1px_0_rgba(255,255,255,0.45)] hover:-translate-y-1 active:translate-y-0 active:scale-[0.98] flex items-center gap-2.5 border border-red-400/50 cursor-pointer"
+                className="group/cta relative px-6 py-4 rounded-2xl bg-gradient-to-r from-[#ff2a3a] via-[#e51d30] to-[#b91522] text-white font-mono text-xs uppercase tracking-wider font-black transition-all duration-300 shadow-[0_14px_38px_rgba(255,42,58,0.55),0_4px_14px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.45)] hover:shadow-[0_20px_52px_rgba(255,42,58,0.8),0_6px_20px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.65)] hover:-translate-y-1.5 active:translate-y-0.5 active:scale-[0.98] flex items-center gap-3.5 border border-red-300/40 cursor-pointer overflow-hidden select-none"
+                style={{
+                  WebkitFontSmoothing: 'antialiased',
+                  textRendering: 'optimizeLegibility',
+                }}
               >
-                <span className="relative flex items-center justify-center w-2 h-2">
-                  <span className="absolute w-3 h-3 rounded-full bg-white/60 animate-ping" />
-                  <span className="relative w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#ffffff]" />
+                {/* Diagonal Specular Sheen Sweep on Hover */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/cta:translate-x-full transition-transform duration-1000 pointer-events-none" />
+                {/* Top Specular Horizon Edge */}
+                <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/90 to-transparent pointer-events-none" />
+                {/* Bottom Bevel Shadow Edge */}
+                <div className="absolute bottom-0 inset-x-0 h-[1px] bg-black/40 pointer-events-none" />
+
+                {/* 3D Pulsing Dual-Radar Beacon */}
+                <span className="relative flex items-center justify-center w-3 h-3 shrink-0">
+                  <span className="absolute w-5 h-5 rounded-full bg-white/50 animate-ping" />
+                  <span className="relative w-2 h-2 rounded-full bg-white shadow-[0_0_12px_#ffffff]" />
                 </span>
-                <span className="font-black tracking-wider text-white">Inspect Curated Projects</span>
-                <ArrowDown className="w-4 h-4 transition-transform group-hover/cta:translate-y-1" />
+
+                <div className="flex flex-col text-left">
+                  <span className="font-black tracking-wider text-white font-display text-xs sm:text-sm drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
+                    Inspect Curated Projects
+                  </span>
+                  <span className="text-[9px] font-mono text-red-100 font-bold tracking-widest uppercase">
+                    PRODUCTION WORK // CASE STUDIES
+                  </span>
+                </div>
+
+                <div className="w-7 h-7 rounded-lg bg-black/25 border border-white/25 flex items-center justify-center shrink-0 group-hover/cta:bg-black/40 transition-colors ml-0.5">
+                  <ArrowDown className="w-4 h-4 transition-transform group-hover/cta:translate-y-1 text-white shrink-0 drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]" />
+                </div>
               </a>
 
+              {/* Primary Action 2: AI Systems Architecture */}
               <a
                 href="#ai-systems"
-                className="group/arch px-6 py-3.5 rounded-xl bg-gradient-to-b from-[#161826] via-[#10121c] to-[#0a0b12] border border-white/25 hover:border-red-500/70 text-white font-mono text-xs uppercase tracking-wider font-extrabold hover:bg-[#1a1c2c] transition-all shadow-[0_10px_25px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.22)] hover:shadow-[0_14px_35px_rgba(255,42,58,0.3)] hover:-translate-y-1 active:translate-y-0 active:scale-[0.98] flex items-center gap-2.5 cursor-pointer"
+                className="group/arch relative px-5.5 py-3.5 rounded-2xl bg-gradient-to-b from-[#181c30] via-[#101322] to-[#090b16] border border-white/25 hover:border-cyan-400 text-white font-mono text-xs uppercase tracking-wider font-extrabold hover:bg-[#1f243c] transition-all duration-300 shadow-[0_14px_36px_rgba(0,0,0,0.9),0_0_24px_rgba(6,182,212,0.2),inset_0_1px_0_rgba(255,255,255,0.25)] hover:shadow-[0_20px_48px_rgba(6,182,212,0.42),0_0_32px_rgba(6,182,212,0.3),inset_0_1px_0_rgba(255,255,255,0.45)] hover:-translate-y-1.5 active:translate-y-0.5 active:scale-[0.98] flex items-center gap-3.5 cursor-pointer overflow-hidden select-none"
+                style={{
+                  WebkitFontSmoothing: 'antialiased',
+                  textRendering: 'optimizeLegibility',
+                }}
               >
-                <Cpu className="w-4 h-4 text-red-400 group-hover/arch:scale-110 group-hover/arch:text-red-300 transition-all drop-shadow-[0_0_8px_rgba(255,42,58,0.8)]" />
-                <span className="font-extrabold tracking-wider text-white">AI Systems Architecture</span>
+                {/* Diagonal Specular Sheen Sweep on Hover */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/15 to-transparent -translate-x-full group-hover/arch:translate-x-full transition-transform duration-1000 pointer-events-none" />
+                {/* Top Specular Edge */}
+                <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-cyan-400/80 to-transparent pointer-events-none" />
+                
+                {/* 3D Silicon Processor Node */}
+                <div className="w-8.5 h-8.5 rounded-xl bg-gradient-to-br from-cyan-900/90 via-cyan-950/95 to-[#061218] border border-cyan-400/70 flex items-center justify-center text-cyan-300 shadow-[0_0_16px_rgba(6,182,212,0.5),inset_0_1px_0_rgba(255,255,255,0.35)] group-hover/arch:scale-110 group-hover/arch:rotate-6 transition-all shrink-0">
+                  <Cpu className="w-4.5 h-4.5 text-cyan-300 drop-shadow-[0_0_10px_#22d3ee]" />
+                </div>
+
+                <div className="flex flex-col text-left">
+                  <span className="font-extrabold tracking-wider text-white group-hover:text-cyan-200 transition-colors font-display text-xs sm:text-[13px]">
+                    AI Systems Architecture
+                  </span>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_6px_#22d3ee] animate-pulse" />
+                    <span className="text-[10px] text-neutral-300 font-mono font-medium tracking-tight">
+                      8 Live Deployed Systems
+                    </span>
+                  </div>
+                </div>
               </a>
 
-              {/* CRAZY 3D INTERACTIVE FOUNDER VAULT BUTTON (ICONIC, RAZOR-SHARP & GLOWING) */}
+              {/* Primary Action 3: FOUNDER VAULT SPECIMEN (With Full Cyber Transition) */}
               <button
                 type="button"
                 onClick={handleEnterVaultSpecimen}
-                disabled={isEnteringVault}
-                className="group/vault relative px-5 py-3 rounded-xl bg-gradient-to-r from-[#1c0818] via-[#12091f] to-[#0a1224] border-2 border-red-500/70 hover:border-cyan-400 text-white transition-all duration-300 shadow-[0_12px_28px_rgba(0,0,0,0.9),0_0_24px_rgba(255,42,58,0.35)] hover:shadow-[0_16px_36px_rgba(0,0,0,0.95),0_0_35px_rgba(34,211,238,0.6)] hover:-translate-y-1 active:translate-y-0 active:scale-[0.98] flex items-center gap-3 cursor-pointer overflow-hidden"
+                disabled={transitionOverlay.isOpen}
+                className="group/vault relative px-5.5 py-3.5 rounded-2xl bg-gradient-to-r from-[#22091c] via-[#140a22] to-[#0a1226] border-2 border-red-500/75 hover:border-cyan-400 text-white transition-all duration-300 shadow-[0_14px_38px_rgba(0,0,0,0.95),0_0_30px_rgba(255,42,58,0.4)] hover:shadow-[0_20px_52px_rgba(0,0,0,0.98),0_0_45px_rgba(34,211,238,0.65)] hover:-translate-y-1.5 active:translate-y-0.5 active:scale-[0.98] flex items-center gap-3.5 cursor-pointer overflow-hidden select-none"
                 title="Explore Sahil's Live Founder Vault (Public Specimen Mode & Architecture)"
+                style={{
+                  WebkitFontSmoothing: 'antialiased',
+                  textRendering: 'optimizeLegibility',
+                }}
               >
                 {/* Shimmer sweep glint */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover/vault:translate-x-full transition-transform duration-1000 pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/vault:translate-x-full transition-transform duration-1000 pointer-events-none" />
+                {/* Top Specular Edge */}
+                <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-red-400/90 to-transparent pointer-events-none" />
                 
-                {/* 3D Holographic Vault Icon */}
-                <div className="relative w-7 h-7 rounded-lg bg-red-950 border border-red-500/70 flex items-center justify-center text-red-400 group-hover/vault:border-cyan-400 group-hover/vault:text-cyan-300 group-hover/vault:rotate-12 transition-all shadow-[0_0_14px_rgba(255,42,58,0.7)] shrink-0">
-                  <Sparkles className="w-4 h-4 animate-pulse" />
+                {/* 3D Holographic Vault Icon Cube */}
+                <div className="relative w-8.5 h-8.5 rounded-xl bg-gradient-to-br from-red-900/95 via-red-950/95 to-[#1c080d] border border-red-500/80 flex items-center justify-center text-red-400 group-hover/vault:border-cyan-400 group-hover/vault:text-cyan-300 group-hover/vault:rotate-12 transition-all shadow-[0_0_18px_rgba(255,42,58,0.7),inset_0_1px_0_rgba(255,255,255,0.4)] shrink-0">
+                  <Sparkles className="w-4.5 h-4.5 animate-pulse" />
                 </div>
 
                 <div className="flex flex-col text-left">
@@ -388,35 +483,87 @@ const Hero = () => {
                     <span className="font-mono text-xs font-black tracking-wider text-white uppercase group-hover/vault:text-cyan-200 transition-colors">
                       FOUNDER VAULT
                     </span>
-                    <span className="px-1.5 py-0.5 rounded bg-cyan-950/90 border border-cyan-400/60 text-cyan-300 font-mono text-[9px] font-black tracking-wider uppercase shadow-[0_0_8px_rgba(34,211,238,0.35)]">
+                    <span className="px-1.5 py-0.5 rounded bg-cyan-950/90 border border-cyan-400/60 text-cyan-300 font-mono text-[9px] font-black tracking-wider uppercase shadow-[0_0_8px_rgba(34,211,238,0.45)]">
                       SPECIMEN
                     </span>
                     <span className="relative flex items-center justify-center w-2 h-2">
-                      <span className="absolute w-3 h-3 rounded-full bg-cyan-400/60 animate-ping" />
+                      <span className="absolute w-3.5 h-3.5 rounded-full bg-cyan-400/60 animate-ping" />
                       <span className="relative w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee]" />
                     </span>
                   </div>
-                  <span className="text-[10px] text-cyan-300 font-mono font-bold tracking-wider flex items-center gap-1 group-hover/vault:text-white transition-colors">
+                  <span className="text-[10px] text-cyan-300 font-mono font-bold tracking-wider flex items-center gap-1 group-hover/vault:text-white transition-colors mt-0.5">
                     ⚡ EXPLORE LIVE ARCHITECTURE
                   </span>
                 </div>
 
-                <ArrowRight className="w-4 h-4 text-cyan-400 group-hover/vault:translate-x-1 transition-transform ml-1" />
+                <ArrowRight className="w-4 h-4 text-cyan-400 group-hover/vault:translate-x-1.5 transition-transform ml-1 shrink-0 drop-shadow-[0_0_8px_#22d3ee]" />
               </button>
 
+              {/* Primary Action 4: DEDICATED VERIFIED RESUME & CV CTA (With Full Vault-Style Cyber Page Transition) */}
+              <button
+                type="button"
+                onClick={handleOpenResume}
+                disabled={transitionOverlay.isOpen}
+                className="group/resume relative px-6 py-3.5 rounded-2xl bg-gradient-to-r from-[#0d2825] via-[#091e1d] to-[#051415] border-2 border-emerald-500/80 hover:border-emerald-300 text-white font-mono text-xs uppercase tracking-wider font-extrabold hover:bg-[#12332f] transition-all duration-300 shadow-[0_14px_38px_rgba(0,0,0,0.95),0_0_32px_rgba(16,185,129,0.4)] hover:shadow-[0_20px_52px_rgba(0,0,0,0.98),0_0_48px_rgba(16,185,129,0.75)] hover:-translate-y-1.5 active:translate-y-0.5 active:scale-[0.98] flex items-center gap-3.5 cursor-pointer overflow-hidden select-none"
+                title="Open Sahil Bhatia's Verified Curriculum Vitae (with Full Vault-Style Cyber Transition)"
+                style={{
+                  WebkitFontSmoothing: 'antialiased',
+                  textRendering: 'optimizeLegibility',
+                }}
+              >
+                {/* Diagonal Specular Sheen Sweep on Hover */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-300/25 to-transparent -translate-x-full group-hover/resume:translate-x-full transition-transform duration-1000 pointer-events-none" />
+                {/* Top Specular Edge */}
+                <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-emerald-400/90 to-transparent pointer-events-none" />
+
+                {/* 3D Holographic Document Cube */}
+                <div className="relative w-8.5 h-8.5 rounded-xl bg-gradient-to-br from-emerald-800/95 via-emerald-950/95 to-[#061812] border border-emerald-400/85 flex items-center justify-center text-emerald-300 shadow-[0_0_20px_rgba(16,185,129,0.75),inset_0_1px_0_rgba(255,255,255,0.45)] group-hover/resume:scale-110 group-hover/resume:rotate-6 transition-all shrink-0">
+                  <FileText className="w-4.5 h-4.5 drop-shadow-[0_0_10px_#34d399]" />
+                </div>
+
+                <div className="flex flex-col text-left">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs font-black tracking-wider text-white uppercase group-hover/resume:text-emerald-200 transition-colors">
+                      VIEW RESUME
+                    </span>
+                    <span className="px-1.5 py-0.5 rounded bg-emerald-950/95 border border-emerald-400/70 text-emerald-300 font-mono text-[9px] font-black tracking-wider uppercase shadow-[0_0_10px_rgba(16,185,129,0.45)]">
+                      CV
+                    </span>
+                    <span className="relative flex items-center justify-center w-2 h-2">
+                      <span className="absolute w-3.5 h-3.5 rounded-full bg-emerald-400/60 animate-ping" />
+                      <span className="relative w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_10px_#34d399]" />
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-emerald-300 font-mono font-bold tracking-wider flex items-center gap-1 group-hover/resume:text-white transition-colors mt-0.5">
+                    ⚡ VERIFIED DOSSIER · PRINT / PDF
+                  </span>
+                </div>
+
+                <div className="w-6 h-6 rounded-lg bg-emerald-950/80 border border-emerald-400/60 flex items-center justify-center ml-0.5 shrink-0 group-hover/resume:bg-emerald-900 transition-colors">
+                  <ArrowRight className="w-3.5 h-3.5 text-emerald-300 group-hover/resume:translate-x-0.5 transition-transform shrink-0 drop-shadow-[0_0_8px_#34d399]" />
+                </div>
+              </button>
+
+              {/* Primary Action 5: Play Intro Video (if enabled) */}
               {isIntroEnabled && (
                 <button
                   type="button"
                   onClick={() => setShowIntroModal(true)}
-                  className="px-5 py-3.5 rounded-xl bg-[#121420] hover:bg-[#1a1c2d] border border-red-500/40 text-white font-mono text-xs uppercase tracking-wider font-extrabold transition-all flex items-center gap-2 group shadow-[0_10px_25px_rgba(255,42,58,0.2)] hover:shadow-[0_15px_35px_rgba(255,42,58,0.35)] hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
+                  className="px-5.5 py-3.5 rounded-2xl bg-gradient-to-b from-[#181a28] via-[#10121d] to-[#090a12] hover:bg-[#1d2035] border border-red-500/50 hover:border-red-400 text-white font-mono text-xs uppercase tracking-wider font-extrabold transition-all duration-300 flex items-center gap-3 group/intro shadow-[0_14px_32px_rgba(255,42,58,0.25),inset_0_1px_0_rgba(255,255,255,0.2)] hover:shadow-[0_18px_40px_rgba(255,42,58,0.45)] hover:-translate-y-1.5 active:translate-y-0.5 cursor-pointer select-none"
+                  style={{
+                    WebkitFontSmoothing: 'antialiased',
+                    textRendering: 'optimizeLegibility',
+                  }}
                 >
-                  <div className="w-5 h-5 rounded-full bg-red-600 flex items-center justify-center text-white group-hover:scale-110 transition-transform shadow-[0_0_8px_#ff2a3a]">
-                    <Play className="w-2.5 h-2.5 fill-white ml-0.5" />
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center text-white group-hover/intro:scale-110 transition-transform shadow-[0_0_14px_#ff2a3a]">
+                    <Play className="w-3 h-3 fill-white ml-0.5" />
                   </div>
-                  <span className="font-extrabold text-white">PLAY INTRO VIDEO</span>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-neutral-200 font-mono font-bold">
-                    {intro.durationBadge || '90 SEC'}
-                  </span>
+                  <div className="flex flex-col text-left">
+                    <span className="font-extrabold text-white group-hover/intro:text-red-300 transition-colors font-display text-xs">PLAY INTRO VIDEO</span>
+                    <span className="text-[10px] text-neutral-400 font-mono mt-0.5">
+                      {intro.durationBadge || '90 SEC'} &middot; EXECUTIVE BRIEF
+                    </span>
+                  </div>
                 </button>
               )}
             </div>
@@ -521,6 +668,14 @@ const Hero = () => {
           </div>
         </div>
       )}
+
+      {/* Hardware-Accelerated Cyber Page Transition Overlay for Resume & Founder Vault */}
+      <VaultPageTransitionOverlay
+        isOpen={transitionOverlay.isOpen}
+        direction={transitionOverlay.direction}
+        customTitle={transitionOverlay.title}
+        customSubtitle={transitionOverlay.subtitle}
+      />
     </section>
   );
 };

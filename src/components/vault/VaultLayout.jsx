@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../lib/authContext';
 import { usePortfolioData } from '../../context/PortfolioDataContext';
+import { forceUnlockBodyScroll } from '../../lib/scrollLock';
 import VaultDashboard from './VaultDashboard';
 import VaultIdentity from './VaultIdentity';
 import VaultPortrait from './VaultPortrait';
@@ -99,8 +100,14 @@ const VaultLayout = () => {
   const [showUnlockModal, setShowUnlockModal] = useState(false);
   const mainContentRef = useRef(null);
 
-  // Auto-scroll to top of workspace whenever tab changes
+  // Ensure scroll is unblocked and auto-scroll to top of workspace on tab change or mount
   useEffect(() => {
+    forceUnlockBodyScroll();
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.documentElement.style.overflow = '';
+    }
     if (mainContentRef.current) {
       mainContentRef.current.scrollTo({ top: 0, behavior: 'instant' });
     }
@@ -411,7 +418,8 @@ const VaultLayout = () => {
         <main
           ref={mainContentRef}
           tabIndex={0}
-          className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 lg:p-8 relative z-10 overscroll-y-contain focus:outline-none"
+          className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 lg:p-8 relative z-10 overscroll-y-contain focus:outline-none touch-pan-y"
+          style={{ WebkitOverflowScrolling: 'touch' }}
         >
           <div className="max-w-6xl mx-auto space-y-6">
             

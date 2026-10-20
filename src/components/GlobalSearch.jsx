@@ -13,14 +13,17 @@ import {
   Layers,
   Lock,
   ExternalLink,
+  FileText,
 } from 'lucide-react';
 import { usePortfolioData } from '../context/PortfolioDataContext';
 import { useAuth } from '../lib/authContext';
 import { buildKnowledgeIndex, searchKnowledgeIndex } from '../lib/knowledgeModel';
 import { useBodyScrollLock, forceUnlockBodyScroll } from '../lib/scrollLock';
+import VaultPageTransitionOverlay from './vault/VaultPageTransitionOverlay';
 
 const CATEGORY_FILTERS = [
   'ALL',
+  'RESUME',
   'PROJECTS',
   'AI SYSTEMS',
   'JOURNEY',
@@ -42,6 +45,7 @@ export default function GlobalSearch({ isOpen, onClose }) {
   const [query, setQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [resumeTransition, setResumeTransition] = useState(false);
 
   // Build searchable index from current portfolio data
   const knowledgeIndex = useMemo(() => {
@@ -51,6 +55,7 @@ export default function GlobalSearch({ isOpen, onClose }) {
   // Filter and search with complete category support even with empty query
   const searchResults = useMemo(() => {
     const catMap = {
+      RESUME: ['RESUME'],
       PROJECTS: ['PROJECT'],
       'AI SYSTEMS': ['AI SYSTEM', 'BENCHMARK'],
       JOURNEY: ['JOURNEY'],
@@ -125,12 +130,26 @@ export default function GlobalSearch({ isOpen, onClose }) {
   const handleSelect = (item) => {
     if (!item) return;
 
+    // Check if Resume route: trigger cyber transition overlay
+    if (item.destination === '/resume' || item.destination === '/cv' || item.type === 'RESUME' || item.id === 'resume-cv-center') {
+      setResumeTransition(true);
+      setTimeout(() => {
+        forceUnlockBodyScroll();
+        onClose();
+        navigate('/resume');
+      }, 450);
+      setTimeout(() => {
+        setResumeTransition(false);
+      }, 850);
+      return;
+    }
+
     // Immediately release body lock and close modal
     forceUnlockBodyScroll();
     onClose();
 
-    // Check if external route (/vault, /business-info, /privacy-policy, /services, etc.)
-    const dedicatedRoutes = ['/vault', '/business-info', '/privacy-policy', '/services', '/terms', '/refund-policy'];
+    // Check if external route (/vault, /resume, /cv, /business-info, /privacy-policy, /services, etc.)
+    const dedicatedRoutes = ['/vault', '/resume', '/cv', '/business-info', '/privacy-policy', '/services', '/terms', '/refund-policy'];
     if (dedicatedRoutes.includes(item.destination) || (item.destination?.startsWith('/') && !item.destination.startsWith('/#') && !['/projects', '/ai-systems', '/benchmarks', '/proof', '/certificates', '/apps', '/contact', '/future-vault'].includes(item.destination))) {
       if (item.destination === '/vault' && lockVault) {
         lockVault();
@@ -248,6 +267,8 @@ export default function GlobalSearch({ isOpen, onClose }) {
   // Helper icon for category
   const getCategoryIcon = (type) => {
     switch (type) {
+      case 'RESUME':
+        return <FileText className="w-3.5 h-3.5 text-emerald-400" />;
       case 'PROJECT':
         return <FolderGit2 className="w-3.5 h-3.5 text-red-400" />;
       case 'AI SYSTEM':
@@ -381,6 +402,28 @@ export default function GlobalSearch({ isOpen, onClose }) {
           })}
         </div>
 
+        {/* Quick Action: Direct Access to Verified Resume & CV */}
+        <div className="relative z-10 px-3 sm:px-5 py-2.5 bg-gradient-to-r from-emerald-950/50 via-[#0a151b]/80 to-[#070b12] border-b border-emerald-500/30 flex items-center justify-between gap-3 text-xs shadow-[inset_0_1px_0_rgba(16,185,129,0.15)]">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399] animate-pulse shrink-0" />
+            <span className="font-mono text-[11px] font-bold text-emerald-300 uppercase tracking-wider shrink-0">
+              QUICK ACTION:
+            </span>
+            <span className="text-neutral-200 font-sans text-xs truncate">
+              Sahil Bhatia &bull; Verified Resume &amp; Curriculum Vitae (CV)
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => handleSelect({ destination: '/resume', type: 'RESUME' })}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-b from-emerald-500/25 to-emerald-900/40 hover:from-emerald-500/35 hover:to-emerald-900/60 text-emerald-200 hover:text-white border border-emerald-500/50 font-mono text-[11px] font-bold tracking-wider shadow-[0_0_14px_rgba(16,185,129,0.3),inset_0_1px_0_rgba(255,255,255,0.2)] hover:shadow-[0_0_20px_rgba(16,185,129,0.55)] transition-all cursor-pointer active:scale-95 shrink-0"
+          >
+            <FileText className="w-3.5 h-3.5 text-emerald-300" />
+            <span>VIEW RESUME</span>
+            <ArrowRight className="w-3 h-3 text-emerald-400" />
+          </button>
+        </div>
+
         {/* Results List */}
         <div
           ref={listRef}
@@ -435,7 +478,9 @@ export default function GlobalSearch({ isOpen, onClose }) {
                   {/* Direct Navigation Action Hint */}
                   <div className="flex items-center gap-2 font-mono text-[11px] shrink-0">
                     <span className="hidden sm:inline font-bold px-2 py-0.5 rounded bg-red-950/40 border border-red-500/30 text-red-400 opacity-0 group-hover:opacity-100 transition-opacity shadow-inner">
-                      {item.type === 'PROJECT'
+                      {item.type === 'RESUME'
+                        ? 'View Resume'
+                        : item.type === 'PROJECT'
                         ? 'Open Specs'
                         : item.type === 'AI SYSTEM'
                         ? 'Inspect Lab'
@@ -464,11 +509,17 @@ export default function GlobalSearch({ isOpen, onClose }) {
                 Try tapping any suggested query below:
               </p>
               <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
-                {['NeutraCap', 'LYRA V2', 'Paytm', 'Generative AI', 'Agentic Architecture', 'Apps'].map((tag) => (
+                {['Resume / CV', 'NeutraCap', 'LYRA V2', 'Paytm', 'Generative AI', 'Agentic Architecture', 'Apps'].map((tag) => (
                   <button
                     key={tag}
                     type="button"
-                    onClick={() => setQuery(tag)}
+                    onClick={() => {
+                      if (tag === 'Resume / CV') {
+                        setSelectedCategory('RESUME');
+                      } else {
+                        setQuery(tag);
+                      }
+                    }}
                     className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 active:bg-red-600/40 text-neutral-200 text-xs font-mono cursor-pointer border border-white/15 active:scale-95 transition-all touch-manipulation"
                   >
                     {tag}
@@ -502,6 +553,14 @@ export default function GlobalSearch({ isOpen, onClose }) {
           </div>
         </div>
       </div>
+
+      {/* Cyber Page Transition Overlay for Direct Resume Navigation from Search */}
+      <VaultPageTransitionOverlay
+        isOpen={resumeTransition}
+        direction="resume"
+        customTitle="INITIALIZING VERIFIED DOSSIER"
+        customSubtitle="Decrypting Sahil Bhatia’s official curriculum vitae, verified engineering credentials & system telemetry..."
+      />
     </div>
   );
 }

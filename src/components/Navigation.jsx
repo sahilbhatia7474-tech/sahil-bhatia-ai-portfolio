@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Terminal, ArrowUpRight, Cpu, Lock, Search, Bot, Compass } from 'lucide-react';
 import { usePortfolioData } from '../context/PortfolioDataContext';
 import { useAuth } from '../lib/authContext';
 import GlobalSearch from './GlobalSearch';
 import VerticalJourneyTimeline from './VerticalJourneyTimeline';
 import GitHubContributionHeatmap from './GitHubContributionHeatmap';
+import VaultPageTransitionOverlay from './vault/VaultPageTransitionOverlay';
 import { useBodyScrollLock } from '../lib/scrollLock';
 
 const DEFAULT_NAV = [
@@ -16,6 +17,7 @@ const DEFAULT_NAV = [
   { label: 'Benchmarks', path: '/benchmarks' },
   { label: 'Proof', path: '/proof' },
   { label: 'Certificates', path: '/certificates' },
+  { label: 'Resume', path: '/resume' },
   { label: 'Future Vault', path: '/future-vault' },
   { label: 'Apps', path: '/apps' },
 ];
@@ -24,6 +26,8 @@ const Navigation = () => {
   const { identity, siteSettings, navigation } = usePortfolioData();
   const { lockVault } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
+  const [resumeTransition, setResumeTransition] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const progressBarRef = useRef(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -153,8 +157,19 @@ const Navigation = () => {
     }
   };
 
-  const handleNavClick = (path) => {
+  const handleNavClick = (path, e) => {
     setMobileMenuOpen(false);
+    if (path === '/resume' || path === '/cv') {
+      if (e && e.preventDefault) e.preventDefault();
+      setResumeTransition(true);
+      setTimeout(() => {
+        navigate(path);
+      }, 450);
+      setTimeout(() => {
+        setResumeTransition(false);
+      }, 850);
+      return;
+    }
     if (path === '/') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
@@ -166,9 +181,14 @@ const Navigation = () => {
     }
   };
 
-  const navItems = navigation && navigation.length > 0
+  const rawNavItems = navigation && navigation.length > 0
     ? navigation.filter((n) => n.visible !== false).map((n) => ({ label: n.label, path: n.target }))
     : DEFAULT_NAV;
+
+  const hasResume = rawNavItems.some((n) => n.path === '/resume' || n.label.toLowerCase() === 'resume');
+  const navItems = hasResume
+    ? rawNavItems
+    : [...rawNavItems.slice(0, 7), { label: 'Resume', path: '/resume' }, ...rawNavItems.slice(7)];
 
   return (
     <>
@@ -292,7 +312,7 @@ const Navigation = () => {
                 <Link
                   key={item.label}
                   to={item.path}
-                  onClick={() => handleNavClick(item.path)}
+                  onClick={(e) => handleNavClick(item.path, e)}
                   className={`relative px-3 py-1.5 rounded-xl text-xs font-mono tracking-wide transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
                     isRouteActive
                       ? 'text-white bg-gradient-to-b from-[#1f2235] to-[#121321] border border-red-500/40 shadow-[0_4px_16px_rgba(255,42,58,0.35),inset_0_1px_0_rgba(255,255,255,0.22)] font-bold -translate-y-0.5'
@@ -715,7 +735,7 @@ const Navigation = () => {
                       <Link
                         key={item.label}
                         to={item.path}
-                        onClick={() => handleNavClick(item.path)}
+                        onClick={(e) => handleNavClick(item.path, e)}
                         className={`group relative flex items-center justify-between p-3.5 rounded-xl transition-all duration-200 touch-manipulation cursor-pointer overflow-hidden ${
                           isRouteActive
                             ? 'bg-gradient-to-b from-[#32131e] via-[#200c14] to-[#12060b] border-2 border-red-500 text-white shadow-[0_0_28px_rgba(255,42,58,0.5),0_12px_26px_rgba(0,0,0,0.95),inset_0_1.5px_0_rgba(255,255,255,0.4)] -translate-y-0.5'
@@ -996,6 +1016,14 @@ const Navigation = () => {
           onClose={() => setIsJourneyTimelineOpen(false)}
         />
       )}
+
+      {/* Hardware-Accelerated Cyber Page Transition Overlay for Resume */}
+      <VaultPageTransitionOverlay
+        isOpen={resumeTransition}
+        direction="resume"
+        customTitle="INITIALIZING VERIFIED DOSSIER"
+        customSubtitle="Decrypting Sahil Bhatia’s official curriculum vitae, verified engineering credentials & system telemetry..."
+      />
     </>
   );
 };

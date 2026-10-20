@@ -6,6 +6,7 @@ import {
   Unlock,
   Shield,
   Activity,
+  FileText,
 } from 'lucide-react';
 
 /**
@@ -24,7 +25,17 @@ function playTransitionSound(type = 'unlock') {
     osc.connect(gain);
     gain.connect(ctx.destination);
 
-    if (type === 'unlock') {
+    if (type === 'resume') {
+      // Ascending crisp affirmative emerald cyber harmonic
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(520, now);
+      osc.frequency.exponentialRampToValueAtTime(1040, now + 0.08);
+      osc.frequency.exponentialRampToValueAtTime(1560, now + 0.16);
+      gain.gain.setValueAtTime(0.045, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+      osc.start(now);
+      osc.stop(now + 0.2);
+    } else if (type === 'unlock') {
       // Ascending dual-tone futuristic access chime
       osc.type = 'triangle';
       osc.frequency.setValueAtTime(440, now);
@@ -65,20 +76,22 @@ function playTransitionSound(type = 'unlock') {
  * 
  * Provides an iconic, hardware-accelerated, ultra-fast transition between:
  * 1. Public Portfolio -> Founder Vault Security Lock Gate ('gateway')
- * 2. Lock Gate -> Authorized Vault Dashboard ('unlock')
- * 3. Active Session -> Sealed Lock Gate ('lock')
+ * 2. Public Portfolio -> Verified Resume Dossier ('resume')
+ * 3. Lock Gate -> Authorized Vault Dashboard ('unlock')
+ * 4. Active Session -> Sealed Lock Gate ('lock')
  * 
  * Strictly portalled to document.body with fixed full-viewport centering to eliminate clipping or split views.
  */
 export const VaultPageTransitionOverlay = ({
   isOpen = false,
-  direction = 'unlock', // 'unlock' | 'lock' | 'gateway'
+  direction = 'unlock', // 'unlock' | 'lock' | 'gateway' | 'resume'
   role = 'FOUNDER_OWNER',
   customTitle,
   customSubtitle,
 }) => {
   const isUnlock = direction === 'unlock';
   const isGateway = direction === 'gateway';
+  const isResume = direction === 'resume';
 
   // Play audio cue when transition triggers
   useEffect(() => {
@@ -100,44 +113,56 @@ export const VaultPageTransitionOverlay = ({
     }
   }, [isOpen]);
 
-  const protocolLabel = isUnlock
+  const protocolLabel = isResume
+    ? 'VERIFIED_DOSSIER'
+    : isUnlock
     ? 'VAULT_UNLOCK'
     : isGateway
     ? 'GATEWAY_ACCESS'
     : 'VAULT_LOCK';
 
-  const statusLabel = isUnlock
+  const statusLabel = isResume
+    ? 'CREDENTIALS VERIFIED'
+    : isUnlock
     ? 'CLEARANCE VERIFIED'
     : isGateway
     ? 'GATEWAY CLEARANCE ENGAGED'
     : 'SECURITY SHIELD ENGAGED';
 
-  const defaultTitle = isUnlock
+  const defaultTitle = isResume
+    ? 'INITIALIZING VERIFIED DOSSIER'
+    : isUnlock
     ? 'INITIALIZING VAULT CONSOLE'
     : isGateway
     ? 'INITIALIZING SECURITY GATEWAY'
     : 'SEALING VAULT ARCHIVE';
 
-  const defaultSubtitle = isUnlock
+  const defaultSubtitle = isResume
+    ? 'Decrypting Sahil Bhatia’s official curriculum vitae, verified engineering credentials & system telemetry...'
+    : isUnlock
     ? 'Transitioning from authentication gateway into authorized Founder & Guest command console...'
     : isGateway
     ? 'Establishing zero-trust encrypted handshake with Founder Vault security terminal...'
     : 'Terminating active console session and locking vault perimeter behind zero-trust shield...';
 
-  const syncLabel = isUnlock
+  const syncLabel = isResume
+    ? 'SYNCHRONIZING 100%'
+    : isUnlock
     ? 'DECRYPTING 100%'
     : isGateway
     ? 'VERIFYING 100%'
     : 'ENCRYPTING 100%';
 
-  const targetLabel = isUnlock ? 'DASHBOARD' : 'LOCK GATE';
-  const protocolCode = isGateway ? 'ZERO_TRUST' : 'AES-GCM-256';
-  const clearanceLabel = isGateway
+  const targetLabel = isResume ? 'RESUME / CV' : isUnlock ? 'DASHBOARD' : 'LOCK GATE';
+  const protocolCode = isResume ? 'SHA-256 / PDF' : isGateway ? 'ZERO_TRUST' : 'AES-GCM-256';
+  const clearanceLabel = isResume
+    ? 'VERIFIED'
+    : isGateway
     ? 'SECURITY ENCLAVE'
     : role === 'PUBLIC_VIEWER'
     ? 'GUEST'
     : 'FOUNDER';
-  const latencyLabel = isGateway ? '0.4 MS' : '0.6 MS';
+  const latencyLabel = isResume ? '0.2 MS' : isGateway ? '0.4 MS' : '0.6 MS';
 
   const overlayContent = (
     <AnimatePresence mode="wait">
@@ -317,7 +342,9 @@ export const VaultPageTransitionOverlay = ({
             {/* Top Specular Edge Laser Accent */}
             <div
               className={`absolute top-0 inset-x-0 h-[2px] ${
-                isUnlock
+                isResume
+                  ? 'bg-gradient-to-r from-transparent via-emerald-300 to-transparent shadow-[0_0_12px_#10b981]'
+                  : isUnlock
                   ? 'bg-gradient-to-r from-transparent via-cyan-300 to-transparent shadow-[0_0_12px_#06b6d4]'
                   : 'bg-gradient-to-r from-transparent via-red-400 to-transparent shadow-[0_0_12px_#ff2a3a]'
               }`}
@@ -327,7 +354,9 @@ export const VaultPageTransitionOverlay = ({
             <div
               className="absolute inset-0 pointer-events-none opacity-40"
               style={{
-                background: isUnlock
+                background: isResume
+                  ? 'radial-gradient(circle at 50% 20%, rgba(16, 185, 129, 0.25) 0%, transparent 70%)'
+                  : isUnlock
                   ? 'radial-gradient(circle at 50% 20%, rgba(6, 182, 212, 0.25) 0%, transparent 70%)'
                   : 'radial-gradient(circle at 50% 20%, rgba(255, 42, 58, 0.25) 0%, transparent 70%)',
               }}
@@ -340,19 +369,23 @@ export const VaultPageTransitionOverlay = ({
                 animate={{ rotate: 360 }}
                 transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
                 className={`absolute inset-0 rounded-2xl border border-dashed ${
-                  isUnlock ? 'border-cyan-400/50' : 'border-red-500/50'
+                  isResume ? 'border-emerald-400/50' : isUnlock ? 'border-cyan-400/50' : 'border-red-500/50'
                 }`}
               />
               <div
                 className={`w-14 h-14 rounded-2xl flex items-center justify-center border transition-all shadow-xl ${
-                  isUnlock
+                  isResume
+                    ? 'bg-gradient-to-b from-[#0c2a22] via-[#081f18] to-[#040e0b] border-emerald-400/80 text-emerald-300 shadow-[0_0_30px_rgba(16,185,129,0.5),inset_0_1px_0_rgba(255,255,255,0.4)]'
+                    : isUnlock
                     ? 'bg-gradient-to-b from-[#0e2738] via-[#091b26] to-[#040e14] border-cyan-400/80 text-cyan-300 shadow-[0_0_30px_rgba(6,182,212,0.5),inset_0_1px_0_rgba(255,255,255,0.4)]'
                     : isGateway
                     ? 'bg-gradient-to-b from-[#2e0e18] via-[#1a0810] to-[#0c0408] border-red-500/80 text-red-300 shadow-[0_0_30px_rgba(255,42,58,0.5),inset_0_1px_0_rgba(255,255,255,0.4)]'
                     : 'bg-gradient-to-b from-[#380e18] via-[#240810] to-[#120408] border-red-500/80 text-red-300 shadow-[0_0_30px_rgba(255,42,58,0.5),inset_0_1px_0_rgba(255,255,255,0.4)]'
                 }`}
               >
-                {isUnlock ? (
+                {isResume ? (
+                  <FileText className="w-7 h-7 drop-shadow-[0_0_10px_#34d399] animate-pulse" />
+                ) : isUnlock ? (
                   <Unlock className="w-7 h-7 drop-shadow-[0_0_10px_#06b6d4] animate-pulse" />
                 ) : isGateway ? (
                   <Shield className="w-7 h-7 drop-shadow-[0_0_10px_#ff2a3a] animate-pulse" />
@@ -366,12 +399,14 @@ export const VaultPageTransitionOverlay = ({
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/60 border border-white/15 text-[11px] font-mono mb-2.5 shadow-[inset_0_1px_4px_rgba(0,0,0,0.8)]">
               <span
                 className={`w-2 h-2 rounded-full ${
-                  isUnlock
+                  isResume
+                    ? 'bg-emerald-400 animate-ping shadow-[0_0_8px_#34d399]'
+                    : isUnlock
                     ? 'bg-cyan-400 animate-ping shadow-[0_0_8px_#06b6d4]'
                     : 'bg-red-500 animate-ping shadow-[0_0_8px_#ff2a3a]'
                 }`}
               />
-              <span className={`font-black tracking-wider uppercase ${isUnlock ? 'text-cyan-300' : 'text-red-400'}`}>
+              <span className={`font-black tracking-wider uppercase ${isResume ? 'text-emerald-300' : isUnlock ? 'text-cyan-300' : 'text-red-400'}`}>
                 {statusLabel}
               </span>
             </div>
@@ -390,7 +425,7 @@ export const VaultPageTransitionOverlay = ({
             <div className="space-y-1.5 mb-5">
               <div className="flex justify-between items-center text-[10px] font-mono text-slate-400">
                 <span className="flex items-center gap-1.5 font-bold">
-                  <Activity className={`w-3 h-3 ${isUnlock ? 'text-cyan-400' : 'text-red-400'} animate-pulse`} />
+                  <Activity className={`w-3 h-3 ${isResume ? 'text-emerald-400' : isUnlock ? 'text-cyan-400' : 'text-red-400'} animate-pulse`} />
                   <span>MATRIX SYNC:</span>
                 </span>
                 <span className="text-white font-black tracking-widest font-mono">
@@ -404,7 +439,9 @@ export const VaultPageTransitionOverlay = ({
                   animate={{ width: '100%' }}
                   transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
                   className={`h-full rounded-full relative ${
-                    isUnlock
+                    isResume
+                      ? 'bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 shadow-[0_0_14px_#10b981]'
+                      : isUnlock
                       ? 'bg-gradient-to-r from-teal-500 via-cyan-400 to-emerald-400 shadow-[0_0_14px_#06b6d4]'
                       : isGateway
                       ? 'bg-gradient-to-r from-red-600 via-amber-500 to-cyan-400 shadow-[0_0_14px_#ff2a3a]'

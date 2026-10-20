@@ -329,6 +329,45 @@ export function buildKnowledgeIndex(data = {}) {
     badge: 'STANDARD',
   });
 
+  // 13. Official Resume & Curriculum Vitae (CV) Center
+  items.push({
+    id: 'resume-cv-center',
+    type: 'RESUME',
+    categoryLabel: 'Curriculum Vitae',
+    title: 'Sahil Bhatia — Verified Resume & CV',
+    subtitle: 'AI Generalist | AI-Assisted Digital Solutions | Workflow Design',
+    description: 'Official verified curriculum vitae: summary, core skills, projects (Dental Care, NeutraCap, LinkBio, ShowTime Cinema, SafeShield, LYRA V2, Sahil AI OS), commercial sales experience (Excitel, Airtel, Paytm), and certifications.',
+    destination: '/resume',
+    targetSection: 'resume',
+    tags: [
+      'resume',
+      'view resume',
+      'cv',
+      'curriculum vitae',
+      'sahil bhatia resume',
+      'sahil resume',
+      'bhatia resume',
+      'dossier',
+      'verified dossier',
+      'verified resume',
+      'experience',
+      'skills',
+      'education',
+      'certifications',
+      'projects',
+      'download resume',
+      'pdf resume',
+      'print resume',
+      'hire sahil',
+      'bio',
+      'biodata',
+      'profile',
+      'resume / cv',
+    ],
+    badge: 'VERIFIED 2026',
+    year: '2026',
+  });
+
   return items;
 }
 
@@ -337,9 +376,10 @@ export function buildKnowledgeIndex(data = {}) {
  */
 export function searchKnowledgeIndex(index, query) {
   if (!query || !query.trim()) {
-    // Return curated recommendations across core dimensions
+    // Return curated recommendations across core dimensions with Resume prioritized
     return index.filter((item) =>
-      ['identity-core', 'project-01', 'project-02', 'project-03', 'system-sys-01', 'system-sys-02', 'contact-channel'].includes(item.id) ||
+      ['resume-cv-center', 'identity-core', 'project-01', 'project-02', 'project-03', 'system-sys-01', 'system-sys-02', 'contact-channel'].includes(item.id) ||
+      item.type === 'RESUME' ||
       item.type === 'PROJECT' ||
       item.type === 'AI SYSTEM' ||
       item.type === 'JOURNEY' ||
@@ -572,6 +612,39 @@ export function queryAIAssistant(userPrompt, portfolioData = {}) {
     };
   }
 
+  // 5.5. RESUME & CURRICULUM VITAE (CV)
+  if (
+    prompt.includes('resume') ||
+    prompt.includes('cv') ||
+    prompt.includes('curriculum vitae') ||
+    prompt.includes('sahil resume') ||
+    prompt.includes('bhatia resume') ||
+    prompt.includes('download resume') ||
+    prompt.includes('view resume') ||
+    prompt.includes('see resume') ||
+    prompt.includes('resume dikhao') ||
+    prompt.includes('cv dikhao') ||
+    prompt.includes('biodata') ||
+    prompt.includes('bio data') ||
+    prompt.includes('resume dekhna') ||
+    prompt.includes('cv dekhna') ||
+    prompt.includes('resume link') ||
+    prompt.includes('cv link') ||
+    prompt.includes('dossier') ||
+    prompt === 'show resume' ||
+    prompt === 'show cv'
+  ) {
+    return {
+      text: `Sahil Bhatia's official verified Resume & Curriculum Vitae is available at /resume:\n\n• Professional Focus: AI Generalist | AI-Assisted Digital Solutions | Workflow Design\n• Core Competencies: Generative AI tools, prompt engineering, digital prototyping, workflow mapping, and ~2 years customer-facing field sales & BD across telecom and fintech.\n• Key Projects: Dental Care, NeutraCap Industrial Catalogue, LinkBio, ShowTime Cinema, Neutronverse Funnels, SafeShield, LYRA V2, and Sahil AI OS.\n• Experience: Excitel Broadband, Airtel Broadband, and Paytm.\n\nYou can review the complete resume or save/print a clean PDF directly from the Resume page.`,
+      actions: [
+        { label: 'VIEW VERIFIED RESUME', destination: '/resume', type: 'resume' },
+        { label: 'SAVE AS PDF / PRINT', destination: '/resume', type: 'resume' },
+        { label: 'OPEN PROFESSIONAL JOURNEY', destination: '/journey', type: 'journey-timeline' },
+        { label: 'INSPECT CURATED PROJECTS', destination: '#projects', type: 'scroll' },
+      ],
+    };
+  }
+
   // 6. "SHOW PROFESSIONAL JOURNEY" / CAREER / SALES / PAYTM / AIRTEL / EXCITEL
   if (
     prompt.includes('journey') ||
@@ -584,8 +657,6 @@ export function queryAIAssistant(userPrompt, portfolioData = {}) {
     prompt.includes('kaam kiya') ||
     prompt.includes('kaha kaam') ||
     prompt.includes('history') ||
-    prompt.includes('resume') ||
-    prompt.includes('cv') ||
     prompt === 'show professional journey'
   ) {
     return {
