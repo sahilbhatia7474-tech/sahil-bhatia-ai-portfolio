@@ -130,6 +130,14 @@ export default function GlobalSearch({ isOpen, onClose }) {
   const handleSelect = (item) => {
     if (!item) return;
 
+    // Check if external URL (e.g. verified portfolio funnel / external services)
+    if (item.external || (item.destination && (item.destination.startsWith('http://') || item.destination.startsWith('https://')))) {
+      forceUnlockBodyScroll();
+      onClose();
+      window.open(item.destination, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
     // Check if Resume route: trigger cyber transition overlay
     if (item.destination === '/resume' || item.destination === '/cv' || item.type === 'RESUME' || item.id === 'resume-cv-center') {
       setResumeTransition(true);
@@ -286,6 +294,8 @@ export default function GlobalSearch({ isOpen, onClose }) {
       case 'VAULT':
       case 'VAULT ITEM':
         return <Lock className="w-3.5 h-3.5 text-red-400" />;
+      case 'SERVICE':
+        return <Sparkles className="w-3.5 h-3.5 text-amber-400" />;
       default:
         return <Sparkles className="w-3.5 h-3.5 text-red-400" />;
     }

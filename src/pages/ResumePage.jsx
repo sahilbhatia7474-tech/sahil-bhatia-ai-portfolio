@@ -17,8 +17,6 @@ import {
   Layers,
   CheckCircle2,
   Globe,
-  ShieldCheck,
-  Zap,
   Copy,
 } from 'lucide-react';
 import PageSEO from '../components/PageSEO';
@@ -262,9 +260,9 @@ export default function ResumePage() {
               </button>
               <div className="hidden sm:flex items-center gap-2.5 pl-3 border-l border-white/15 text-[11px] font-mono text-neutral-300">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
-                <span className="text-white font-extrabold tracking-wider font-['Outfit',sans-serif]">DOSSIER CENTER</span>
+                <span className="text-white font-extrabold tracking-wider font-['Outfit',sans-serif]">RESUME / CV</span>
                 <span className="text-neutral-500">|</span>
-                <span className="text-neutral-300 font-bold font-['Outfit',sans-serif]">SAHIL BHATIA · CV</span>
+                <span className="text-neutral-300 font-bold font-['Outfit',sans-serif]">SAHIL BHATIA</span>
               </div>
             </div>
 
@@ -360,12 +358,6 @@ export default function ResumePage() {
               }}
             />
 
-            {/* High-Tech Technical Watermark Badge */}
-            <div className="absolute right-6 top-6 hidden md:flex items-center gap-2 font-mono text-[10px] text-neutral-400 bg-white/5 border border-white/10 px-3.5 py-1.5 rounded-full pointer-events-none select-none no-print shadow-inner backdrop-blur-md">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee] animate-pulse" />
-              <span className="text-neutral-200 font-bold uppercase tracking-wider font-['Outfit',sans-serif]">ROOT CLEARANCE // DOSSIER 2026</span>
-            </div>
-
             <div
               className="space-y-10 sm:space-y-12 relative z-10"
               style={{
@@ -389,7 +381,7 @@ export default function ResumePage() {
                           <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500 shadow-[0_0_10px_#ff2a3a]" />
                         </span>
                         <span className="font-['Outfit',sans-serif] text-[11px] sm:text-xs tracking-[0.16em] uppercase text-red-200 font-extrabold">
-                          AUTHORITATIVE DOSSIER · VERIFIED IDENTITY
+                          VERIFIED CURRICULUM VITAE
                         </span>
                       </div>
                     </div>
@@ -406,17 +398,9 @@ export default function ResumePage() {
 
                     {/* Operational Telemetry Strip (On-Screen Only) */}
                     <div className="pt-1 flex flex-wrap items-center gap-2 font-mono text-[11px] no-print">
-                      <span className="px-3 py-1 rounded-lg bg-emerald-950/70 border border-emerald-500/40 text-emerald-300 font-bold flex items-center gap-1.5 shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
-                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 drop-shadow-[0_0_6px_#34d399]" />
-                        <span>CLEARANCE: VERIFIED</span>
-                      </span>
-                      <span className="px-3 py-1 rounded-lg bg-cyan-950/70 border border-cyan-400/40 text-cyan-300 font-bold flex items-center gap-1.5 shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
-                        <Zap className="w-3.5 h-3.5 text-cyan-400 drop-shadow-[0_0_6px_#22d3ee]" />
-                        <span>SYSTEMS: 8 PROTOTYPES</span>
-                      </span>
                       <span className="px-3 py-1 rounded-lg bg-purple-950/70 border border-purple-400/40 text-purple-300 font-bold flex items-center gap-1.5 shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
                         <Briefcase className="w-3.5 h-3.5 text-purple-400 drop-shadow-[0_0_6px_#c084fc]" />
-                        <span>FIELD OPS: ~2 YEARS</span>
+                        <span>FIELD OPERATIONS &amp; BD: ~2 YEARS</span>
                       </span>
                     </div>
                   </div>
@@ -441,21 +425,14 @@ export default function ResumePage() {
                         <div className="min-w-0 space-y-0.5">
                           <div className="flex items-center gap-1.5">
                             <span className="w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_6px_#ff2a3a]" />
-                            <span className="text-[10px] text-red-300/90 uppercase tracking-[0.16em] block font-extrabold font-['Outfit',sans-serif]">Location Hub // Region 01</span>
+                            <span className="text-[10px] text-red-300/90 uppercase tracking-[0.16em] block font-extrabold font-['Outfit',sans-serif]">Location</span>
                           </div>
                           <div className="text-white font-black tracking-tight text-sm font-['Outfit',sans-serif]">Delhi NCR, India</div>
-                          <div className="text-[10px] font-mono text-neutral-400 font-medium">28.61° N, 77.20° E · IST (UTC+5:30)</div>
+                          <div className="text-[10px] font-mono text-neutral-400 font-medium">India · Open to Remote / Hybrid</div>
                         </div>
                       </div>
                       <div className="relative z-10 hidden sm:flex flex-col items-end gap-1 shrink-0 no-print">
-                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 font-bold text-[10px] shadow-[0_0_10px_rgba(16,185,129,0.25)]">
-                          <span className="relative flex h-1.5 w-1.5">
-                            <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
-                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500 shadow-[0_0_6px_#34d399]" />
-                          </span>
-                          <span>ACTIVE REGION</span>
-                        </div>
-                        <span className="text-[9px] font-mono text-neutral-400 uppercase tracking-wider">Remote / Hybrid</span>
+                        <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-500/40 px-2 py-0.5 rounded-md font-bold uppercase tracking-wider">Available</span>
                       </div>
                     </div>
 
@@ -481,7 +458,7 @@ export default function ResumePage() {
                         <div className="min-w-0 space-y-0.5">
                           <div className="flex items-center gap-1.5">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#34d399]" />
-                            <span className="text-[10px] text-emerald-300/90 uppercase tracking-[0.16em] block font-extrabold font-['Outfit',sans-serif]">Direct Voice // Priority Line</span>
+                            <span className="text-[10px] text-emerald-300/90 uppercase tracking-[0.16em] block font-extrabold font-['Outfit',sans-serif]">Phone</span>
                           </div>
                           <div className="text-emerald-300 font-black tracking-tight text-sm group-hover/phone:text-white transition-colors font-['Outfit',sans-serif]">+91 9953239674</div>
                           <div className="text-[10px] font-mono text-neutral-400 font-medium">Direct Voice · WhatsApp Available</div>
@@ -517,10 +494,10 @@ export default function ResumePage() {
                         <div className="min-w-0 space-y-0.5">
                           <div className="flex items-center gap-1.5">
                             <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_6px_#22d3ee]" />
-                            <span className="text-[10px] text-cyan-300/90 uppercase tracking-[0.16em] block font-extrabold font-['Outfit',sans-serif]">Direct Dispatch // 24H SLA</span>
+                            <span className="text-[10px] text-cyan-300/90 uppercase tracking-[0.16em] block font-extrabold font-['Outfit',sans-serif]">Email</span>
                           </div>
                           <div className="text-cyan-300 font-bold tracking-tight text-xs truncate block group-hover/mail:text-white transition-colors font-mono">sahilbhatia7474@gmail.com</div>
-                          <div className="text-[10px] font-mono text-neutral-400 font-medium">Click Card to Copy Address</div>
+                          <div className="text-[10px] font-mono text-neutral-400 font-medium">Click to Copy Address</div>
                         </div>
                       </div>
                       <div className="relative z-10 shrink-0 no-print">
@@ -568,10 +545,10 @@ export default function ResumePage() {
                         <div className="min-w-0 space-y-0.5">
                           <div className="flex items-center gap-1.5">
                             <span className="w-1.5 h-1.5 rounded-full bg-purple-400 shadow-[0_0_6px_#c084fc]" />
-                            <span className="text-[10px] text-purple-300/90 uppercase tracking-[0.16em] block font-extrabold font-['Outfit',sans-serif]">Production Systems // Verified</span>
+                            <span className="text-[10px] text-purple-300/90 uppercase tracking-[0.16em] block font-extrabold font-['Outfit',sans-serif]">Portfolio</span>
                           </div>
                           <div className="text-purple-200 font-bold tracking-tight text-xs truncate block group-hover/web:text-white transition-colors font-mono">sahil-bhatia-ai-portfolio</div>
-                          <div className="text-[10px] font-mono text-neutral-400 font-medium">8 Live Deployed AI Systems & Apps</div>
+                          <div className="text-[10px] font-mono text-neutral-400 font-medium">Verified Projects &amp; Systems</div>
                         </div>
                       </div>
                       <div className="relative z-10 shrink-0 no-print">
@@ -833,14 +810,7 @@ export default function ResumePage() {
                       </div>
                       <div className="flex items-center gap-1.5">
                         <span className="text-cyan-400 font-bold">Blue:</span>
-                        <a
-                          href="https://2m0y1o.flexi-funnels.com/portfolio-offer"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-neutral-300 hover:text-white underline break-all font-semibold"
-                        >
-                          portfolio-offer
-                        </a>
+                        <span className="text-neutral-400 font-mono text-[11px] italic">In Progress (Not Linked)</span>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <span className="text-neutral-400 font-bold">Black:</span>
@@ -1037,15 +1007,9 @@ export default function ResumePage() {
                 <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-b from-[#13172b]/85 via-[#0d1020]/90 to-[#070914]/95 border border-white/15 shadow-[0_12px_30px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.18)] space-y-2 print-card">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5">
                     <h3 className="text-sm sm:text-base font-bold font-display text-white">
-                      Bachelor of Computer Applications (BCA) / Technology Studies
+                      B.Sc. Mathematics (Honours) — studies commenced; degree not completed.
                     </h3>
-                    <span className="text-xs font-mono text-cyan-300 bg-cyan-950/70 border border-cyan-400/40 px-2.5 py-0.5 rounded-md font-bold">
-                      Academic Graduation
-                    </span>
                   </div>
-                  <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed font-sans">
-                    Focus on Computing Frameworks, Software Systems, Distributed Logic, and Web Technologies.
-                  </p>
                 </div>
               </section>
 
@@ -1164,7 +1128,7 @@ export default function ResumePage() {
                     <CheckCircle2 className="w-3.5 h-3.5" />
                   </div>
                   <span className="text-neutral-300 font-bold">
-                    Authoritative Curriculum Vitae &bull; Ground-Truth Verified
+                    Verified Curriculum Vitae &bull; Professional Portfolio Document
                   </span>
                 </div>
                 <div className="flex items-center gap-2">

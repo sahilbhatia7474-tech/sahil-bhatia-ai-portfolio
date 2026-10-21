@@ -368,6 +368,35 @@ export function buildKnowledgeIndex(data = {}) {
     year: '2026',
   });
 
+  // 14. Get Your Own Portfolio — Done-for-You Career Portfolio Service
+  items.push({
+    id: 'portfolio-service-offer',
+    type: 'SERVICE',
+    categoryLabel: 'Portfolio Service',
+    title: 'Get Your Own Portfolio — Professional Career Portfolio',
+    subtitle: 'Done-For-You · 4-Day Turnaround · ₹1,499 One-Time',
+    description: 'Turn your resume, projects and certificates into a premium, mobile-first portfolio built to be shared. Includes review, submission form, and secure checkout.',
+    destination: 'https://2m0y1o.flexi-funnels.com/portfolio-offer-ba1cgdc',
+    external: true,
+    tags: [
+      'get your own portfolio',
+      'portfolio service',
+      'portfolio offer',
+      'portfolio package',
+      'buy portfolio',
+      'build my portfolio',
+      'order portfolio',
+      'portfolio funnel',
+      'portfolio creation',
+      'career portfolio',
+      'portfolio',
+      'services',
+      'hire',
+    ],
+    badge: '₹1,499 SERVICE',
+    year: '2026',
+  });
+
   return items;
 }
 
@@ -690,6 +719,26 @@ export function queryAIAssistant(userPrompt, portfolioData = {}) {
     };
   }
 
+  // 7.5. GET YOUR OWN PORTFOLIO / PORTFOLIO SERVICE FUNNEL
+  if (
+    prompt.includes('get your own portfolio') ||
+    prompt.includes('portfolio service') ||
+    prompt.includes('portfolio offer') ||
+    prompt.includes('buy portfolio') ||
+    prompt.includes('portfolio banwana') ||
+    prompt.includes('build my portfolio') ||
+    prompt.includes('portfolio funnel') ||
+    prompt.includes('order portfolio')
+  ) {
+    return {
+      text: `Get Your Own Portfolio is Sahil's verified done-for-you career portfolio service (₹1,499 one-time, 4-day delivery):\n\n• Turn your resume, projects, and certificates into an editorial, mobile-first portfolio built to be shared.\n• Complete done-for-you delivery in 4 days, custom structure, and seamless shareability.\n• Review the verified offer details and checkout securely.`,
+      actions: [
+        { label: 'VIEW PORTFOLIO OFFER & FUNNEL', url: 'https://2m0y1o.flexi-funnels.com/portfolio-offer-ba1cgdc', type: 'external' },
+        { label: 'VIEW VERIFIED RESUME', destination: '/resume', type: 'resume' },
+      ],
+    };
+  }
+
   // 8. "SHOW PROOF" / EVIDENCE / AUDIT / REPOSITORIES
   if (
     prompt.includes('proof') ||
@@ -708,20 +757,38 @@ export function queryAIAssistant(userPrompt, portfolioData = {}) {
     };
   }
 
-  // 9. "SHOW CERTIFICATES" / CREDENTIALS / EDUCATION
+  // 9. "SHOW CERTIFICATES" / CREDENTIALS
   if (
     prompt.includes('certificate') ||
     prompt.includes('credential') ||
-    prompt.includes('education') ||
-    prompt.includes('qualification') ||
+    prompt.includes('certification') ||
     prompt === 'show certificates'
   ) {
     return {
-      text: `Verified technical credentials and research benchmarks include:\n\n• Advanced Prompt Architecture & Agent Workflows (Systematic evaluation on structured JSON schemas, multimodal reasoning, and long reasoning chain context preservation).\n• Verified competency across LLM prompt engineering, n8n automations, TypeScript/React systems, and Directed Acyclic Graphs.`,
+      text: `Verified technical credentials & certifications include:\n\n• Generative AI Mastermind — Outskill (Certificate ID: 0A0suE8RRdgDrQXPyc2f)\n• AI Tools & ChatGPT Workshop — be10x (Credential ID: 0270772f-3809-4400-b29b-1e1c61cd09971465833)\n\nAll credentials feature authentic verification links and verifiable skills.`,
       actions: [
         { label: 'VIEW CERTIFICATES & CREDENTIALS', destination: '#certificates', type: 'scroll' },
         { label: 'VIEW PROOF MATRIX', destination: '#proof', type: 'scroll' },
         { label: 'INSPECT SKILLS MAP', destination: '#capabilities', type: 'scroll' },
+      ],
+    };
+  }
+
+  // 9.5. EDUCATION / DEGREE / ACADEMIC QUALIFICATIONS
+  if (
+    prompt.includes('education') ||
+    prompt.includes('degree') ||
+    prompt.includes('college') ||
+    prompt.includes('university') ||
+    prompt.includes('padhai') ||
+    prompt.includes('qualification')
+  ) {
+    return {
+      text: `Academic Qualifications:\n\n• B.Sc. Mathematics (Honours) — studies commenced; degree not completed.\n\nAll specialized computing, autonomous agents, and AI architecture proficiencies have been developed through intensive self-directed research, verified open-source builds, and frontline commercial deployments.`,
+      actions: [
+        { label: 'VIEW VERIFIED RESUME', destination: '/resume', type: 'resume' },
+        { label: 'VIEW CERTIFICATES', destination: '#certificates', type: 'scroll' },
+        { label: 'EXPLORE CAPABILITIES', destination: '#capabilities', type: 'scroll' },
       ],
     };
   }

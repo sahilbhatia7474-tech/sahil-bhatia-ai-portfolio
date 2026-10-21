@@ -64,11 +64,11 @@ const VaultEducation = ({ openCreateSignal, clearCreateSignal }) => {
     }
     setEditingEdu(null);
     setFormData({
-      degree: 'Bachelor of Technology (B.Tech IT)',
-      institution: 'Guru Gobind Singh Indraprastha University (GGSIPU)',
-      period: '2021 - 2025',
-      description: 'Rigorous coursework in Data Structures, Distributed Systems, Software Engineering, AI & Machine Learning.',
-      evidence: 'Degree credentials verified and logged.',
+      degree: '',
+      institution: '',
+      period: '',
+      description: '',
+      evidence: '',
       status: 'PUBLISHED',
       visibility: 'PUBLIC',
       order: education.length + 1,

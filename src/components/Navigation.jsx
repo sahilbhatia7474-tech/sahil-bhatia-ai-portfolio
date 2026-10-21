@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Terminal, ArrowUpRight, Cpu, Lock, Search, Bot, Compass } from 'lucide-react';
+import { Menu, X, Terminal, ArrowUpRight, Cpu, Lock, Search, Bot, Compass, FileText, Sparkles, ArrowRight } from 'lucide-react';
 import { usePortfolioData } from '../context/PortfolioDataContext';
 import { useAuth } from '../lib/authContext';
 import GlobalSearch from './GlobalSearch';
@@ -55,6 +55,9 @@ const Navigation = () => {
           setScrolled((prev) => (prev !== isScrolled ? isScrolled : prev));
 
           if (progressBarRef.current) {
+            if (currentY > cachedDocHeight) {
+              cachedDocHeight = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+            }
             const progress = cachedDocHeight > 0 ? Math.min(100, Math.max(0, (currentY / cachedDocHeight) * 100)) : 0;
             progressBarRef.current.style.width = `${progress}%`;
           }
@@ -632,7 +635,7 @@ const Navigation = () => {
                 <GitHubContributionHeatmap />
               </div>
 
-              {/* Quick Actions Tier: Search & Journey */}
+              {/* Quick Actions Tier: Search, Journey, Resume & Get Your Own Portfolio */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                 {/* Search Knowledge Model — 3D Tactile Workstation Module (CSS Selector 3) */}
                 <button
@@ -707,6 +710,88 @@ const Navigation = () => {
                     <span>EXPLORE &rarr;</span>
                   </div>
                 </button>
+
+                {/* Dedicated Verified Resume & CV Button (Reusing Dashboard Resume Button Style & Interaction) */}
+                <button
+                  type="button"
+                  onClick={(e) => handleNavClick('/resume', e)}
+                  className="w-full flex items-center justify-between p-4 sm:p-4.5 rounded-2xl bg-gradient-to-r from-[#0d2825] via-[#091e1d] to-[#051415] border-2 border-emerald-500/80 hover:border-emerald-300 text-white shadow-[0_16px_36px_rgba(0,0,0,0.95),0_0_24px_rgba(16,185,129,0.3),inset_0_1.5px_0_rgba(255,255,255,0.32),inset_0_-2px_0_rgba(0,0,0,0.8)] hover:shadow-[0_22px_48px_rgba(0,0,0,0.98),0_0_36px_rgba(16,185,129,0.5),inset_0_1.5px_0_rgba(255,255,255,0.45)] hover:-translate-y-1 active:translate-y-0.5 active:scale-[0.99] transition-all duration-200 touch-manipulation cursor-pointer group relative overflow-hidden text-left"
+                  style={{
+                    WebkitFontSmoothing: 'antialiased',
+                    textRendering: 'optimizeLegibility',
+                  }}
+                  title="Open Sahil Bhatia's Verified Curriculum Vitae"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-300/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" />
+                  <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-emerald-400/90 to-transparent pointer-events-none" />
+
+                  <div className="flex items-center gap-3.5 relative z-10 min-w-0">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-800/95 via-emerald-950/95 to-[#061812] border border-emerald-400/85 flex items-center justify-center text-emerald-300 shadow-[0_0_20px_rgba(16,185,129,0.75),inset_0_1px_0_rgba(255,255,255,0.45)] group-hover:scale-110 group-hover:rotate-6 transition-all shrink-0">
+                      <FileText className="w-5 h-5 drop-shadow-[0_0_10px_#34d399]" />
+                    </div>
+                    <div className="text-left min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-xs sm:text-sm font-black tracking-wider text-white uppercase group-hover:text-emerald-200 transition-colors">
+                          VIEW RESUME
+                        </span>
+                        <span className="px-1.5 py-0.5 rounded bg-emerald-950/95 border border-emerald-400/70 text-emerald-300 font-mono text-[9px] font-black tracking-wider uppercase shadow-[0_0_10px_rgba(16,185,129,0.45)]">
+                          CV
+                        </span>
+                        <span className="relative flex items-center justify-center w-2 h-2">
+                          <span className="absolute w-3 h-3 rounded-full bg-emerald-400/60 animate-ping" />
+                          <span className="relative w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" />
+                        </span>
+                      </div>
+                      <span className="text-[10px] sm:text-xs text-emerald-300 font-mono font-medium tracking-wide block mt-0.5 group-hover:text-white transition-colors">
+                        Verified CV · Experience & Skills · PDF
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="w-7 h-7 rounded-lg bg-emerald-950/80 border border-emerald-400/60 flex items-center justify-center shrink-0 group-hover:bg-emerald-900 group-hover:border-emerald-300 transition-colors">
+                    <ArrowRight className="w-4 h-4 text-emerald-300 group-hover:translate-x-0.5 transition-transform shrink-0 drop-shadow-[0_0_8px_#34d399]" />
+                  </div>
+                </button>
+
+                {/* Compact Portfolio Service Entry: "Get Your Own Portfolio" */}
+                <a
+                  href="https://2m0y1o.flexi-funnels.com/portfolio-offer-ba1cgdc"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full flex items-center justify-between p-4 sm:p-4.5 rounded-2xl bg-gradient-to-r from-[#2a1708] via-[#1a0e05] to-[#0d0702] border-2 border-amber-500/70 hover:border-amber-300 text-white shadow-[0_16px_36px_rgba(0,0,0,0.95),0_0_24px_rgba(245,158,11,0.25),inset_0_1.5px_0_rgba(255,255,255,0.32),inset_0_-2px_0_rgba(0,0,0,0.8)] hover:shadow-[0_22px_48px_rgba(0,0,0,0.98),0_0_36px_rgba(245,158,11,0.45),inset_0_1.5px_0_rgba(255,255,255,0.45)] hover:-translate-y-1 active:translate-y-0.5 active:scale-[0.99] transition-all duration-200 touch-manipulation cursor-pointer group relative overflow-hidden text-left"
+                  style={{
+                    WebkitFontSmoothing: 'antialiased',
+                    textRendering: 'optimizeLegibility',
+                  }}
+                  title="Get Your Own Portfolio — Done-for-You Career Portfolio Service"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-300/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" />
+                  <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-amber-400/90 to-transparent pointer-events-none" />
+
+                  <div className="flex items-center gap-3.5 relative z-10 min-w-0">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-700/95 via-amber-950/95 to-[#160a03] border border-amber-400/85 flex items-center justify-center text-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.7),inset_0_1px_0_rgba(255,255,255,0.45)] group-hover:scale-110 group-hover:rotate-6 transition-all shrink-0">
+                      <Sparkles className="w-5 h-5 drop-shadow-[0_0_10px_#fbbf24]" />
+                    </div>
+                    <div className="text-left min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-sans font-bold text-sm sm:text-base text-white tracking-tight group-hover:text-amber-200 transition-colors">
+                          Get Your Own Portfolio
+                        </span>
+                        <span className="px-1.5 py-0.5 rounded bg-amber-950/95 border border-amber-400/70 text-amber-300 font-mono text-[9px] font-black tracking-wider uppercase shadow-[0_0_10px_rgba(245,158,11,0.45)]">
+                          SERVICE
+                        </span>
+                      </div>
+                      <span className="text-[10px] sm:text-xs text-amber-200/90 font-mono font-medium tracking-wide block mt-0.5 group-hover:text-white transition-colors">
+                        Done-For-You · 4-Day Turnaround · ₹1,499
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="w-7 h-7 rounded-lg bg-amber-950/80 border border-amber-400/60 flex items-center justify-center shrink-0 group-hover:bg-amber-900 group-hover:border-amber-300 transition-colors">
+                    <ArrowUpRight className="w-4 h-4 text-amber-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform shrink-0 drop-shadow-[0_0_8px_#fbbf24]" />
+                  </div>
+                </a>
               </div>
 
               {/* Navigation Links Grid Section */}
