@@ -1,12 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Terminal, ArrowUpRight, Cpu, Lock, Search, Bot, Compass, FileText, Sparkles, ArrowRight } from 'lucide-react';
+import { X, Terminal, ArrowUpRight, Lock, Search, Bot, Compass, FileText, Sparkles, ArrowRight } from 'lucide-react';
 import { usePortfolioData } from '../context/PortfolioDataContext';
 import { useAuth } from '../lib/authContext';
 import GlobalSearch from './GlobalSearch';
 import VerticalJourneyTimeline from './VerticalJourneyTimeline';
 import GitHubContributionHeatmap from './GitHubContributionHeatmap';
-import VaultPageTransitionOverlay from './vault/VaultPageTransitionOverlay';
 import { useBodyScrollLock } from '../lib/scrollLock';
 
 const DEFAULT_NAV = [
@@ -27,7 +26,6 @@ const Navigation = () => {
   const { lockVault } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const [resumeTransition, setResumeTransition] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const progressBarRef = useRef(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -164,13 +162,31 @@ const Navigation = () => {
     setMobileMenuOpen(false);
     if (path === '/resume' || path === '/cv') {
       if (e && e.preventDefault) e.preventDefault();
-      setResumeTransition(true);
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(
+          new CustomEvent('vault-transition', {
+            detail: {
+              isOpen: true,
+              direction: 'resume',
+              title: 'INITIALIZING VERIFIED DOSSIER',
+              subtitle: 'Decrypting Sahil Bhatia’s official curriculum vitae, verified engineering credentials & system telemetry...',
+            },
+          })
+        );
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      }
       setTimeout(() => {
         navigate(path);
-      }, 450);
+      }, 420);
       setTimeout(() => {
-        setResumeTransition(false);
-      }, 850);
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(
+            new CustomEvent('vault-transition', {
+              detail: { isOpen: false, direction: 'resume' },
+            })
+          );
+        }
+      }, 800);
       return;
     }
     if (path === '/') {
@@ -419,66 +435,63 @@ const Navigation = () => {
             <button
               type="button"
               onClick={() => setMobileMenuOpen((prev) => !prev)}
-              className={`inline-flex items-center gap-3 px-3.5 py-2 rounded-xl border text-xs font-mono transition-all duration-300 active:scale-95 cursor-pointer touch-manipulation hover:-translate-y-0.5 active:translate-y-0 group relative overflow-hidden select-none ${
+              className={`inline-flex items-center gap-3 px-3.5 py-2 rounded-xl border text-xs font-mono transition-all duration-300 active:scale-[0.96] cursor-pointer touch-manipulation hover:-translate-y-0.5 active:translate-y-0 group relative overflow-hidden select-none ${
                 mobileMenuOpen
-                  ? 'bg-gradient-to-b from-[#2e1017] via-[#1a080d] to-[#0d0407] border-red-500 text-white shadow-[0_0_32px_rgba(255,42,58,0.55),0_10px_28px_rgba(0,0,0,0.95),inset_0_1.5px_0_rgba(255,255,255,0.4)]'
-                  : 'bg-gradient-to-b from-[#22253a] via-[#131525] to-[#090a12] border-white/30 text-white hover:border-red-500/90 shadow-[0_10px_26px_rgba(0,0,0,0.9),inset_0_1.5px_0_rgba(255,255,255,0.38),inset_0_-2px_0_rgba(0,0,0,0.65)] hover:shadow-[0_0_28px_rgba(255,42,58,0.4),0_12px_30px_rgba(0,0,0,0.95)]'
+                  ? 'bg-gradient-to-b from-[#2a0e14] via-[#16070a] to-[#0a0305] border-red-500/80 text-white shadow-[0_0_24px_rgba(255,42,58,0.45),0_10px_24px_rgba(0,0,0,0.95),inset_0_1.5px_0_rgba(255,255,255,0.35),inset_0_-1.5px_0_rgba(0,0,0,0.9)]'
+                  : 'bg-gradient-to-b from-[#1e2235] via-[#111322] to-[#080912] border-white/25 text-white hover:border-red-500/70 shadow-[0_10px_24px_rgba(0,0,0,0.9),inset_0_1.5px_0_rgba(255,255,255,0.25),inset_0_-1.5px_0_rgba(0,0,0,0.85)] hover:shadow-[0_12px_28px_rgba(255,42,58,0.25),inset_0_1.5px_0_rgba(255,255,255,0.38)]'
               }`}
               title="System Navigation Matrix Menu"
               aria-label="Toggle navigation menu"
               aria-expanded={mobileMenuOpen}
             >
-              {/* Corner High-Tech Micro-Notches */}
-              <div className="absolute top-1 left-1 w-1 h-1 border-t border-l border-red-400/80 pointer-events-none" />
-              <div className="absolute bottom-1 right-1 w-1 h-1 border-b border-r border-cyan-400/80 pointer-events-none" />
+              {/* CNC Machined Top Edge Chamfer Highlight */}
+              <div className="absolute top-0 inset-x-2 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none" />
 
-              {/* Specular Glint Sweep on Hover */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+              {/* Brushed Titanium Anisotropic Specular Sheen */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.05] to-transparent pointer-events-none opacity-80 group-hover:opacity-100 transition-opacity" />
 
-              {/* 3D Morphing Laser Matrix Mechanism */}
-              <div className="relative w-5 h-4.5 flex flex-col justify-between items-center pointer-events-none py-0.5 shrink-0">
-                {/* Top 3D Laser Blade */}
-                <span
-                  className={`h-[2.5px] rounded-full transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] origin-center ${
-                    mobileMenuOpen
-                      ? 'w-5 bg-gradient-to-r from-red-500 via-rose-200 to-red-500 rotate-45 translate-y-[6.5px] shadow-[0_0_12px_#ff2a3a]'
-                      : 'w-5 bg-gradient-to-r from-white via-neutral-100 to-white/90 shadow-[0_1px_3px_rgba(0,0,0,0.9)] group-hover:from-red-400 group-hover:via-white group-hover:to-red-400 group-hover:shadow-[0_0_8px_#ff2a3a]'
-                  }`}
-                />
+              {/* Recessed Mechanical Switch Pad */}
+              <div className="relative w-7 h-7 rounded-lg bg-black/40 border border-white/5 flex items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.8)]">
+                {/* Precision Mechanical Louver Blades */}
+                <div className="w-[16px] h-[12px] flex flex-col justify-between items-center pointer-events-none">
+                  {/* Top Blade */}
+                  <span
+                    className={`h-[2px] rounded-[1px] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-center ${
+                      mobileMenuOpen
+                        ? 'w-[16px] bg-gradient-to-r from-red-400 via-rose-100 to-red-400 rotate-45 translate-y-[5px] shadow-[0_0_8px_rgba(255,42,58,0.9)]'
+                        : 'w-[16px] bg-gradient-to-r from-neutral-300 via-white to-neutral-200 group-hover:from-white group-hover:via-rose-100 group-hover:to-red-300 shadow-[0_1px_2px_rgba(0,0,0,0.95)]'
+                    }`}
+                  />
 
-                {/* Center Quantum Diode & Dynamic Segmented Rails */}
-                <div
-                  className={`w-5 flex items-center justify-between transition-all duration-300 ease-out ${
-                    mobileMenuOpen ? 'opacity-0 scale-50 pointer-events-none' : 'opacity-100 scale-100'
-                  }`}
-                >
-                  <span className="h-[2px] w-1.5 rounded-full bg-red-500 shadow-[0_0_6px_#ff2a3a] group-hover:w-2 transition-all" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee] animate-pulse" />
-                  <span className="h-[2px] w-1.5 rounded-full bg-red-500 shadow-[0_0_6px_#ff2a3a] group-hover:w-2 transition-all" />
+                  {/* Middle Stepped Blade */}
+                  <span
+                    className={`h-[2px] rounded-[1px] transition-all duration-200 ease-out origin-left self-start ${
+                      mobileMenuOpen
+                        ? 'w-0 opacity-0 -translate-x-2'
+                        : 'w-[11px] bg-gradient-to-r from-neutral-400 via-neutral-100 to-neutral-300 group-hover:w-[16px] group-hover:from-white group-hover:to-red-300 shadow-[0_1px_2px_rgba(0,0,0,0.95)]'
+                    }`}
+                  />
+
+                  {/* Bottom Blade */}
+                  <span
+                    className={`h-[2px] rounded-[1px] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-center ${
+                      mobileMenuOpen
+                        ? 'w-[16px] bg-gradient-to-r from-red-400 via-rose-100 to-red-400 -rotate-45 -translate-y-[5px] shadow-[0_0_8px_rgba(255,42,58,0.9)]'
+                        : 'w-[16px] bg-gradient-to-r from-neutral-300 via-white to-neutral-200 group-hover:from-white group-hover:via-rose-100 group-hover:to-red-300 shadow-[0_1px_2px_rgba(0,0,0,0.95)]'
+                    }`}
+                  />
                 </div>
-
-                {/* Center Nexus Hologram Node (Only visible when open to crown the 'X') */}
-                {mobileMenuOpen && (
-                  <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-xs rotate-45 bg-gradient-to-tr from-red-600 via-white to-cyan-300 shadow-[0_0_10px_#ff2a3a] border border-white animate-in zoom-in duration-300" />
-                )}
-
-                {/* Bottom 3D Laser Blade */}
-                <span
-                  className={`h-[2.5px] rounded-full transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] origin-center ${
-                    mobileMenuOpen
-                      ? 'w-5 bg-gradient-to-r from-red-500 via-rose-200 to-red-500 -rotate-45 -translate-y-[6.5px] shadow-[0_0_12px_#ff2a3a]'
-                      : 'w-5 bg-gradient-to-r from-white via-neutral-100 to-white/90 shadow-[0_1px_3px_rgba(0,0,0,0.9)] group-hover:from-red-400 group-hover:via-white group-hover:to-red-400 group-hover:shadow-[0_0_8px_#ff2a3a]'
-                  }`}
-                />
               </div>
 
               <span className="hidden xl:inline text-white font-mono text-xs font-black tracking-wider uppercase group-hover:text-red-300 transition-colors">
                 {mobileMenuOpen ? 'DISENGAGE' : 'SYS MENU'}
               </span>
-              <span className="relative flex items-center justify-center w-2 h-2">
+
+              {/* Optical Diode Recessed Status Aperture */}
+              <div className="relative w-3.5 h-3.5 rounded-full bg-black/60 border border-white/10 flex items-center justify-center shadow-inner">
                 <span className={`absolute w-2.5 h-2.5 rounded-full animate-ping ${mobileMenuOpen ? 'bg-red-400/70' : 'bg-red-500/50'}`} />
                 <span className={`relative w-1.5 h-1.5 rounded-full ${mobileMenuOpen ? 'bg-red-400 shadow-[0_0_8px_#ff2a3a]' : 'bg-red-500 shadow-[0_0_6px_#ff2a3a]'}`} />
-              </span>
+              </div>
             </button>
 
             {/* Direct Channel CTA */}
@@ -509,48 +522,51 @@ const Navigation = () => {
             <button
               type="button"
               onClick={() => setMobileMenuOpen((prev) => !prev)}
-              className={`w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl border flex items-center justify-center transition-all duration-300 cursor-pointer touch-manipulation active:scale-95 group relative overflow-hidden select-none ${
+              className={`w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl flex items-center justify-center transition-all duration-300 cursor-pointer touch-manipulation active:scale-[0.94] group relative select-none ${
                 mobileMenuOpen
-                  ? 'bg-gradient-to-b from-[#2e1017] via-[#1a080d] to-[#0d0407] border-red-500 text-white shadow-[0_0_28px_rgba(255,42,58,0.55),inset_0_1.5px_0_rgba(255,255,255,0.4)]'
-                  : 'bg-gradient-to-b from-[#22253a] via-[#131525] to-[#090a12] border-white/30 text-white hover:border-red-500/90 shadow-[0_10px_24px_rgba(0,0,0,0.9),inset_0_1.5px_0_rgba(255,255,255,0.35),inset_0_-2px_0_rgba(0,0,0,0.65)]'
+                  ? 'bg-gradient-to-b from-[#2a0e14] via-[#16070a] to-[#0a0305] border border-red-500/80 shadow-[0_0_24px_rgba(255,42,58,0.45),0_10px_24px_rgba(0,0,0,0.95),inset_0_1.5px_0_rgba(255,255,255,0.35),inset_0_-1.5px_0_rgba(0,0,0,0.9)]'
+                  : 'bg-gradient-to-b from-[#1e2235] via-[#111322] to-[#080912] border border-white/25 hover:border-red-500/70 shadow-[0_10px_24px_rgba(0,0,0,0.9),inset_0_1.5px_0_rgba(255,255,255,0.25),inset_0_-1.5px_0_rgba(0,0,0,0.85)] hover:shadow-[0_12px_28px_rgba(255,42,58,0.25),inset_0_1.5px_0_rgba(255,255,255,0.38)] hover:-translate-y-0.5'
               }`}
               aria-label="Toggle navigation menu"
               aria-expanded={mobileMenuOpen}
             >
-              {/* Corner Notches */}
-              <div className="absolute top-1 left-1 w-1 h-1 border-t border-l border-red-400/80 pointer-events-none" />
-              <div className="absolute bottom-1 right-1 w-1 h-1 border-b border-r border-cyan-400/80 pointer-events-none" />
+              {/* CNC Machined Top Edge Chamfer Highlight */}
+              <div className="absolute top-0 inset-x-2 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none" />
 
-              {/* 3D Morphing Laser Matrix Bars for Mobile */}
-              <div className="relative w-5 h-4.5 flex flex-col justify-between items-center pointer-events-none py-0.5 shrink-0">
-                <span
-                  className={`h-[2.5px] rounded-full transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] origin-center ${
-                    mobileMenuOpen
-                      ? 'w-5 bg-gradient-to-r from-red-500 via-rose-200 to-red-500 rotate-45 translate-y-[6.5px] shadow-[0_0_12px_#ff2a3a]'
-                      : 'w-5 bg-gradient-to-r from-white via-neutral-100 to-white/90 group-hover:from-red-400 group-hover:to-red-400 shadow-[0_1px_3px_rgba(0,0,0,0.9)]'
-                  }`}
-                />
-                <div
-                  className={`w-5 flex items-center justify-between transition-all duration-300 ease-out ${
-                    mobileMenuOpen ? 'opacity-0 scale-50 pointer-events-none' : 'opacity-100 scale-100'
-                  }`}
-                >
-                  <span className="h-[2px] w-1.5 rounded-full bg-red-500 shadow-[0_0_6px_#ff2a3a]" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee] animate-pulse" />
-                  <span className="h-[2px] w-1.5 rounded-full bg-red-500 shadow-[0_0_6px_#ff2a3a]" />
+              {/* Brushed Titanium Anisotropic Specular Sheen */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.05] to-transparent pointer-events-none opacity-80 group-hover:opacity-100 transition-opacity" />
+
+              {/* Recessed Mechanical Switch Pad */}
+              <div className="relative w-8 h-8 rounded-lg bg-black/40 border border-white/5 flex items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.8)]">
+                {/* Precision Mechanical Louver Blades */}
+                <div className="w-[18px] h-[14px] flex flex-col justify-between items-center pointer-events-none">
+                  {/* Top Blade */}
+                  <span
+                    className={`h-[2px] rounded-[1px] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-center ${
+                      mobileMenuOpen
+                        ? 'w-[18px] bg-gradient-to-r from-red-400 via-rose-100 to-red-400 rotate-45 translate-y-[6px] shadow-[0_0_8px_rgba(255,42,58,0.9)]'
+                        : 'w-[18px] bg-gradient-to-r from-neutral-300 via-white to-neutral-200 group-hover:from-white group-hover:via-rose-100 group-hover:to-red-300 shadow-[0_1px_2px_rgba(0,0,0,0.95)]'
+                    }`}
+                  />
+
+                  {/* Middle Stepped Blade */}
+                  <span
+                    className={`h-[2px] rounded-[1px] transition-all duration-200 ease-out origin-left self-start ${
+                      mobileMenuOpen
+                        ? 'w-0 opacity-0 -translate-x-2'
+                        : 'w-[12px] bg-gradient-to-r from-neutral-400 via-neutral-100 to-neutral-300 group-hover:w-[18px] group-hover:from-white group-hover:to-red-300 shadow-[0_1px_2px_rgba(0,0,0,0.95)]'
+                    }`}
+                  />
+
+                  {/* Bottom Blade */}
+                  <span
+                    className={`h-[2px] rounded-[1px] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] origin-center ${
+                      mobileMenuOpen
+                        ? 'w-[18px] bg-gradient-to-r from-red-400 via-rose-100 to-red-400 -rotate-45 -translate-y-[6px] shadow-[0_0_8px_rgba(255,42,58,0.9)]'
+                        : 'w-[18px] bg-gradient-to-r from-neutral-300 via-white to-neutral-200 group-hover:from-white group-hover:via-rose-100 group-hover:to-red-300 shadow-[0_1px_2px_rgba(0,0,0,0.95)]'
+                    }`}
+                  />
                 </div>
-
-                {mobileMenuOpen && (
-                  <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-xs rotate-45 bg-gradient-to-tr from-red-600 via-white to-cyan-300 shadow-[0_0_10px_#ff2a3a] border border-white animate-in zoom-in duration-300" />
-                )}
-
-                <span
-                  className={`h-[2.5px] rounded-full transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] origin-center ${
-                    mobileMenuOpen
-                      ? 'w-5 bg-gradient-to-r from-red-500 via-rose-200 to-red-500 -rotate-45 -translate-y-[6.5px] shadow-[0_0_12px_#ff2a3a]'
-                      : 'w-5 bg-gradient-to-r from-white via-neutral-100 to-white/90 group-hover:from-red-400 group-hover:to-red-400 shadow-[0_1px_3px_rgba(0,0,0,0.9)]'
-                  }`}
-                />
               </div>
             </button>
           </div>
@@ -755,7 +771,7 @@ const Navigation = () => {
 
                 {/* Compact Portfolio Service Entry: "Get Your Own Portfolio" */}
                 <a
-                  href="https://2m0y1o.flexi-funnels.com/portfolio-offer-ba1cgdc"
+                  href="https://2m0y1o.flexi-funnels.com/portfolio-offer-d"
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => setMobileMenuOpen(false)}
@@ -880,6 +896,28 @@ const Navigation = () => {
                   onClick={() => {
                     setMobileMenuOpen(false);
                     if (lockVault) lockVault();
+                    if (typeof window !== 'undefined') {
+                      window.dispatchEvent(
+                        new CustomEvent('vault-transition', {
+                          detail: {
+                            isOpen: true,
+                            direction: 'gateway',
+                            title: 'INITIALIZING SECURITY GATEWAY',
+                            subtitle: 'Establishing zero-trust encrypted handshake with Founder Vault security terminal...',
+                          },
+                        })
+                      );
+                      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+                    }
+                    setTimeout(() => {
+                      if (typeof window !== 'undefined') {
+                        window.dispatchEvent(
+                          new CustomEvent('vault-transition', {
+                            detail: { isOpen: false, direction: 'gateway' },
+                          })
+                        );
+                      }
+                    }, 800);
                   }}
                   className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-b from-[#2a111c] via-[#1a0a12] to-[#0e0509] border-2 border-red-500/60 hover:border-cyan-400 text-white shadow-[0_16px_36px_rgba(0,0,0,0.9),0_0_24px_rgba(255,42,58,0.25),inset_0_1.5px_0_rgba(255,255,255,0.25),inset_0_-2px_0_rgba(0,0,0,0.7)] hover:shadow-[0_20px_45px_rgba(0,0,0,0.95),0_0_32px_rgba(34,211,238,0.35)] hover:-translate-y-1 active:translate-y-0.5 active:scale-[0.99] transition-all duration-200 cursor-pointer group relative overflow-hidden"
                   style={{
@@ -1101,14 +1139,6 @@ const Navigation = () => {
           onClose={() => setIsJourneyTimelineOpen(false)}
         />
       )}
-
-      {/* Hardware-Accelerated Cyber Page Transition Overlay for Resume */}
-      <VaultPageTransitionOverlay
-        isOpen={resumeTransition}
-        direction="resume"
-        customTitle="INITIALIZING VERIFIED DOSSIER"
-        customSubtitle="Decrypting Sahil Bhatia’s official curriculum vitae, verified engineering credentials & system telemetry..."
-      />
     </>
   );
 };

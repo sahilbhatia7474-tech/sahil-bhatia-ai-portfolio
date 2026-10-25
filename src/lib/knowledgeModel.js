@@ -376,7 +376,7 @@ export function buildKnowledgeIndex(data = {}) {
     title: 'Get Your Own Portfolio — Professional Career Portfolio',
     subtitle: 'Done-For-You · 4-Day Turnaround · ₹1,499 One-Time',
     description: 'Turn your resume, projects and certificates into a premium, mobile-first portfolio built to be shared. Includes review, submission form, and secure checkout.',
-    destination: 'https://2m0y1o.flexi-funnels.com/portfolio-offer-ba1cgdc',
+    destination: 'https://2m0y1o.flexi-funnels.com/portfolio-offer-d',
     external: true,
     tags: [
       'get your own portfolio',
@@ -733,7 +733,7 @@ export function queryAIAssistant(userPrompt, portfolioData = {}) {
     return {
       text: `Get Your Own Portfolio is Sahil's verified done-for-you career portfolio service (₹1,499 one-time, 4-day delivery):\n\n• Turn your resume, projects, and certificates into an editorial, mobile-first portfolio built to be shared.\n• Complete done-for-you delivery in 4 days, custom structure, and seamless shareability.\n• Review the verified offer details and checkout securely.`,
       actions: [
-        { label: 'VIEW PORTFOLIO OFFER & FUNNEL', url: 'https://2m0y1o.flexi-funnels.com/portfolio-offer-ba1cgdc', type: 'external' },
+        { label: 'VIEW PORTFOLIO OFFER & FUNNEL', url: 'https://2m0y1o.flexi-funnels.com/portfolio-offer-d', type: 'external' },
         { label: 'VIEW VERIFIED RESUME', destination: '/resume', type: 'resume' },
       ],
     };

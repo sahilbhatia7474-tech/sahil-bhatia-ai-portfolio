@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { 
   onAuthStateChanged, 
   signInWithPopup, 
@@ -127,7 +127,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [authError, setAuthError] = useState(null);
 
-  const lockVault = () => {
+  const lockVault = useCallback(() => {
     setIsVaultUnlocked(false);
     try {
       if (typeof window !== 'undefined') {
@@ -136,9 +136,9 @@ export const AuthProvider = ({ children }) => {
     } catch {
       // safe fallback
     }
-  };
+  }, []);
 
-  const unlockVault = () => {
+  const unlockVault = useCallback(() => {
     setIsVaultUnlocked(true);
     try {
       if (typeof window !== 'undefined') {
@@ -147,7 +147,7 @@ export const AuthProvider = ({ children }) => {
     } catch {
       // safe fallback
     }
-  };
+  }, []);
 
   const getDomainErrorMessage = () => {
     const currentHost = typeof window !== 'undefined' ? window.location.hostname : 'current hostname';
@@ -182,38 +182,6 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    // If already authorized via session in sessionStorage
-    try {
-      const storedRole = sessionStorage.getItem('sahil_vault_role');
-      if (storedRole === 'PUBLIC_VIEWER') {
-        setRole('PUBLIC_VIEWER');
-        setIsFounder(false);
-        setCanEdit(false);
-        if (!user) {
-          setUser({
-            email: 'public.viewer@guest.os',
-            displayName: 'Public Visitor (Read-Only Guest Mode)',
-            uid: 'guest-viewer-session',
-          });
-        }
-        setLoading(false);
-      } else if (storedRole === 'FOUNDER_OWNER' && sessionStorage.getItem('sahil_founder_authorized') === 'true') {
-        setRole('FOUNDER_OWNER');
-        setIsFounder(true);
-        setCanEdit(true);
-        if (!user) {
-          setUser({
-            email: FOUNDER_EMAIL,
-            displayName: 'Sahil Bhatia (Verified Founder & Sole Editor)',
-            uid: 'founder-master-session',
-          });
-        }
-        setLoading(false);
-      }
-    } catch {
-      // safe fallback
-    }
-
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         if (firebaseUser.isAnonymous) {

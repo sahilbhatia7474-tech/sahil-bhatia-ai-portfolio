@@ -14,7 +14,6 @@ import { usePortfolioData } from '../context/PortfolioDataContext';
 import { queryAIAssistant } from '../lib/knowledgeModel';
 import { isValidHttpUrl } from '../lib/projectLinks';
 import { useBodyScrollLock, forceUnlockBodyScroll } from '../lib/scrollLock';
-import VaultPageTransitionOverlay from './vault/VaultPageTransitionOverlay';
 
 const SUGGESTED_PROMPTS = [
   { label: '📄 VIEW RESUME (CV)', destination: '/resume', type: 'resume' },

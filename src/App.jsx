@@ -5,7 +5,6 @@ import { PortfolioDataProvider, usePortfolioData } from './context/PortfolioData
 import { ThemeProvider } from './context/ThemeContext';
 import SystemBootLoader from './components/SystemBootLoader';
 import CustomCursor from './components/CustomCursor';
-import SpiderVerseBackgroundWall from './components/SpiderVerseBackgroundWall';
 import CaptainAmericaShieldBackground from './components/CaptainAmericaShieldBackground';
 import DynamicAmbientLightBackdrop from './components/DynamicAmbientLightBackdrop';
 import Navigation from './components/Navigation';
@@ -29,7 +28,7 @@ const PortfolioTerminal = lazy(() => import('./components/PortfolioTerminal'));
 
 import ScrollJumpInstrument from './components/ScrollJumpInstrument';
 import SpatialSectionDivider from './components/SpatialSectionDivider';
-import { ShieldAlert, Lock, RefreshCw } from 'lucide-react';
+import { ShieldAlert, Lock } from 'lucide-react';
 
 // Lazy-load secondary pages to keep the initial landing bundle fast and lightweight
 const JourneyPage = lazy(() => import('./pages/JourneyPage'));
@@ -43,6 +42,7 @@ const ResumePage = lazy(() => import('./pages/ResumePage'));
 // Lazy-load private Founder Vault CMS to isolate bundle size from public portfolio
 const VaultLayout = lazy(() => import('./components/vault/VaultLayout'));
 import ProtectedRoute from './components/vault/ProtectedRoute';
+import VaultPageTransitionOverlay from './components/vault/VaultPageTransitionOverlay';
 
 // Route Section Smooth Scroller
 function ScrollManager() {
@@ -53,9 +53,14 @@ function ScrollManager() {
     const hash = location.hash;
 
     if (hash) {
-      const el = document.querySelector(hash);
-      if (el) {
-        setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 120);
+      try {
+        const cleanId = hash.replace(/^#/, '');
+        const el = document.getElementById(cleanId) || (hash.length > 1 ? document.querySelector(hash) : null);
+        if (el) {
+          setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 120);
+        }
+      } catch {
+        // Safe fallback for non-selector hashes
       }
       return;
     }
@@ -74,12 +79,20 @@ function ScrollManager() {
 
     const sectionId = routeSectionMap[path];
     if (sectionId) {
-      const el = document.getElementById(sectionId);
-      if (el) {
-        setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 120);
+      try {
+        const el = document.getElementById(sectionId);
+        if (el) {
+          setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 120);
+        }
+      } catch {
+        // Safe fallback
       }
-    } else if (path === '/') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (path === '/' || path.startsWith('/vault') || path === '/resume') {
+      try {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      } catch {
+        // Safe fallback
+      }
     }
   }, [location.pathname, location.hash]);
 
@@ -98,7 +111,8 @@ function PublicExperience() {
     if (lockVault) {
       lockVault();
     }
-  }, [lockVault]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleBootComplete = () => {
     try {
@@ -152,9 +166,6 @@ function PublicExperience() {
 
   return (
     <div className="bg-[#070708] min-h-screen text-neutral-100 relative selection:bg-red-600 selection:text-white font-sans antialiased">
-      {/* Route Section Scroller */}
-      <ScrollManager />
-
       {/* System Initialization Boot Sequence */}
       {booting && <SystemBootLoader onComplete={handleBootComplete} />}
 
@@ -199,9 +210,6 @@ function PublicExperience() {
 
       {/* Precision Ambient Light Follower & Custom Cursor */}
       <CustomCursor />
-
-      {/* Spider-Man Web-Shooting & Geometric Spider-Net Cosmic Wall Layer */}
-      <SpiderVerseBackgroundWall />
 
       {/* Global Fixed Captain America Vibranium Shield - Centered in Viewport across Entire Website */}
       <CaptainAmericaShieldBackground />
@@ -277,6 +285,26 @@ function PublicExperience() {
 
 // Master Application Component with Providers & Routing
 function App() {
+  const [vaultTransition, setVaultTransition] = useState({
+    isOpen: false,
+    direction: 'gateway',
+    role: 'FOUNDER_OWNER',
+    customTitle: '',
+    customSubtitle: '',
+  });
+
+  useEffect(() => {
+    const handleVaultTransition = (e) => {
+      if (!e || !e.detail) return;
+      setVaultTransition((prev) => ({
+        ...prev,
+        ...e.detail,
+      }));
+    };
+    window.addEventListener('vault-transition', handleVaultTransition);
+    return () => window.removeEventListener('vault-transition', handleVaultTransition);
+  }, []);
+
   // Pre-warm Founder Vault layout in background so entering is instantaneous
   useEffect(() => {
     const idleTimer = setTimeout(() => {
@@ -288,6 +316,18 @@ function App() {
 
   return (
     <BrowserRouter>
+      {/* Route Section & Top Scroll Orchestrator */}
+      <ScrollManager />
+
+      {/* Hardware-Accelerated Cyber Page Transition Overlay across all routes */}
+      <VaultPageTransitionOverlay
+        isOpen={vaultTransition.isOpen}
+        direction={vaultTransition.direction}
+        role={vaultTransition.role}
+        customTitle={vaultTransition.customTitle}
+        customSubtitle={vaultTransition.customSubtitle}
+      />
+
       {/* Cinematic CRT Monitor Horizontal Scanline Overlay */}
       <CRTScanlineOverlay />
 

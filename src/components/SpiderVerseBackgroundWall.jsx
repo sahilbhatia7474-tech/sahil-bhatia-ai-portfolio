@@ -299,13 +299,31 @@ export default function SpiderVerseBackgroundWall() {
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
     document.addEventListener('mouseleave', handleMouseLeave, { passive: true });
 
+    let isScrolling = false;
+    let scrollStopTimer = null;
+
+    const handleScrollThrottler = () => {
+      isScrolling = true;
+      if (scrollStopTimer) clearTimeout(scrollStopTimer);
+      scrollStopTimer = setTimeout(() => {
+        isScrolling = false;
+      }, 80);
+    };
+
+    window.addEventListener('scroll', handleScrollThrottler, { passive: true });
+
     let galaxyAngle = 0;
     let lastRenderTime = 0;
 
-    // Main Render Loop with Adaptive Frame Rate Governor (Silky 60fps at all times, no scroll freeze)
+    // Main Render Loop with Adaptive Frame Rate Governor (Silky 60fps at all times, dedicated compositor during scroll)
     const render = (currentTime = 0) => {
       if (!prefersReducedMotion && isVisible) {
         animationFrameId = requestAnimationFrame(render);
+      }
+
+      // During active rapid scroll, throttle to ~30fps to dedicate GPU compositor bandwidth to ultra-smooth scrolling
+      if (isScrolling && currentTime - lastRenderTime < 33.3) {
+        return;
       }
 
       // Frame throttle to standard display refresh (~60fps)
@@ -552,6 +570,8 @@ export default function SpiderVerseBackgroundWall() {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseleave', handleMouseLeave);
+      window.removeEventListener('scroll', handleScrollThrottler);
+      if (scrollStopTimer) clearTimeout(scrollStopTimer);
     };
   }, []);
 

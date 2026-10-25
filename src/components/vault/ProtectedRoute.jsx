@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../lib/authContext';
 import VaultLogin from './VaultLogin';
-import VaultPageTransitionOverlay from './VaultPageTransitionOverlay';
 
 /**
  * STRICT ROUTE-LEVEL SECURITY GATEWAY FOR FOUNDER VAULT WITH ULTRA-FAST CYBER TRANSITIONS
@@ -17,8 +16,6 @@ export const ProtectedRoute = ({ children }) => {
 
   // Internal state tracking which screen is rendered
   const [displayedUnlocked, setDisplayedUnlocked] = useState(isVaultUnlocked);
-  const [isOverlayOpen, setIsOverlayOpen] = useState(false);
-  const [transitionDirection, setTransitionDirection] = useState('unlock');
   
   const prevUnlockedRef = useRef(isVaultUnlocked);
   const isInitialMount = useRef(true);
@@ -30,7 +27,6 @@ export const ProtectedRoute = ({ children }) => {
       isInitialMount.current = false;
       setDisplayedUnlocked(isVaultUnlocked);
       prevUnlockedRef.current = isVaultUnlocked;
-      setIsOverlayOpen(false);
 
       // Pre-warm private VaultLayout chunk in background while user views lock screen
       import('./VaultLayout').catch(() => null);
@@ -40,12 +36,19 @@ export const ProtectedRoute = ({ children }) => {
     // Trigger snappy overlay when lock/unlock state changes
     if (prevUnlockedRef.current !== isVaultUnlocked) {
       const direction = isVaultUnlocked ? 'unlock' : 'lock';
-      setTransitionDirection(direction);
       prevUnlockedRef.current = isVaultUnlocked;
-      setIsOverlayOpen(true);
 
-      // Immediately reset scroll at transition start to prevent mid-animation layout shift
+      // Dispatch global cyber transition event so overlay stays mounted cleanly at root level
       if (typeof window !== 'undefined') {
+        window.dispatchEvent(
+          new CustomEvent('vault-transition', {
+            detail: {
+              isOpen: true,
+              direction,
+              role,
+            },
+          })
+        );
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
       }
 
@@ -56,7 +59,17 @@ export const ProtectedRoute = ({ children }) => {
 
       // Snappy smooth reveal (550ms total, well within 1-second limit)
       const endTimer = setTimeout(() => {
-        setIsOverlayOpen(false);
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(
+            new CustomEvent('vault-transition', {
+              detail: {
+                isOpen: false,
+                direction,
+                role,
+              },
+            })
+          );
+        }
       }, 550);
 
       return () => {
@@ -64,17 +77,10 @@ export const ProtectedRoute = ({ children }) => {
         clearTimeout(endTimer);
       };
     }
-  }, [isVaultUnlocked]);
+  }, [isVaultUnlocked, role]);
 
   return (
-    <div className={`relative bg-[#040509] ${displayedUnlocked ? 'h-screen h-[100dvh] max-h-screen overflow-hidden flex flex-col' : 'min-h-screen'}`}>
-      {/* Framer Motion Cyber Vault Page Transition Shroud */}
-      <VaultPageTransitionOverlay
-        isOpen={isOverlayOpen}
-        direction={transitionDirection}
-        role={role}
-      />
-
+    <div className="relative bg-[#040509] w-full min-h-screen flex flex-col">
       {/* Underlying View with Smooth Framer Motion Cross-Fade */}
       <AnimatePresence mode="wait">
         {!displayedUnlocked ? (

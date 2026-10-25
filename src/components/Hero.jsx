@@ -1,66 +1,82 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate, Link } from 'react-router-dom';
-import { ArrowDown, Cpu, Play, Pause, Volume2, VolumeX, X, Sparkles, ShieldCheck, ArrowRight, Lock, Zap, Eye, FileText } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowDown, Cpu, Play, Pause, Volume2, VolumeX, X, Sparkles, ArrowRight, FileText } from 'lucide-react';
 import { usePortfolioData } from '../context/PortfolioDataContext';
 import { useAuth } from '../lib/authContext';
 import FeaturedBuilderCard3D from './FeaturedBuilderCard3D';
-import VaultPageTransitionOverlay from './vault/VaultPageTransitionOverlay';
 
 const Hero = () => {
   const navigate = useNavigate();
   const { identity, siteSettings } = usePortfolioData();
-  const { isFounder, lockVault } = useAuth();
+  const { lockVault } = useAuth();
   const [showIntroModal, setShowIntroModal] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
   const videoRef = useRef(null);
-
-  // High-Tech Cyber Page Transition Overlay State
-  const [transitionOverlay, setTransitionOverlay] = useState({
-    isOpen: false,
-    direction: 'gateway',
-    title: '',
-    subtitle: '',
-  });
 
   const handleOpenResume = (e) => {
     if (e && e.preventDefault) e.preventDefault();
-    setTransitionOverlay({
-      isOpen: true,
-      direction: 'resume',
-      title: 'INITIALIZING VERIFIED DOSSIER',
-      subtitle: 'Decrypting Sahil Bhatia’s official curriculum vitae, verified engineering credentials & system telemetry...',
-    });
+    setIsNavigating(true);
     if (typeof window !== 'undefined') {
+      window.dispatchEvent(
+        new CustomEvent('vault-transition', {
+          detail: {
+            isOpen: true,
+            direction: 'resume',
+            title: 'INITIALIZING VERIFIED DOSSIER',
+            subtitle: 'Decrypting Sahil Bhatia’s official curriculum vitae, verified engineering credentials & system telemetry...',
+          },
+        })
+      );
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     }
     setTimeout(() => {
       navigate('/resume');
-    }, 450);
+    }, 420);
     setTimeout(() => {
-      setTransitionOverlay((prev) => ({ ...prev, isOpen: false }));
-    }, 850);
+      setIsNavigating(false);
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(
+          new CustomEvent('vault-transition', {
+            detail: { isOpen: false, direction: 'resume' },
+          })
+        );
+      }
+    }, 800);
   };
 
   const handleEnterVaultSpecimen = (e) => {
     if (e && e.preventDefault) e.preventDefault();
     if (lockVault) lockVault();
-    setTransitionOverlay({
-      isOpen: true,
-      direction: 'gateway',
-      title: 'INITIALIZING SECURITY GATEWAY',
-      subtitle: 'Establishing zero-trust encrypted handshake with Founder Vault security terminal...',
-    });
+    setIsNavigating(true);
     if (typeof window !== 'undefined') {
+      window.dispatchEvent(
+        new CustomEvent('vault-transition', {
+          detail: {
+            isOpen: true,
+            direction: 'gateway',
+            title: 'INITIALIZING SECURITY GATEWAY',
+            subtitle: 'Establishing zero-trust encrypted handshake with Founder Vault security terminal...',
+          },
+        })
+      );
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     }
     setTimeout(() => {
       navigate('/vault');
-    }, 450);
+    }, 420);
     setTimeout(() => {
-      setTransitionOverlay((prev) => ({ ...prev, isOpen: false }));
-    }, 850);
+      setIsNavigating(false);
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(
+          new CustomEvent('vault-transition', {
+            detail: { isOpen: false, direction: 'gateway' },
+          })
+        );
+      }
+    }, 800);
   };
 
   const intro = identity?.introVideo;
@@ -272,32 +288,37 @@ const Hero = () => {
           WebkitFontSmoothing: 'antialiased',
         }}
       >
-        {/* System Breadcrumb / OS Banner with Elevated Depth */}
+        {/* System Breadcrumb / OS Banner with Elevated Depth (CSS Selector 5) */}
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 1, y: 0 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.2 }}
           className="flex flex-wrap items-center gap-3 mb-6"
         >
-          <div className="inline-flex flex-wrap items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0d0e14]/95 border border-white/15 text-xs font-mono text-neutral-300 shadow-[0_6px_20px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-md">
-            <span className="w-2 h-2 rounded-full bg-[#ff2a3a] shadow-[0_0_10px_#ff2a3a] animate-pulse" />
-            <span className="text-white font-medium">{siteSettings?.systemName || identity?.systemName || 'PORTFOLIO OS'}</span>
-            <span className="text-neutral-600">//</span>
-            <span className="text-neutral-400">AI PORTFOLIO & SYSTEMS</span>
+          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-2xl bg-gradient-to-r from-[#12162a]/95 via-[#0b0e1e]/98 to-[#060812] border-2 border-white/25 text-xs font-mono text-neutral-200 shadow-[0_10px_28px_rgba(0,0,0,0.85),0_0_20px_rgba(255,42,58,0.15),inset_0_1.5px_0_rgba(255,255,255,0.3)] backdrop-blur-md">
+            <span className="relative flex items-center justify-center w-2.5 h-2.5">
+              <span className="absolute w-4 h-4 rounded-full bg-red-500 animate-ping opacity-75" />
+              <span className="relative w-2 h-2 rounded-full bg-[#ff2a3a] shadow-[0_0_10px_#ff2a3a]" />
+            </span>
+            <span className="text-white font-black tracking-wider uppercase">{siteSettings?.systemName || identity?.systemName || 'PORTFOLIO OS'}</span>
+            <span className="text-red-500 font-bold">//</span>
+            <span className="text-neutral-300 font-semibold tracking-wide">AI PORTFOLIO &amp; SYSTEMS ARCHITECTURE</span>
           </div>
 
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-red-950/45 border border-red-500/45 text-xs font-mono text-red-300 shadow-[0_6px_20px_rgba(255,42,58,0.22),inset_0_1px_0_rgba(255,255,255,0.15)] backdrop-blur-md">
-            <span className="w-1.5 h-1.5 rounded-full bg-red-400 shadow-[0_0_8px_#ff2a3a]" />
-            <span>AI-NATIVE RUNTIME &bull; FOUNDER VAULT</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-gradient-to-r from-[#2a0e16]/95 via-[#18090f]/95 to-[#0e0509] border-2 border-red-500/60 text-xs font-mono text-red-200 shadow-[0_10px_28px_rgba(255,42,58,0.25),inset_0_1.5px_0_rgba(255,255,255,0.25)] backdrop-blur-md">
+            <span className="w-2 h-2 rounded-full bg-red-400 shadow-[0_0_10px_#ff2a3a] animate-pulse" />
+            <span className="font-bold tracking-wider">AI-NATIVE RUNTIME</span>
+            <span className="text-red-400 font-bold">&bull;</span>
+            <span className="text-white font-black">FOUNDER VAULT ONLINE</span>
           </div>
         </motion.div>
 
         {/* Main Display Typography */}
         <div className="grid grid-cols-1 lg:grid-cols-12 xl:flex xl:flex-row xl:items-center xl:justify-between gap-10 xl:gap-14 items-center">
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 1, y: 0 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
+            transition={{ duration: 0.2 }}
             className="lg:col-span-7 xl:flex-1 xl:min-w-0 space-y-6"
           >
             <div>
@@ -317,9 +338,10 @@ const Hero = () => {
             </div>
 
             {/* Core Hero Statement with Volumetric Depth Box */}
-            <div className="relative pl-5 py-3 border-l-2 border-[#ff2a3a] bg-gradient-to-r from-red-950/30 via-[#0c0d15]/85 to-transparent rounded-r-2xl shadow-[0_16px_40px_-10px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-md">
+            <div className="relative pl-6 py-4 border-l-4 border-[#ff2a3a] bg-gradient-to-r from-red-950/40 via-[#0e101c]/90 to-[#070810]/80 rounded-r-3xl shadow-[0_20px_50px_-10px_rgba(0,0,0,0.95),0_0_30px_rgba(255,42,58,0.18),inset_0_1.5px_0_rgba(255,255,255,0.15)] backdrop-blur-md overflow-hidden">
+              <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-red-500 via-white/30 to-transparent pointer-events-none" />
               <p
-                className="text-2xl sm:text-3xl md:text-4xl font-light tracking-tight text-white font-display drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
+                className="text-2xl sm:text-3xl md:text-4xl lg:text-[40px] font-normal tracking-tight text-white font-display leading-[1.18] drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]"
                 style={{
                   WebkitFontSmoothing: 'antialiased',
                   textRendering: 'optimizeLegibility',
@@ -327,60 +349,115 @@ const Hero = () => {
               >
                 &ldquo;{identity?.heroStatement || 'I build AI-powered digital experiences.'}&rdquo;
               </p>
-              <p className="mt-3 text-sm sm:text-base text-neutral-300 max-w-2xl leading-relaxed font-sans drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
+              <p className="mt-3.5 text-sm sm:text-base text-neutral-200 max-w-2xl leading-relaxed font-sans drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)] font-normal">
                 {identity?.subStatement || identity?.shortBio}
               </p>
             </div>
 
-            {/* Positioning Pills with High-Definition Tactility & Razor-Sharp Contrast */}
+            {/* Positioning Pills with High-Definition Tactility & Razor-Sharp Contrast (CSS Selector 1) */}
             <div className="pt-2">
-              <div className="text-[11px] font-mono tracking-widest text-neutral-300 uppercase mb-2.5 font-bold flex items-center gap-2">
+              <div className="text-[11px] font-mono tracking-widest text-neutral-300 uppercase mb-3 font-bold flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_8px_#ff2a3a] animate-pulse" />
-                <span>PRIMARY ROLES & POSITIONING</span>
+                <span>PRIMARY ROLES &amp; POSITIONING</span>
               </div>
-              <div className="flex flex-wrap gap-2.5">
+              <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3">
                 {[
-                  { title: 'AI Generalist', beacon: 'bg-cyan-400', glow: 'shadow-[0_0_10px_#22d3ee]', border: 'hover:border-cyan-400', shadow: 'hover:shadow-[0_12px_30px_rgba(34,211,238,0.35)]' },
-                  { title: 'AI Consultant', beacon: 'bg-emerald-400', glow: 'shadow-[0_0_10px_#34d399]', border: 'hover:border-emerald-400', shadow: 'hover:shadow-[0_12px_30px_rgba(16,185,129,0.35)]' },
-                  { title: 'AI-Native Builder', beacon: 'bg-red-500', glow: 'shadow-[0_0_10px_#ff2a3a]', border: 'hover:border-red-400', shadow: 'hover:shadow-[0_12px_30px_rgba(255,42,58,0.4)]' },
-                  { title: 'Digital Systems Creator', beacon: 'bg-amber-400', glow: 'shadow-[0_0_10px_#fbbf24]', border: 'hover:border-amber-400', shadow: 'hover:shadow-[0_12px_30px_rgba(245,158,11,0.35)]' },
+                  {
+                    title: 'AI Generalist',
+                    roleCode: 'ROLE_01',
+                    beacon: 'bg-cyan-400',
+                    dot: 'bg-cyan-400 shadow-[0_0_10px_#22d3ee]',
+                    cardBg: 'bg-gradient-to-b from-[#111c30] to-[#090f1c]',
+                    border: 'border-2 border-cyan-500/50 hover:border-cyan-300',
+                    shadow: 'hover:shadow-[0_16px_36px_rgba(34,211,238,0.4),inset_0_1.5px_0_rgba(255,255,255,0.35)]',
+                    accentText: 'text-cyan-300',
+                    tag: 'ORCHESTRATION',
+                  },
+                  {
+                    title: 'AI Consultant',
+                    roleCode: 'ROLE_02',
+                    beacon: 'bg-emerald-400',
+                    dot: 'bg-emerald-400 shadow-[0_0_10px_#34d399]',
+                    cardBg: 'bg-gradient-to-b from-[#0f241c] to-[#081510]',
+                    border: 'border-2 border-emerald-500/50 hover:border-emerald-300',
+                    shadow: 'hover:shadow-[0_16px_36px_rgba(16,185,129,0.4),inset_0_1.5px_0_rgba(255,255,255,0.35)]',
+                    accentText: 'text-emerald-300',
+                    tag: 'SOLUTIONS',
+                  },
+                  {
+                    title: 'AI-Native Builder',
+                    roleCode: 'ROLE_03',
+                    beacon: 'bg-red-500',
+                    dot: 'bg-red-500 shadow-[0_0_10px_#ff2a3a]',
+                    cardBg: 'bg-gradient-to-b from-[#281119] to-[#15080d]',
+                    border: 'border-2 border-red-500/60 hover:border-red-400',
+                    shadow: 'hover:shadow-[0_16px_36px_rgba(255,42,58,0.5),inset_0_1.5px_0_rgba(255,255,255,0.35)]',
+                    accentText: 'text-red-300',
+                    tag: '0-TO-1 SHIP',
+                  },
+                  {
+                    title: 'Digital Systems Creator',
+                    roleCode: 'ROLE_04',
+                    beacon: 'bg-amber-400',
+                    dot: 'bg-amber-400 shadow-[0_0_10px_#fbbf24]',
+                    cardBg: 'bg-gradient-to-b from-[#24190c] to-[#140d06]',
+                    border: 'border-2 border-amber-500/50 hover:border-amber-300',
+                    shadow: 'hover:shadow-[0_16px_36px_rgba(245,158,11,0.4),inset_0_1.5px_0_rgba(255,255,255,0.35)]',
+                    accentText: 'text-amber-300',
+                    tag: 'FULL STACK',
+                  },
                 ].map((item) => (
                   <div
                     key={item.title}
-                    className={`group/pos relative px-4 py-2.5 rounded-xl bg-[#0f111a] hover:bg-[#151824] border border-white/20 ${item.border} text-xs sm:text-sm font-bold text-white shadow-[0_8px_24px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.25)] ${item.shadow} hover:-translate-y-1.5 active:scale-95 transition-all duration-300 cursor-pointer overflow-hidden flex items-center gap-2.5`}
+                    className={`group/pos relative px-4 py-3 rounded-2xl ${item.cardBg} ${item.border} ${item.shadow} shadow-[0_10px_25px_rgba(0,0,0,0.85),inset_0_1.5px_0_rgba(255,255,255,0.22)] hover:-translate-y-1.5 active:scale-95 transition-all duration-300 cursor-pointer overflow-hidden flex flex-col justify-between select-none min-w-[140px]`}
                   >
-                    {/* Specular hairline top glint */}
-                    <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover/pos:via-red-400 transition-colors pointer-events-none" />
-                    <span className="relative flex items-center justify-center w-2 h-2 shrink-0">
-                      <span className={`absolute w-3 h-3 rounded-full ${item.beacon}/50 animate-ping`} />
-                      <span className={`relative w-1.5 h-1.5 rounded-full ${item.beacon} ${item.glow}`} />
+                    {/* Top specular hairline glint */}
+                    <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/50 to-transparent pointer-events-none" />
+
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <span className="font-mono text-[9px] text-neutral-400 font-black tracking-widest uppercase">
+                        {item.roleCode}
+                      </span>
+                      <span className="relative flex items-center justify-center w-2 h-2 shrink-0">
+                        <span className={`absolute w-3.5 h-3.5 rounded-full ${item.beacon}/60 animate-ping`} />
+                        <span className={`relative w-1.5 h-1.5 rounded-full ${item.dot}`} />
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-1">
+                      <span className="tracking-wide text-white font-bold font-sans text-xs sm:text-sm">
+                        {item.title}
+                      </span>
+                    </div>
+
+                    <span className={`text-[9px] font-mono font-black tracking-wider uppercase mt-1 ${item.accentText}`}>
+                      {item.tag}
                     </span>
-                    <span className="tracking-wide text-white font-bold">{item.title}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Capability Themes Cluster with High Contrast */}
-            <div className="pt-1">
-              <div className="text-[11px] font-mono tracking-widest text-neutral-300 uppercase mb-2 font-bold flex items-center gap-2">
+            {/* Capability Themes Cluster with High Contrast (CSS Selector 2) */}
+            <div className="pt-2">
+              <div className="text-[11px] font-mono tracking-widest text-neutral-300 uppercase mb-2.5 font-bold flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee] animate-pulse" />
                 <span>CORE CAPABILITY THEMES</span>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2.5">
                 {[
-                  { tag: 'AI + SYSTEMS', color: 'hover:border-red-400 hover:text-red-300 hover:shadow-[0_8px_22px_rgba(255,42,58,0.3)]' },
-                  { tag: 'VIBE CODING', color: 'hover:border-cyan-400 hover:text-cyan-300 hover:shadow-[0_8px_22px_rgba(34,211,238,0.3)]' },
-                  { tag: 'AUTOMATION', color: 'hover:border-amber-400 hover:text-amber-300 hover:shadow-[0_8px_22px_rgba(245,158,11,0.3)]' },
-                  { tag: 'PRODUCT', color: 'hover:border-purple-400 hover:text-purple-300 hover:shadow-[0_8px_22px_rgba(192,132,252,0.3)]' },
-                  { tag: 'UX', color: 'hover:border-emerald-400 hover:text-emerald-300 hover:shadow-[0_8px_22px_rgba(16,185,129,0.3)]' },
+                  { tag: 'AI + SYSTEMS', color: 'hover:border-red-400 hover:text-red-300 hover:shadow-[0_10px_26px_rgba(255,42,58,0.4)]', bg: 'hover:bg-red-950/40' },
+                  { tag: 'VIBE CODING', color: 'hover:border-cyan-400 hover:text-cyan-300 hover:shadow-[0_10px_26px_rgba(34,211,238,0.4)]', bg: 'hover:bg-cyan-950/40' },
+                  { tag: 'AUTOMATION', color: 'hover:border-amber-400 hover:text-amber-300 hover:shadow-[0_10px_26px_rgba(245,158,11,0.4)]', bg: 'hover:bg-amber-950/40' },
+                  { tag: 'PRODUCT', color: 'hover:border-purple-400 hover:text-purple-300 hover:shadow-[0_10px_26px_rgba(192,132,252,0.4)]', bg: 'hover:bg-purple-950/40' },
+                  { tag: 'UX', color: 'hover:border-emerald-400 hover:text-emerald-300 hover:shadow-[0_10px_26px_rgba(16,185,129,0.4)]', bg: 'hover:bg-emerald-950/40' },
                 ].map((item) => (
                   <span
                     key={item.tag}
-                    className={`group/theme px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold tracking-wider bg-[#0d0e17] hover:bg-[#131522] border border-white/20 text-white ${item.color} shadow-[0_4px_16px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.2)] hover:-translate-y-1 active:scale-95 transition-all duration-200 cursor-pointer flex items-center gap-1.5`}
+                    className={`group/theme px-4 py-2 rounded-xl text-xs font-mono font-bold tracking-wider bg-gradient-to-b from-[#131728] to-[#0a0d18] border-2 border-white/20 text-white ${item.color} ${item.bg} shadow-[0_6px_20px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.25)] hover:-translate-y-1 active:scale-95 transition-all duration-200 cursor-pointer flex items-center gap-2 select-none`}
                   >
-                    <span className="text-red-400 group-hover/theme:scale-125 transition-transform font-extrabold">#</span>
-                    <span className="font-bold text-white tracking-wider">{item.tag}</span>
+                    <span className="text-red-400 group-hover/theme:scale-125 transition-transform font-extrabold text-sm">#</span>
+                    <span className="font-extrabold text-white tracking-wider">{item.tag}</span>
                   </span>
                 ))}
               </div>
@@ -460,7 +537,7 @@ const Hero = () => {
               <button
                 type="button"
                 onClick={handleEnterVaultSpecimen}
-                disabled={transitionOverlay.isOpen}
+                disabled={isNavigating}
                 className="group/vault relative px-5.5 py-3.5 rounded-2xl bg-gradient-to-r from-[#22091c] via-[#140a22] to-[#0a1226] border-2 border-red-500/75 hover:border-cyan-400 text-white transition-all duration-300 shadow-[0_14px_38px_rgba(0,0,0,0.95),0_0_30px_rgba(255,42,58,0.4)] hover:shadow-[0_20px_52px_rgba(0,0,0,0.98),0_0_45px_rgba(34,211,238,0.65)] hover:-translate-y-1.5 active:translate-y-0.5 active:scale-[0.98] flex items-center gap-3.5 cursor-pointer overflow-hidden select-none"
                 title="Explore Sahil's Live Founder Vault (Public Specimen Mode & Architecture)"
                 style={{
@@ -503,7 +580,7 @@ const Hero = () => {
               <button
                 type="button"
                 onClick={handleOpenResume}
-                disabled={transitionOverlay.isOpen}
+                disabled={isNavigating}
                 className="group/resume relative px-6 py-3.5 rounded-2xl bg-gradient-to-r from-[#0d2825] via-[#091e1d] to-[#051415] border-2 border-emerald-500/80 hover:border-emerald-300 text-white font-mono text-xs uppercase tracking-wider font-extrabold hover:bg-[#12332f] transition-all duration-300 shadow-[0_14px_38px_rgba(0,0,0,0.95),0_0_32px_rgba(16,185,129,0.4)] hover:shadow-[0_20px_52px_rgba(0,0,0,0.98),0_0_48px_rgba(16,185,129,0.75)] hover:-translate-y-1.5 active:translate-y-0.5 active:scale-[0.98] flex items-center gap-3.5 cursor-pointer overflow-hidden select-none"
                 title="Open Sahil Bhatia's Verified Curriculum Vitae (with Full Vault-Style Cyber Transition)"
                 style={{
@@ -668,14 +745,6 @@ const Hero = () => {
           </div>
         </div>
       )}
-
-      {/* Hardware-Accelerated Cyber Page Transition Overlay for Resume & Founder Vault */}
-      <VaultPageTransitionOverlay
-        isOpen={transitionOverlay.isOpen}
-        direction={transitionOverlay.direction}
-        customTitle={transitionOverlay.title}
-        customSubtitle={transitionOverlay.subtitle}
-      />
     </section>
   );
 };

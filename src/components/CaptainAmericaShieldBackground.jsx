@@ -15,7 +15,8 @@ export default function CaptainAmericaShieldBackground() {
   const isLoopRunning = useRef(false);
 
   useEffect(() => {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (typeof window === 'undefined') return;
+    const prefersReducedMotion = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)').matches : false;
     if (prefersReducedMotion) return;
 
     let running = true;
@@ -88,16 +89,16 @@ export default function CaptainAmericaShieldBackground() {
         }}
       >
         {/* Multi-octave atmospheric backlighting: crimson red & cosmic vibranium blue */}
-        <div className="absolute inset-2 sm:inset-4 rounded-full bg-gradient-to-tr from-red-600/[0.18] via-rose-950/[0.12] to-blue-600/[0.16] blur-[100px] transform scale-90 pointer-events-none" />
-        <div className="absolute w-[60%] h-[60%] rounded-full bg-cyan-500/[0.08] blur-[80px] pointer-events-none" />
-        <div className="absolute w-[45%] h-[45%] rounded-full bg-red-500/[0.12] blur-[65px] pointer-events-none" />
+        <div className="absolute inset-2 sm:inset-4 rounded-full bg-gradient-to-tr from-red-600/[0.32] via-rose-950/[0.22] to-blue-600/[0.28] blur-[90px] transform scale-90 pointer-events-none" />
+        <div className="absolute w-[60%] h-[60%] rounded-full bg-cyan-500/[0.18] blur-[70px] pointer-events-none" />
+        <div className="absolute w-[45%] h-[45%] rounded-full bg-red-500/[0.22] blur-[55px] pointer-events-none" />
 
         {/* Circular Shield Artwork with Soft Feathering into Background */}
         <div
           className="relative w-full h-full flex items-center justify-center overflow-hidden"
           style={{
-            maskImage: 'radial-gradient(circle at 50% 44%, black 46%, rgba(0,0,0,0.8) 68%, transparent 92%)',
-            WebkitMaskImage: 'radial-gradient(circle at 50% 44%, black 46%, rgba(0,0,0,0.8) 68%, transparent 92%)',
+            maskImage: 'radial-gradient(circle at 50% 44%, black 58%, rgba(0,0,0,0.88) 78%, transparent 96%)',
+            WebkitMaskImage: 'radial-gradient(circle at 50% 44%, black 58%, rgba(0,0,0,0.88) 78%, transparent 96%)',
           }}
         >
           <img
@@ -107,13 +108,13 @@ export default function CaptainAmericaShieldBackground() {
             fetchPriority="high"
             decoding="async"
             aria-hidden="true"
-            className="w-full h-full object-cover object-[center_34%] opacity-[0.48] sm:opacity-[0.58] filter contrast-125 brightness-105 saturate-110 pointer-events-none select-none"
+            className="w-full h-full object-cover object-[center_34%] opacity-[0.72] sm:opacity-[0.82] filter contrast-125 brightness-110 saturate-115 pointer-events-none select-none drop-shadow-[0_0_35px_rgba(255,42,58,0.35)]"
           />
         </div>
 
         {/* Vibranium Star Specular Glint & Atmospheric Flare */}
-        <div className="absolute w-44 h-44 rounded-full bg-blue-400/[0.14] blur-2xl pointer-events-none" />
-        <div className="absolute -top-8 w-72 h-36 bg-red-600/[0.16] blur-3xl pointer-events-none" />
+        <div className="absolute w-52 h-52 rounded-full bg-blue-400/[0.22] blur-2xl pointer-events-none" />
+        <div className="absolute -top-8 w-80 h-40 bg-red-600/[0.25] blur-3xl pointer-events-none" />
       </div>
     </div>
   );

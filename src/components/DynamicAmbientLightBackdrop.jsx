@@ -32,10 +32,20 @@ export default function DynamicAmbientLightBackdrop() {
   });
 
   useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const handler = (e) => setPrefersReducedMotion(e.matches);
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+    try {
+      const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const handler = (e) => setPrefersReducedMotion(e.matches);
+      if (mq.addEventListener) {
+        mq.addEventListener('change', handler);
+        return () => mq.removeEventListener('change', handler);
+      } else if (mq.addListener) {
+        mq.addListener(handler);
+        return () => mq.removeListener(handler);
+      }
+    } catch {
+      // safe fallback
+    }
   }, []);
 
   useEffect(() => {

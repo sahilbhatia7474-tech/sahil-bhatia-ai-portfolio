@@ -18,6 +18,7 @@ import {
   CheckCircle2,
   Globe,
   Copy,
+  ArrowUpRight,
 } from 'lucide-react';
 import PageSEO from '../components/PageSEO';
 import VaultPageTransitionOverlay from '../components/vault/VaultPageTransitionOverlay';
@@ -267,6 +268,18 @@ export default function ResumePage() {
             </div>
 
             <div className="flex items-center gap-2.5">
+              <a
+                href="https://2m0y1o.flexi-funnels.com/portfolio-offer-d"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hidden sm:inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-600/25 via-amber-900/35 to-amber-950/50 hover:from-amber-600/40 hover:to-amber-900/50 border border-amber-400/60 hover:border-amber-300 text-amber-200 hover:text-white text-xs font-mono font-bold transition-all shadow-[0_4px_16px_rgba(245,158,11,0.2),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 cursor-pointer no-print group"
+                title="Open Portfolio Offer Funnel"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse group-hover:rotate-12 transition-transform" />
+                <span>Portfolio Offer</span>
+                <ArrowUpRight className="w-3.5 h-3.5 text-amber-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </a>
+
               <button
                 type="button"
                 onClick={handleCopyLink}
@@ -794,35 +807,23 @@ export default function ResumePage() {
                       </span>
                     </div>
                     <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed font-sans">
-                      Created and iterated Green, Blue and Black portfolio-offer landing-page variants in FlexiFunnels, refining offer presentation, funnel sequencing and A/B-test structure.
+                      Created and iterated high-converting portfolio-offer landing-page funnels in FlexiFunnels, refining offer presentation, funnel sequencing and conversion architecture.
                     </p>
-                    <div className="pt-2 border-t border-white/10 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs font-mono">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-emerald-400 font-bold">Green:</span>
-                        <a
-                          href="https://2m0y1o.flexi-funnels.com/portfolio-offer-ba1cgdc"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-neutral-300 hover:text-white underline break-all font-semibold"
-                        >
-                          portfolio-offer-ba1cgdc
-                        </a>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-cyan-400 font-bold">Blue:</span>
-                        <span className="text-neutral-400 font-mono text-[11px] italic">In Progress (Not Linked)</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-neutral-400 font-bold">Black:</span>
-                        <a
-                          href="https://2m0y1o.flexi-funnels.com/portfolio-offer-b"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-neutral-300 hover:text-white underline break-all font-semibold"
-                        >
-                          portfolio-offer-b
-                        </a>
-                      </div>
+                    <div className="pt-2.5 border-t border-white/10 flex flex-wrap items-center gap-3 text-xs font-mono">
+                      <a
+                        href="https://2m0y1o.flexi-funnels.com/portfolio-offer-d"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-700/35 via-amber-900/45 to-amber-950/60 hover:from-amber-600/50 hover:to-amber-900/60 border border-amber-400/70 hover:border-amber-300 text-amber-200 hover:text-white font-bold transition-all shadow-[0_4px_14px_rgba(245,158,11,0.25),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 cursor-pointer no-underline print-badge group"
+                        title="Open Live Portfolio Offer Funnel"
+                      >
+                        <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0 group-hover:rotate-12 transition-transform" />
+                        <span>Live Offer Funnel</span>
+                        <ArrowUpRight className="w-3.5 h-3.5 text-amber-400 shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                      </a>
+                      <span className="text-[11px] font-mono text-neutral-400 px-2 py-0.5 rounded-md bg-white/5 border border-white/10">
+                        Conversion &amp; Offer Architecture
+                      </span>
                     </div>
                   </div>
 
